@@ -60,7 +60,6 @@ public class DayDraggableEventView extends ViewGroup {
         initAttrs();
 
         this.isAllDayEvent = isAllDayEvent;
-
         initBackground();
         initDataInViews();
     }
@@ -79,24 +78,24 @@ public class DayDraggableEventView extends ViewGroup {
         }
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    }
+//    @Override
+//    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+//        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+//    }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-
         int baseL = getPaddingLeft();
         int baseT = getPaddingTop();
-        width = r - l - baseL;
+        int icon_margin = DensityUtil.dip2px(getContext(),1);
+
+        width = (r-l) - baseL;
         height = b - t;
 
-        bg.layout(baseL,baseT,r,b);
+        bg.layout(baseL,baseT,width,height + baseT);
         leftBar.layout(baseL, baseT, leftBar.getLayoutParams().width, height);
-        int icon_margin = DensityUtil.dip2px(getContext(),1);
         icon.layout(width - baseL - icon.getLayoutParams().width -icon_margin,icon_margin + baseT,width,icon_margin + icon.getLayoutParams().height + baseT);
-        title.layout(baseL+leftBar.getLayoutParams().width,t + baseT, width,b);
+        title.layout(baseL+leftBar.getLayoutParams().width,baseT, width,height - baseT);
     }
 
     public static class LayoutParams extends ViewGroup.LayoutParams {
@@ -194,7 +193,6 @@ public class DayDraggableEventView extends ViewGroup {
                         && status != null
                         && !status.equals("")
                         && status.equals("slash")){
-
                     drawSlash(canvas);
                 }
             }

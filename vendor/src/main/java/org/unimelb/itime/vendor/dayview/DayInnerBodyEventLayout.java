@@ -1,6 +1,7 @@
 package org.unimelb.itime.vendor.dayview;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -65,16 +66,19 @@ public class DayInnerBodyEventLayout extends ViewGroup {
 
     }
 
+    int a = 1;
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int cCount = getChildCount();
         int paddingLeft  = this.getPaddingLeft();
         int paddingRight  = this.getPaddingRight();
         width = width - (paddingLeft + paddingRight);
-
+        Log.i(TAG, "Inner onMeasure: " + a++);
         for (int i = 0; i < cCount; i++) {
+            getChildAt(i).measure(widthMeasureSpec,heightMeasureSpec);
             if (getChildAt(i) instanceof TimeSlotView) {
                 getChildAt(i).getLayoutParams().width = width;
             }
@@ -94,9 +98,10 @@ public class DayInnerBodyEventLayout extends ViewGroup {
             int eventWidth = width / pos.widthFactor;
             int leftMargin = eventWidth * pos.startX;
             params.width = eventWidth;
-            eventView.measure(0,0);
-            eventView.setX(leftMargin + 1 * pos.startX);
-            eventView.setY(pos.topMargin);
+            params.left = leftMargin + 1 * pos.startX;
+            params.top = pos.topMargin;
+//            eventView.setX(leftMargin);
+//            eventView.setY(pos.topMargin);
         }
     }
 
@@ -109,11 +114,13 @@ public class DayInnerBodyEventLayout extends ViewGroup {
         for (int i = 0; i < cCount; i++) {
             View child = getChildAt(i);
             if (child instanceof DayDraggableEventView){
-                child.layout(paddingLeft, 0, paddingLeft + child.getLayoutParams().width, child.getLayoutParams().height);
+                DayDraggableEventView.LayoutParams params = (DayDraggableEventView.LayoutParams) child.getLayoutParams();
+                child.layout(paddingLeft + params.left, params.top, paddingLeft + params.left + child.getLayoutParams().width, params.top + child.getLayoutParams().height);
             }
             
             if (child instanceof TimeSlotView){
-                child.layout(paddingLeft, 0, paddingLeft + child.getLayoutParams().width, child.getLayoutParams().height);
+                DayInnerBodyEventLayout.LayoutParams params = (DayInnerBodyEventLayout.LayoutParams) child.getLayoutParams();
+                child.layout(paddingLeft + params.left, params.top, paddingLeft + params.left + child.getLayoutParams().width, params.top + child.getLayoutParams().height);
             }
         }
     }

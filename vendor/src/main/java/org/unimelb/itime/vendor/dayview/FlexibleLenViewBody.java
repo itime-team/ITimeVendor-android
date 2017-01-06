@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -55,7 +56,7 @@ public class FlexibleLenViewBody extends RelativeLayout {
     private boolean isRemoveOptListener = false;
 
     private ScrollContainerView scrollContainerView;
-    private RelativeLayout bodyContainerLayout;
+    private FrameLayout bodyContainerLayout;
     private RelativeLayout animationLayout;
 
     private LinearLayout topAllDayLayout;
@@ -187,8 +188,8 @@ public class FlexibleLenViewBody extends RelativeLayout {
         scrollContainerView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         this.addView(scrollContainerView);
 
-        bodyContainerLayout = new RelativeLayout(context);
-        bodyContainerLayout.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        bodyContainerLayout = new FrameLayout(context);
+        bodyContainerLayout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         scrollContainerView.addView(bodyContainerLayout);
 
         topAllDayLayout = new LinearLayout(getContext());
@@ -361,8 +362,10 @@ public class FlexibleLenViewBody extends RelativeLayout {
             DayInnerBodyEventLayout eventLayout = new DayInnerBodyEventLayout(context);
             eventLayout.setBackgroundColor(getResources().getColor(displayLen == 1 ? R.color.color_75white : (i%2 == 0 ? R.color.color_f2f2f5 : R.color.color_75white)));
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT,1f);
-//            int eventLayoutPadding = DensityUtil.dip2px(context, 20);
-//            eventLayout.setPadding(eventLayoutPadding,0,eventLayoutPadding,0);
+
+            int eventLayoutPadding = DensityUtil.dip2px(context, 1);
+            eventLayout.setPadding(eventLayoutPadding,0,eventLayoutPadding,0);
+
             parent.addView(eventLayout,params);
             if (!isTimeSlotEnable){
                 eventLayout.setOnDragListener(new EventDragListener(i));
@@ -658,9 +661,9 @@ public class FlexibleLenViewBody extends RelativeLayout {
     private void addRegularEvent(ITimeEventInterface event) {
         int offset = getEventContainerIndex(event.getStartTime());
         if (offset < displayLen){
-            DayInnerBodyEventLayout eventLayout = this.eventLayouts.get(offset);
-            DayDraggableEventView newDragEventView = this.createDayDraggableEventView(event, false);
-            DayDraggableEventView.LayoutParams params = (DayDraggableEventView.LayoutParams) newDragEventView.getLayoutParams();
+            final DayInnerBodyEventLayout eventLayout = this.eventLayouts.get(offset);
+            final DayDraggableEventView newDragEventView = this.createDayDraggableEventView(event, false);
+            final DayDraggableEventView.LayoutParams params = (DayDraggableEventView.LayoutParams) newDragEventView.getLayoutParams();
 
             newDragEventView.setId(View.generateViewId());
             this.regularEventViewMap.put(event, newDragEventView.getId());
@@ -856,6 +859,8 @@ public class FlexibleLenViewBody extends RelativeLayout {
         }
         DayDraggableEventView event_view = new DayDraggableEventView(context, event, false);
         event_view.setType(DayDraggableEventView.TYPE_TEMP);
+        int padding = DensityUtil.dip2px(context,1);
+        event_view.setPadding(0,padding,0,0);
 
         int eventHeight = 1 * lineHeight;//one hour
         DayDraggableEventView.LayoutParams params = new DayDraggableEventView.LayoutParams(200, eventHeight);
@@ -1239,7 +1244,6 @@ public class FlexibleLenViewBody extends RelativeLayout {
             timeSlotView.setIsSelected(wrapper.isSelected());
             DayInnerBodyEventLayout.LayoutParams params = new DayInnerBodyEventLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, layoutWidthPerDay);
             timeSlotView.setLayoutParams(params);
-//            timeSlotView.setTag(struct);
         }else {
             long duration = this.slotViews.size() == 0 ? 3600 * 1000 : this.slotViews.get(0).getDuration();
             timeSlotView.setDuration(duration);
@@ -1278,7 +1282,8 @@ public class FlexibleLenViewBody extends RelativeLayout {
         String[] components = hourWithMinutes.split(":");
         float trickTime = Integer.valueOf(components[0]) + (float) Integer.valueOf(components[1]) / 100;
         final int topMargin = nearestTimeSlotValue(trickTime);
-        timeSlotView.setY(topMargin);
+//        timeSlotView.setY(topMargin);
+        ((DayInnerBodyEventLayout.LayoutParams)timeSlotView.getLayoutParams()).top = topMargin;
 
         if (animate){
             ResizeAnimation resizeAnimation = new ResizeAnimation(
@@ -1427,21 +1432,18 @@ public class FlexibleLenViewBody extends RelativeLayout {
 
         @Override
         public boolean onLongClick(View v) {
-//            if (tempDragView == null) {
-                DayInnerBodyEventLayout container = (DayInnerBodyEventLayout) v;
-                tempDragView = createTimeSlotView(new WrapperTimeSlot(null));
-                tempDragView.setY(nowTapY);
-                container.addView(tempDragView);
+            DayInnerBodyEventLayout container = (DayInnerBodyEventLayout) v;
+            tempDragView = createTimeSlotView(new WrapperTimeSlot(null));
+            DayInnerBodyEventLayout.LayoutParams params = (DayInnerBodyEventLayout.LayoutParams)tempDragView.getLayoutParams();
+            params.top = (int) nowTapY;
+            container.addView(tempDragView);
 
-                tempDragView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        tempDragView.performLongClick();
-                    }
-                }, 100);
-//            }else{
-//                Log.i(TAG, "onLongClitempDragView  not null ");
-//            }
+            tempDragView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    tempDragView.performLongClick();
+                }
+            }, 100);
 
             return true;
         }
