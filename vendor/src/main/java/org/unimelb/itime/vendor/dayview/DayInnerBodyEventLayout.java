@@ -76,9 +76,8 @@ public class DayInnerBodyEventLayout extends ViewGroup {
         int paddingLeft  = this.getPaddingLeft();
         int paddingRight  = this.getPaddingRight();
         width = width - (paddingLeft + paddingRight);
-        Log.i(TAG, "Inner onMeasure: " + a++);
+
         for (int i = 0; i < cCount; i++) {
-            getChildAt(i).measure(widthMeasureSpec,heightMeasureSpec);
             if (getChildAt(i) instanceof TimeSlotView) {
                 getChildAt(i).getLayoutParams().width = width;
             }
@@ -100,8 +99,6 @@ public class DayInnerBodyEventLayout extends ViewGroup {
             params.width = eventWidth;
             params.left = leftMargin + 1 * pos.startX;
             params.top = pos.topMargin;
-//            eventView.setX(leftMargin);
-//            eventView.setY(pos.topMargin);
         }
     }
 

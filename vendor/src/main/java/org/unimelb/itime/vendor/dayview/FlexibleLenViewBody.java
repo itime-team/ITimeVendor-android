@@ -24,7 +24,6 @@ import android.widget.TextView;
 
 import org.unimelb.itime.vendor.R;
 import org.unimelb.itime.vendor.eventview.DayDraggableEventView;
-import org.unimelb.itime.vendor.helper.VendorAnimation;
 import org.unimelb.itime.vendor.helper.CalendarEventOverlapHelper;
 import org.unimelb.itime.vendor.helper.DensityUtil;
 import org.unimelb.itime.vendor.helper.MyCalendar;
@@ -56,16 +55,19 @@ public class FlexibleLenViewBody extends RelativeLayout {
     private boolean isRemoveOptListener = false;
 
     private ScrollContainerView scrollContainerView;
-    private FrameLayout bodyContainerLayout;
-    private RelativeLayout animationLayout;
+    private LinearLayout bodyContainerLayout;
+
+    private RelativeLayout globalAnimationLayout;
+    private RelativeLayout localAnimationLayout;
 
     private LinearLayout topAllDayLayout;
     private LinearLayout topAllDayEventLayouts;
 
-    private RelativeLayout leftSideRLayout;
-    private RelativeLayout rightContentLayout;
+    private FrameLayout regularBodyLayout;
+    private FrameLayout timeLayout;
+    private FrameLayout rightContentLayout;
 
-    private RelativeLayout dividerBgRLayout;
+    private FrameLayout dividerBgRLayout;
     private LinearLayout eventLayout;
 
     public MyCalendar myCalendar;
@@ -163,15 +165,12 @@ public class FlexibleLenViewBody extends RelativeLayout {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         layoutWidthPerDay = MeasureSpec.getSize(eventLayout.getMeasuredWidth()/displayLen);
-        int cCount = getChildCount();
-        for (int i = 0; i < cCount; i++) {
-            measureChildren(widthMeasureSpec,heightMeasureSpec);
-        }
-    }
+//        int cCount = getChildCount();
+//        for (int i = 0; i < cCount; i++) {
+//            measureChildren(widthMeasureSpec,heightMeasureSpec);
+//        }
 
-    @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        super.onLayout(changed, l, t, r, b);
+//        Log.i(TAG, "FlexibleBody: " + a++);
     }
 
     private void initLayoutParams(){
@@ -184,27 +183,24 @@ public class FlexibleLenViewBody extends RelativeLayout {
     private void initViews() {
         this.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
+        ImageView dividerTop = getDivider();
+        this.addView(dividerTop);
+
         scrollContainerView = new ScrollContainerView(context);
-        scrollContainerView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        scrollContainerView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         this.addView(scrollContainerView);
 
-        bodyContainerLayout = new FrameLayout(context);
-        bodyContainerLayout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        bodyContainerLayout = new LinearLayout(context);
+        bodyContainerLayout.setOrientation(LinearLayout.VERTICAL);
+        bodyContainerLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         scrollContainerView.addView(bodyContainerLayout);
 
         topAllDayLayout = new LinearLayout(getContext());
+        topAllDayLayout.setOrientation(LinearLayout.HORIZONTAL);
         topAllDayLayout.setBackgroundColor(Color.parseColor("#EBEBEB"));
         topAllDayLayout.setId(View.generateViewId());
-        RelativeLayout.LayoutParams topAllDayLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams topAllDayLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         topAllDayLayout.setLayoutParams(topAllDayLayoutParams);
-
-        ImageView dividerTop = getDivider();
-        ((RelativeLayout.LayoutParams) dividerTop.getLayoutParams()).addRule(ALIGN_PARENT_TOP);
-        this.addView(dividerTop);
-
-        ImageView dividerBottom = getDivider();
-        ((RelativeLayout.LayoutParams) dividerBottom.getLayoutParams()).addRule(ALIGN_BOTTOM, topAllDayLayout.getId());
-        bodyContainerLayout.addView(dividerBottom);
 
         TextView allDayTitleTv = new TextView(context);
         LinearLayout.LayoutParams allDayTitleTvParams = new LinearLayout.LayoutParams(leftSideWidth, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -229,50 +225,57 @@ public class FlexibleLenViewBody extends RelativeLayout {
         this.initInnerHeaderEventLayouts(topAllDayEventLayouts);
         topAllDayLayout.addView(topAllDayEventLayouts);
 
-        leftSideRLayout = new RelativeLayout(getContext());
-        leftSideRLayout.setId(View.generateViewId());
-        RelativeLayout.LayoutParams leftSideRLayoutParams = new RelativeLayout.LayoutParams(leftSideWidth, ViewGroup.LayoutParams.MATCH_PARENT);
-        leftSideRLayoutParams.addRule(RelativeLayout.BELOW, topAllDayLayout.getId());
-        leftSideRLayout.setGravity(Gravity.CENTER);
-        leftSideRLayout.setPadding(0, 0, 0, 0);
-        leftSideRLayout.setLayoutParams(leftSideRLayoutParams);
+        regularBodyLayout = new FrameLayout(getContext());
+//        regularBodyLayout.setOrientation(LinearLayout.HORIZONTAL);
+        LinearLayout.LayoutParams regularBodyLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        regularBodyLayout.setLayoutParams(regularBodyLayoutParams);
 
-        rightContentLayout = new RelativeLayout(getContext());
+        timeLayout = new FrameLayout(getContext());
+        timeLayout.setId(View.generateViewId());
+//        timeLayout.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout.LayoutParams leftSideRLayoutParams = new LinearLayout.LayoutParams(leftSideWidth, ViewGroup.LayoutParams.MATCH_PARENT);
+//        timeLayout.setGravity(Gravity.CENTER);
+        timeLayout.setLayoutParams(leftSideRLayoutParams);
+
+        regularBodyLayout.addView(timeLayout);
+
+        rightContentLayout = new FrameLayout(getContext());
         rightContentLayout.setId(View.generateViewId());
-        RelativeLayout.LayoutParams rightContentLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        rightContentLayoutParams.addRule(RelativeLayout.BELOW, topAllDayLayout.getId());
-        rightContentLayoutParams.addRule(RelativeLayout.RIGHT_OF, leftSideRLayout.getId());
-        rightContentLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        rightContentLayoutParams.addRule(RelativeLayout.ALIGN_TOP, leftSideRLayout.getId());
-        rightContentLayoutParams.addRule(RelativeLayout.ALIGN_BOTTOM, leftSideRLayout.getId());
+        FrameLayout.LayoutParams rightContentLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        rightContentLayoutParams.leftMargin = leftSideWidth;
         rightContentLayout.setLayoutParams(rightContentLayoutParams);
+        regularBodyLayout.addView(rightContentLayout);
 
-        dividerBgRLayout = new RelativeLayout(getContext());
-//        dividerBgRLayout.setBackgroundColor(Color.parseColor("#80000000"));
+        dividerBgRLayout = new FrameLayout(getContext());
         dividerBgRLayout.setId(View.generateViewId());
-        RelativeLayout.LayoutParams dividerBgRLayoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams dividerBgRLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         dividerBgRLayout.setLayoutParams(dividerBgRLayoutParams);
         rightContentLayout.addView(dividerBgRLayout);
 
         eventLayout = new LinearLayout(getContext());
         eventLayout.setId(View.generateViewId());
         eventLayout.setOrientation(LinearLayout.HORIZONTAL);
-        RelativeLayout.LayoutParams eventLayoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        eventLayoutParams.addRule(ALIGN_LEFT, rightContentLayout.getId());
-        eventLayoutParams.addRule(ALIGN_TOP, rightContentLayout.getId());
+        LinearLayout.LayoutParams eventLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         this.initInnerBodyEventLayouts(eventLayout);
         eventLayout.setLayoutParams(eventLayoutParams);
 
         rightContentLayout.addView(eventLayout);
 
         bodyContainerLayout.addView(topAllDayLayout);
-        bodyContainerLayout.addView(leftSideRLayout);
-        bodyContainerLayout.addView(rightContentLayout);
+        ImageView dividerBottom = getDivider();
+        bodyContainerLayout.addView(dividerBottom);
+        bodyContainerLayout.addView(regularBodyLayout);
 
-        animationLayout = new RelativeLayout(context);
+        globalAnimationLayout = new RelativeLayout(context);
         RelativeLayout.LayoutParams animationLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        animationLayout.setLayoutParams(animationLayoutParams);
-        this.addView(animationLayout);
+        globalAnimationLayout.setLayoutParams(animationLayoutParams);
+
+        this.addView(globalAnimationLayout);
+
+        localAnimationLayout = new RelativeLayout(context);
+        FrameLayout.LayoutParams localAnimationLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        localAnimationLayout.setLayoutParams(localAnimationLayoutParams);
+        regularBodyLayout.addView(localAnimationLayout);
 
         dividerTop.bringToFront();
         dividerBottom.bringToFront();
@@ -336,11 +339,11 @@ public class FlexibleLenViewBody extends RelativeLayout {
         bottomArrow.setRotation(90);
         bottomArrow.setVisibility(INVISIBLE);
 
-        if (this.animationLayout != null){
-            animationLayout.addView(leftArrow);
-            animationLayout.addView(rightArrow);
-            animationLayout.addView(topArrow);
-            animationLayout.addView(bottomArrow);
+        if (this.globalAnimationLayout != null){
+            globalAnimationLayout.addView(leftArrow);
+            globalAnimationLayout.addView(rightArrow);
+            globalAnimationLayout.addView(topArrow);
+            globalAnimationLayout.addView(bottomArrow);
         }
     }
 
@@ -414,7 +417,7 @@ public class FlexibleLenViewBody extends RelativeLayout {
         ImageView dividerImgV;
         //divider
         dividerImgV = new ImageView(context);
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dividerImgV.setLayoutParams(params);
         dividerImgV.setImageDrawable(getResources().getDrawable(org.unimelb.itime.vendor.R.drawable.itime_header_divider_line));
 
@@ -488,7 +491,7 @@ public class FlexibleLenViewBody extends RelativeLayout {
 
     private void initTimeText(String[] HOURS) {
         for (int time = 0; time < HOURS.length; time++) {
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             TextView timeView = new TextView(context);
             params.setMargins(0, lineHeight * time, 0, 0);
             timeView.setLayoutParams(params);
@@ -497,7 +500,7 @@ public class FlexibleLenViewBody extends RelativeLayout {
             timeView.setTextSize(12);
             timeView.setGravity(Gravity.CENTER);
             timeTextSize = (int) timeView.getTextSize() + timeView.getPaddingTop();
-            leftSideRLayout.addView(timeView);
+            timeLayout.addView(timeView);
         }
     }
 
@@ -540,8 +543,8 @@ public class FlexibleLenViewBody extends RelativeLayout {
     public void resetViews() {
         clearAllEvents();
 
-        bodyContainerLayout.removeView(nowTime);
-        bodyContainerLayout.removeView(nowTimeLine);
+        localAnimationLayout.removeView(nowTime);
+        localAnimationLayout.removeView(nowTimeLine);
 
         MyCalendar tempCal = new MyCalendar(this.myCalendar);
         for (int dayOffset = 0; dayOffset < this.getDisplayLen(); dayOffset++) {
@@ -589,7 +592,7 @@ public class FlexibleLenViewBody extends RelativeLayout {
         nowTimeLine = new ImageView(context);
         nowTimeLine.setId(View.generateViewId());
 
-        int lineMarin_top = getNowTimeLinePst() + (int) context.getResources().getDimension(R.dimen.all_day_height);
+        int lineMarin_top = getNowTimeLinePst();
         nowTime.setText(localTime);
         nowTime.setTextSize(10);
         RelativeLayout.LayoutParams paramsText = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -600,7 +603,7 @@ public class FlexibleLenViewBody extends RelativeLayout {
         nowTime.setLayoutParams(paramsText);
         nowTime.setTextColor(context.getResources().getColor(R.color.text_today_color));
         nowTime.setBackgroundColor(context.getResources().getColor(R.color.whites));
-        bodyContainerLayout.addView(nowTime);
+        localAnimationLayout.addView(nowTime);
 
         RelativeLayout.LayoutParams nowTimeLineParams =
                 new RelativeLayout.LayoutParams(
@@ -611,7 +614,7 @@ public class FlexibleLenViewBody extends RelativeLayout {
         nowTimeLineParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         nowTimeLineParams.addRule(RelativeLayout.RIGHT_OF, nowTime.getId());
         nowTimeLine.setLayoutParams(nowTimeLineParams);
-        bodyContainerLayout.addView(nowTimeLine);
+        localAnimationLayout.addView(nowTimeLine);
     }
 
     private int getNowTimeLinePst() {

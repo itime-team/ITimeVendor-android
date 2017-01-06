@@ -207,7 +207,7 @@ public class DavidActivity extends AppCompatActivity {
         long interval = 3600 * 1000;
         long startTime = calendar.getTimeInMillis();
         long endTime;
-        for (int i = 1; i < 0; i++) {
+        for (int i = 1; i < 2; i++) {
             endTime = startTime + (3600*1000);
 //            long duration = (endTime - startTime);
 
