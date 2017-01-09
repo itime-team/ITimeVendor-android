@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
-import org.unimelb.itime.vendor.eventview.DayDraggableEventView;
+import org.unimelb.itime.vendor.unitviews.DraggableEventView;
 import org.unimelb.itime.vendor.listener.ITimeEventInterface;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
  */
 public class DayInnerHeaderEventLayout extends LinearLayout {
     ArrayList<ITimeEventInterface> events = new ArrayList<>();
-    ArrayList<DayDraggableEventView> dgEvents = new ArrayList<>();
+    ArrayList<DraggableEventView> dgEvents = new ArrayList<>();
 
     public DayInnerHeaderEventLayout(Context context) {
         super(context);
@@ -32,11 +32,11 @@ public class DayInnerHeaderEventLayout extends LinearLayout {
         this.events = events;
     }
 
-    public ArrayList<DayDraggableEventView> getDgEvents() {
+    public ArrayList<DraggableEventView> getDgEvents() {
         return dgEvents;
     }
 
-    public void setDgEvents(ArrayList<DayDraggableEventView> dgEvents) {
+    public void setDgEvents(ArrayList<DraggableEventView> dgEvents) {
         this.dgEvents = dgEvents;
     }
 

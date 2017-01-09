@@ -1,4 +1,4 @@
-package org.unimelb.itime.vendor.eventview;
+package org.unimelb.itime.vendor.unitviews;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -27,7 +27,7 @@ import java.util.Calendar;
 /**
  * Created by yuhaoliu on 3/08/16.
  */
-public class DayDraggableEventView extends ViewGroup {
+public class DraggableEventView extends ViewGroup {
     private final String TAG = "MyAPP";
 
     public static int TYPE_NORMAL = 0;
@@ -54,7 +54,7 @@ public class DayDraggableEventView extends ViewGroup {
     private ITimeEventInterface event;
     private PosParam posParam;
 
-    public DayDraggableEventView(Context context, @Nullable ITimeEventInterface event, boolean isAllDayEvent) {
+    public DraggableEventView(Context context, @Nullable ITimeEventInterface event, boolean isAllDayEvent) {
         super(context);
         this.event = event;
         initAttrs();

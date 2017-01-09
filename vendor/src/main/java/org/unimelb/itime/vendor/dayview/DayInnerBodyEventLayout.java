@@ -1,20 +1,15 @@
 package org.unimelb.itime.vendor.dayview;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 
-import org.unimelb.itime.vendor.R;
-import org.unimelb.itime.vendor.eventview.DayDraggableEventView;
+import org.unimelb.itime.vendor.unitviews.DraggableEventView;
 import org.unimelb.itime.vendor.listener.ITimeEventInterface;
-import org.unimelb.itime.vendor.timeslot.TimeSlotView;
+import org.unimelb.itime.vendor.unitviews.DraggableTimeSlotView;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 /**
  * Created by yuhaoliu on 21/09/16.
@@ -22,7 +17,7 @@ import java.util.Calendar;
 public class DayInnerBodyEventLayout extends ViewGroup {
     private static final String TAG = "MyAPP";
     ArrayList<ITimeEventInterface> events = new ArrayList<>();
-    ArrayList<DayDraggableEventView> dgEvents = new ArrayList<>();
+    ArrayList<DraggableEventView> dgEvents = new ArrayList<>();
 
     public ArrayList<ITimeEventInterface> getEvents() {
         return events;
@@ -32,11 +27,11 @@ public class DayInnerBodyEventLayout extends ViewGroup {
         this.events = events;
     }
 
-    public ArrayList<DayDraggableEventView> getDgEvents() {
+    public ArrayList<DraggableEventView> getDgEvents() {
         return dgEvents;
     }
 
-    public void setDgEvents(ArrayList<DayDraggableEventView> dgEvents) {
+    public void setDgEvents(ArrayList<DraggableEventView> dgEvents) {
         this.dgEvents = dgEvents;
     }
 
@@ -78,16 +73,16 @@ public class DayInnerBodyEventLayout extends ViewGroup {
         width = width - (paddingLeft + paddingRight);
 
         for (int i = 0; i < cCount; i++) {
-            if (getChildAt(i) instanceof TimeSlotView) {
+            if (getChildAt(i) instanceof DraggableTimeSlotView) {
                 getChildAt(i).getLayoutParams().width = width;
             }
 
-            if (!(getChildAt(i) instanceof DayDraggableEventView)) {
+            if (!(getChildAt(i) instanceof DraggableEventView)) {
                 continue;
             }
-            DayDraggableEventView eventView = (DayDraggableEventView) getChildAt(i);
-            DayDraggableEventView.LayoutParams params = (DayDraggableEventView.LayoutParams) eventView.getLayoutParams();
-            DayDraggableEventView.PosParam pos = eventView.getPosParam();
+            DraggableEventView eventView = (DraggableEventView) getChildAt(i);
+            DraggableEventView.LayoutParams params = (DraggableEventView.LayoutParams) eventView.getLayoutParams();
+            DraggableEventView.PosParam pos = eventView.getPosParam();
             if (pos == null) {
                 // for creating a new event
                 // the pos parameter is null, because we just mock it
@@ -110,12 +105,12 @@ public class DayInnerBodyEventLayout extends ViewGroup {
 
         for (int i = 0; i < cCount; i++) {
             View child = getChildAt(i);
-            if (child instanceof DayDraggableEventView){
-                DayDraggableEventView.LayoutParams params = (DayDraggableEventView.LayoutParams) child.getLayoutParams();
+            if (child instanceof DraggableEventView){
+                DraggableEventView.LayoutParams params = (DraggableEventView.LayoutParams) child.getLayoutParams();
                 child.layout(paddingLeft + params.left, params.top, paddingLeft + params.left + child.getLayoutParams().width, params.top + child.getLayoutParams().height);
             }
             
-            if (child instanceof TimeSlotView){
+            if (child instanceof DraggableTimeSlotView){
                 DayInnerBodyEventLayout.LayoutParams params = (DayInnerBodyEventLayout.LayoutParams) child.getLayoutParams();
                 child.layout(paddingLeft + params.left, params.top, paddingLeft + params.left + child.getLayoutParams().width, params.top + child.getLayoutParams().height);
             }

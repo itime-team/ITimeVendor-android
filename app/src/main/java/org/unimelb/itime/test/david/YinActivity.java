@@ -3,7 +3,6 @@ package org.unimelb.itime.test.david;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.ViewTreeObserver;
 
 import org.unimelb.itime.test.R;
 import org.unimelb.itime.test.bean.Contact;
@@ -12,7 +11,7 @@ import org.unimelb.itime.test.bean.Invitee;
 import org.unimelb.itime.vendor.agendaview.MonthAgendaView;
 import org.unimelb.itime.vendor.dayview.FlexibleLenViewBody;
 import org.unimelb.itime.vendor.dayview.MonthDayView;
-import org.unimelb.itime.vendor.eventview.DayDraggableEventView;
+import org.unimelb.itime.vendor.unitviews.DraggableEventView;
 import org.unimelb.itime.vendor.helper.MyCalendar;
 
 import java.text.SimpleDateFormat;
@@ -53,17 +52,17 @@ public class YinActivity extends AppCompatActivity {
         });
         monthDayView.setOnBodyOuterListener(new FlexibleLenViewBody.OnBodyListener() {
             @Override
-            public boolean isDraggable(DayDraggableEventView eventView) {
+            public boolean isDraggable(DraggableEventView eventView) {
                 return false;
             }
 
             @Override
-            public void onEventCreate(DayDraggableEventView eventView) {
+            public void onEventCreate(DraggableEventView eventView) {
 
             }
 
             @Override
-            public void onEventClick(DayDraggableEventView eventView) {
+            public void onEventClick(DraggableEventView eventView) {
                 Calendar cal = Calendar.getInstance();
                 cal.setTimeInMillis(eventView.getStartTimeM());
 
@@ -72,17 +71,17 @@ public class YinActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onEventDragStart(DayDraggableEventView eventView) {
+            public void onEventDragStart(DraggableEventView eventView) {
                 eventView.setEvent(new Event());
             }
 
             @Override
-            public void onEventDragging(DayDraggableEventView eventView, int x, int y) {
+            public void onEventDragging(DraggableEventView eventView, int x, int y) {
 
             }
 
             @Override
-            public void onEventDragDrop(DayDraggableEventView eventView) {
+            public void onEventDragDrop(DraggableEventView eventView) {
                 Calendar cal = Calendar.getInstance();
                 cal.setTimeInMillis(eventView.getStartTimeM());
 //                Log.i(TAG, "onEventDragDrop: " + cal.getTime());

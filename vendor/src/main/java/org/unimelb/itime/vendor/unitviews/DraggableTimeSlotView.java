@@ -1,4 +1,4 @@
-package org.unimelb.itime.vendor.timeslot;
+package org.unimelb.itime.vendor.unitviews;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -21,7 +21,7 @@ import java.util.Calendar;
 /**
  * Created by yuhaoliu on 26/08/2016.
  */
-public class TimeSlotView extends ViewGroup {
+public class DraggableTimeSlotView extends ViewGroup {
     public static int TYPE_NORMAL = 0;
     public static int TYPE_TEMP = 1;
 
@@ -37,7 +37,7 @@ public class TimeSlotView extends ViewGroup {
     private WrapperTimeSlot wrapper;
     private ITimeTimeSlotInterface timeslot;
 
-    public TimeSlotView(Context context, WrapperTimeSlot wrapper) {
+    public DraggableTimeSlotView(Context context, WrapperTimeSlot wrapper) {
         super(context);
         this.wrapper = wrapper;
         this.timeslot = wrapper.getTimeSlot();
@@ -153,14 +153,14 @@ public class TimeSlotView extends ViewGroup {
             @Override
             public void onAnimationStart(Animator animation) {
                 super.onAnimationStart(animation);
-                TimeSlotView.this.setBackgroundResource(R.drawable.icon_timeslot_bg);
+                DraggableTimeSlotView.this.setBackgroundResource(R.drawable.icon_timeslot_bg);
 //                TimeSlotView.this.setBackgroundResource(R.drawable.time_block_background);
             }
 
             @Override
             public void onAnimationEnd(Animator animation)
             {
-                TimeSlotView.this.setBackgroundResource(R.drawable.time_block_background);
+                DraggableTimeSlotView.this.setBackgroundResource(R.drawable.time_block_background);
             }
         });
         alphaAnimation.start();
