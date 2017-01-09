@@ -212,16 +212,22 @@ public class MonthDayView extends LinearLayout {
     }
 
     public void scrollTo(final Calendar calendar){
-        ViewTreeObserver vto = this.getViewTreeObserver();
-        final ViewGroup self = this;
-        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                self.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                headerRecyclerView.stopScroll();
-                headerScrollToDate(calendar);
-            }
-        });
+        if (this.getHeight() == 0){
+            ViewTreeObserver vto = this.getViewTreeObserver();
+            final ViewGroup self = this;
+            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    self.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                    headerRecyclerView.stopScroll();
+                    headerScrollToDate(calendar);
+                }
+            });
+        }else{
+            headerRecyclerView.stopScroll();
+            headerScrollToDate(calendar);
+        }
+
     }
 
     public void scrollToWithOffset(final long time){
