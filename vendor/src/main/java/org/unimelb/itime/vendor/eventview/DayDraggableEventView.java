@@ -77,10 +77,12 @@ public class DayDraggableEventView extends ViewGroup {
             }
         }
     }
+    int a = 1;
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 //        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        Log.i(TAG, "onMeasure: " + a++);
     }
 
     @Override
