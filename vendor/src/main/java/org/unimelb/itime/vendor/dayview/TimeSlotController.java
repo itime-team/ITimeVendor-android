@@ -260,11 +260,11 @@ public class TimeSlotController {
     void addSlot(WrapperTimeSlot wrapper, boolean animate){
         int offset = container.getContainerIndex(wrapper.getTimeSlot().getStartTime());
 
-//        if (rightArrow!= null && offset >= container.displayLen){
-//            rightArrow.setVisibility(VISIBLE);
-//        }else if (rightArrow!= null && offset <= -1){
-//            leftArrow.setVisibility(VISIBLE);
-//        }
+        if (container.rightArrow!= null && offset >= container.displayLen){
+            container.rightArrow.setVisibility(VISIBLE);
+        }else if (container.rightArrow!= null && offset <= -1){
+            container.leftArrow.setVisibility(VISIBLE);
+        }
 
         if (offset < container.displayLen && offset > -1){
             DraggableTimeSlotView draggableTimeSlotView = createTimeSlotView(wrapper);
@@ -339,8 +339,8 @@ public class TimeSlotController {
             }
         }
 
-//        topArrow.setVisibility(topShow?VISIBLE:INVISIBLE);
-//        bottomArrow.setVisibility(bottomShow?VISIBLE:INVISIBLE);
+        container.topArrow.setVisibility(topShow?VISIBLE:INVISIBLE);
+        container.bottomArrow.setVisibility(bottomShow?VISIBLE:INVISIBLE);
     }
 
     private void resizeTimeSlot(DraggableTimeSlotView draggableTimeSlotView, boolean animate){

@@ -118,10 +118,10 @@ public class FlexibleLenViewBody extends FrameLayout {
 
     protected float heightPerMillisd = 0;
 
-    private ImageView leftArrow;
-    private ImageView rightArrow;
-    private ImageView topArrow;
-    private ImageView bottomArrow;
+    ImageView leftArrow;
+    ImageView rightArrow;
+    ImageView topArrow;
+    ImageView bottomArrow;
 
     private TimeSlotController timeSlotController;
     private EventController eventController;
@@ -202,11 +202,6 @@ public class FlexibleLenViewBody extends FrameLayout {
         bodyContainerLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         scrollContainerView.addView(bodyContainerLayout);
 
-        localAnimationLayout = new RelativeLayout(context);
-        FrameLayout.LayoutParams localAnimationLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        localAnimationLayout.setLayoutParams(localAnimationLayoutParams);
-        bodyContainerLayout.addView(localAnimationLayout);
-
         topAllDayLayout = new LinearLayout(getContext());
         topAllDayLayout.setOrientation(LinearLayout.HORIZONTAL);
         topAllDayLayout.setBackgroundColor(color_allday_bg);
@@ -265,6 +260,12 @@ public class FlexibleLenViewBody extends FrameLayout {
         eventLayout.setLayoutParams(eventLayoutParams);
 
         bodyContainerLayout.addView(eventLayout);
+
+        localAnimationLayout = new RelativeLayout(context);
+        FrameLayout.LayoutParams localAnimationLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        localAnimationLayoutParams.topMargin = topAllDayHeight + 2 * topAllDayEventLayoutsPadding;
+        localAnimationLayout.setLayoutParams(localAnimationLayoutParams);
+        bodyContainerLayout.addView(localAnimationLayout);
     }
 
     private void initAnimations(){
