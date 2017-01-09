@@ -9,7 +9,7 @@ import org.unimelb.itime.test.bean.Contact;
 import org.unimelb.itime.test.bean.Event;
 import org.unimelb.itime.test.bean.Invitee;
 import org.unimelb.itime.vendor.agendaview.MonthAgendaView;
-import org.unimelb.itime.vendor.dayview.FlexibleLenViewBody;
+import org.unimelb.itime.vendor.dayview.EventController;
 import org.unimelb.itime.vendor.dayview.MonthDayView;
 import org.unimelb.itime.vendor.unitviews.DraggableEventView;
 import org.unimelb.itime.vendor.helper.MyCalendar;
@@ -50,7 +50,7 @@ public class YinActivity extends AppCompatActivity {
                 Log.i(TAG, "onMonthChanged: " + calendar.getCalendar().getTime());
             }
         });
-        monthDayView.setOnBodyOuterListener(new FlexibleLenViewBody.OnBodyListener() {
+        monthDayView.setOnBodyOuterListener(new EventController.OnEventListener() {
             @Override
             public boolean isDraggable(DraggableEventView eventView) {
                 return false;

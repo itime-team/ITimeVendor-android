@@ -13,8 +13,10 @@ import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import org.unimelb.itime.vendor.dayview.EventController;
 import org.unimelb.itime.vendor.dayview.FlexibleLenBodyViewPager;
 import org.unimelb.itime.vendor.dayview.FlexibleLenViewBody;
+import org.unimelb.itime.vendor.dayview.TimeSlotController;
 import org.unimelb.itime.vendor.unitviews.DraggableEventView;
 import org.unimelb.itime.vendor.helper.DensityUtil;
 import org.unimelb.itime.vendor.helper.MyCalendar;
@@ -63,8 +65,8 @@ public class WeekView extends LinearLayout {
     private WeekViewPagerAdapter adapter;
     private ITimeEventPackageInterface eventPackage;
 
-    private FlexibleLenViewBody.OnBodyListener OnBodyOuterListener;
-    private FlexibleLenViewBody.OnTimeSlotListener onTimeSlotOuterListener;
+    private EventController.OnEventListener OnBodyOuterListener;
+    private TimeSlotController.OnTimeSlotListener onTimeSlotOuterListener;
     private OnHeaderListener onHeaderListener;
 
     public WeekView(Context context) {
@@ -122,7 +124,7 @@ public class WeekView extends LinearLayout {
             FlexibleLenViewBody bodyView = new FlexibleLenViewBody(context,7);
             bodyView.setLayoutParams(new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             bodyView.setCalendar(new MyCalendar(calendar));
-            bodyView.setOnBodyListener(new OnBodyInnerListener());
+            bodyView.setOnBodyListener(new OnEventInnerListener());
             bodyView.setOnTimeSlotListener(new OnTimeSlotInnerListener());
 
             final ScrollView scroller = bodyView.getScrollView();
@@ -390,15 +392,15 @@ public class WeekView extends LinearLayout {
         this.onHeaderListener = onHeaderListener;
     }
 
-    public void setOnBodyOuterListener(FlexibleLenViewBody.OnBodyListener onBodyOuterListener){
+    public void setOnBodyOuterListener(EventController.OnEventListener onBodyOuterListener){
         this.OnBodyOuterListener = onBodyOuterListener;
     }
 
-    public void setOnTimeSlotOuterListener(FlexibleLenViewBody.OnTimeSlotListener onTimeSlotOuterListener){
+    public void setOnTimeSlotOuterListener(TimeSlotController.OnTimeSlotListener onTimeSlotOuterListener){
         this.onTimeSlotOuterListener = onTimeSlotOuterListener;
     }
 
-    public class OnTimeSlotInnerListener implements FlexibleLenViewBody.OnTimeSlotListener{
+    public class OnTimeSlotInnerListener implements TimeSlotController.OnTimeSlotListener{
         @Override
         public void onTimeSlotCreate(DraggableTimeSlotView draggableTimeSlotView) {
             MyCalendar currentCal = new MyCalendar((adapter.getViewBodyByPosition(bodyCurrentPosition)).getCalendar());
@@ -457,7 +459,7 @@ public class WeekView extends LinearLayout {
         }
     }
 
-    private class OnBodyInnerListener implements FlexibleLenViewBody.OnBodyListener{
+    private class OnEventInnerListener implements EventController.OnEventListener {
         int parentWidth = dm.widthPixels;
 
         @Override

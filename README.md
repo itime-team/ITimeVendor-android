@@ -109,7 +109,7 @@ OnBodyListener
     public void removeAllOptListener()
     
     public void setOnHeaderListener(OnHeaderListener onHeaderListener);
-    public void setOnBodyListener(OnBodyListener onBodyListener);
+    public void setOnBodyListener(OnBodyListener onEventListener);
 ```
 
 WeekView

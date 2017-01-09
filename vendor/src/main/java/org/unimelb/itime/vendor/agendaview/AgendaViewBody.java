@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.unimelb.itime.vendor.R;
 import org.unimelb.itime.vendor.agendaview.AgendaBodyHeader;
 import org.unimelb.itime.vendor.helper.DensityUtil;
 import org.unimelb.itime.vendor.helper.MyCalendar;
@@ -24,6 +25,11 @@ import java.util.List;
  */
 public class AgendaViewBody extends LinearLayout{
     private final String TAG = "MyAPP2";
+
+    /*************************** Start of Color Setting **********************************/
+    private int color_no_event = R.color.text_enable;
+    /*************************** End of Color Setting **********************************/
+    private int rs_divider = R.drawable.itime_header_divider_line;
 
     private MyCalendar myCalendar;
     private AgendaBodyHeader rowHeader;
@@ -121,7 +127,7 @@ public class AgendaViewBody extends LinearLayout{
             noEvent.setPadding(DensityUtil.dip2px(context,10),0,0,0);
             noEvent.setGravity(Gravity.CENTER_VERTICAL);
             noEvent.setTextSize(titleSize);
-            noEvent.setTextColor(getResources().getColor(org.unimelb.itime.vendor.R.color.text_enable));
+            noEvent.setTextColor(getResources().getColor(color_no_event));
             this.rowBody.addView(noEvent, params);
         }
     }
@@ -132,7 +138,7 @@ public class AgendaViewBody extends LinearLayout{
         dividerImgV = new ImageView(context);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dividerImgV.setLayoutParams(params);
-        dividerImgV.setImageDrawable(getResources().getDrawable(org.unimelb.itime.vendor.R.drawable.itime_header_divider_line));
+        dividerImgV.setImageDrawable(getResources().getDrawable(rs_divider));
         dividerImgV.setPadding(DensityUtil.dip2px(context, 5),0,0,0);
 
         return  dividerImgV;

@@ -14,7 +14,8 @@ import org.unimelb.itime.test.bean.Event;
 import org.unimelb.itime.test.bean.TimeSlot;
 import org.unimelb.itime.test.david.DBManager;
 import org.unimelb.itime.test.david.EventManager;
-import org.unimelb.itime.vendor.dayview.FlexibleLenViewBody;
+import org.unimelb.itime.vendor.dayview.EventController;
+import org.unimelb.itime.vendor.dayview.TimeSlotController;
 import org.unimelb.itime.vendor.unitviews.DraggableEventView;
 import org.unimelb.itime.vendor.unitviews.DraggableTimeSlotView;
 import org.unimelb.itime.vendor.weekview.WeekView;
@@ -54,7 +55,7 @@ public class PaulActivity extends AppCompatActivity {
             }
         });
         weekView.setEventClassName(Event.class);
-        weekView.setOnBodyOuterListener(new FlexibleLenViewBody.OnBodyListener() {
+        weekView.setOnBodyOuterListener(new EventController.OnEventListener() {
             @Override
             public boolean isDraggable(DraggableEventView eventView) {
                 return false;
@@ -104,7 +105,7 @@ public class PaulActivity extends AppCompatActivity {
 //        },5000);
         weekView.setDayEventMap(EventManager.getInstance().getEventsMap());
 
-        weekView.setOnTimeSlotOuterListener(new FlexibleLenViewBody.OnTimeSlotListener() {
+        weekView.setOnTimeSlotOuterListener(new TimeSlotController.OnTimeSlotListener() {
             @Override
             public void onTimeSlotCreate(final DraggableTimeSlotView draggableTimeSlotView) {
                 // popup timeslot create page
@@ -115,7 +116,6 @@ public class PaulActivity extends AppCompatActivity {
                 weekView.addTimeSlot(timeSlot);
                 weekView.reloadTimeSlots(false);
                 slots.add(timeSlot);
-
             }
 
             @Override

@@ -409,7 +409,7 @@ public class MonthDayView extends LinearLayout {
                     }
                 }
             });
-            bodyView.setOnBodyListener(new OnBodyInnerListener());
+            bodyView.setOnBodyListener(new OnEventInnerListener());
         }
 
     }
@@ -477,9 +477,9 @@ public class MonthDayView extends LinearLayout {
         this.onHeaderListener = onHeaderListener;
     }
 
-    FlexibleLenViewBody.OnBodyListener OnBodyOuterListener;
+    EventController.OnEventListener OnBodyOuterListener;
 
-    public void setOnBodyOuterListener(FlexibleLenViewBody.OnBodyListener onBodyOuterListener){
+    public void setOnBodyOuterListener(EventController.OnEventListener onBodyOuterListener){
         this.OnBodyOuterListener = onBodyOuterListener;
     }
 
@@ -487,7 +487,7 @@ public class MonthDayView extends LinearLayout {
         void onMonthChanged(MyCalendar calendar);
     }
 
-    public class OnBodyInnerListener implements FlexibleLenViewBody.OnBodyListener{
+    public class OnEventInnerListener implements EventController.OnEventListener {
         int parentWidth = dm.widthPixels;
 
         @Override
