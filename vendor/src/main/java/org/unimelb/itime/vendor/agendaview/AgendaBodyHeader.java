@@ -1,6 +1,7 @@
 package org.unimelb.itime.vendor.agendaview;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.util.Log;
 import android.view.Gravity;
@@ -10,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.unimelb.itime.vendor.R;
 import org.unimelb.itime.vendor.helper.DensityUtil;
 import org.unimelb.itime.vendor.helper.MyCalendar;
 
@@ -22,6 +24,22 @@ import java.util.Locale;
 public class AgendaBodyHeader extends LinearLayout {
 
     private static final String TAG = "MyAPP2";
+
+    /**
+     * Color category
+     */
+    /*************************** Start of Color Setting **********************************/
+    private int color_title = R.color.title_text_color;
+    private int color_title_bg = R.color.title_bg_color;
+    private int color_title_today = R.color.time_red;
+    private int color_title_bg_today = R.color.title_today_bg_color;
+    /*************************** End of Color Setting **********************************/
+
+    /*************************** Start of Resources Setting ****************************/
+    private int rs_header_divider = R.drawable.itime_header_divider_line;
+    /*************************** End of Resources Setting ****************************/
+
+
     private LinearLayout contentLayout;
 
     private TextView mentionTv;
@@ -124,8 +142,8 @@ public class AgendaBodyHeader extends LinearLayout {
         dayOfWeek = calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault());
 
         mentionTv.setPadding(0,0,textPadding,0);
-        titleColor = getResources().getColor(org.unimelb.itime.vendor.R.color.title_text_color);
-        titleBgColor = getResources().getColor(org.unimelb.itime.vendor.R.color.title_bg_color);
+        titleColor = getResources().getColor(color_title);
+        titleBgColor = getResources().getColor(color_title_bg);
 
         Calendar todayCal = Calendar.getInstance();
 
@@ -139,8 +157,8 @@ public class AgendaBodyHeader extends LinearLayout {
                 break;
             case 0:
                 mention = "Today";
-                titleColor = getResources().getColor(org.unimelb.itime.vendor.R.color.time_red);
-                titleBgColor = getResources().getColor(org.unimelb.itime.vendor.R.color.title_today_bg_color);
+                titleColor = getResources().getColor(color_title_today);
+                titleBgColor = getResources().getColor(color_title_bg_today);
                 break;
             case -1:
                 mention = "Yesterday";
@@ -174,7 +192,7 @@ public class AgendaBodyHeader extends LinearLayout {
         dividerImgV = new ImageView(context);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dividerImgV.setLayoutParams(params);
-        dividerImgV.setImageDrawable(getResources().getDrawable(org.unimelb.itime.vendor.R.drawable.itime_header_divider_line));
+        dividerImgV.setImageDrawable(getResources().getDrawable(rs_header_divider));
         dividerImgV.setPadding(0,0,0,0);
 
         return  dividerImgV;

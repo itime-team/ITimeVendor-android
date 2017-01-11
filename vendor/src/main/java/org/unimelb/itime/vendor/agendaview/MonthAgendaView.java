@@ -316,17 +316,22 @@ public class MonthAgendaView extends RelativeLayout{
     }
 
     public void scrollTo(final Calendar calendar){
-        ViewTreeObserver vto = this.getViewTreeObserver();
-        final ViewGroup self = this;
-        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                self.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                headerRecyclerView.stopScroll();
-                bodyRecyclerView.stopScroll();
-                headerScrollToDate(calendar);
-            }
-        });
+        if (this.getHeight() == 0){
+            ViewTreeObserver vto = this.getViewTreeObserver();
+            final ViewGroup self = this;
+            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    self.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                    headerRecyclerView.stopScroll();
+                    bodyRecyclerView.stopScroll();
+                    headerScrollToDate(calendar);
+                }
+            });
+        }else{
+            headerRecyclerView.stopScroll();
+            headerScrollToDate(calendar);
+        }
     }
 
     public interface OnHeaderListener{

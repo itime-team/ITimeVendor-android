@@ -44,13 +44,25 @@ public class DayViewHeader extends LinearLayout {
     //means default is none;
     private int todayPst = -1;
 
+    /**
+     * Color category
+     */
+    /*************************** Start of Color Setting **********************************/
+    private int color_headerTodayTextColor = Color.BLACK;
+    private int color_headerNormalTextColorOdd = Color.BLACK;
+    private int color_headerNormalTextColorEven = Color.BLACK;
+    private int color_headerSelectedTextColor = Color.WHITE;
+    private int color_todaySelectedCircleBgColor = Color.RED;
+    private int color_otherSelectedCircleBgColor = getResources().getColor(R.color.group_et);
+    /*************************** End of Color Setting **********************************/
+
+    /*************************** Start of Resources Setting ****************************/
+    private int rs_header_bg = R.drawable.itime_day_rectangle;
+    private int rs_event_dot = R.drawable.itime_event_dot;
+    /*************************** End of Resources Setting ****************************/
+
     //Colors
-    private int headerTodayTextColor = Color.BLACK;
-    private int headerNormalTextColorOdd = Color.BLACK;
-    private int headerNormalTextColorEven = Color.BLACK;
-    private int headerSelectedTextColor = Color.WHITE;
-    private int todaySelectedCircleBgColor = Color.RED;
-    private int otherSelectedCircleBgColor = getResources().getColor(R.color.group_et);
+
 
     private float textTitleRatio = 1f;
 
@@ -104,12 +116,12 @@ public class DayViewHeader extends LinearLayout {
             TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.dayStyle, 0, 0);
             try {
             } finally {
-                headerTodayTextColor = typedArray.getColor(R.styleable.dayStyle_headerTodayTextColor, headerTodayTextColor);
-                headerNormalTextColorOdd = typedArray.getColor(R.styleable.dayStyle_headerNormalTextColorOdd, headerNormalTextColorOdd);
-                headerNormalTextColorEven = typedArray.getColor(R.styleable.dayStyle_headerNormalTextColorEven, headerNormalTextColorEven);
-                headerSelectedTextColor = typedArray.getColor(R.styleable.dayStyle_headerSelectedTextColor, headerSelectedTextColor);
-                todaySelectedCircleBgColor = typedArray.getColor(R.styleable.dayStyle_todaySelectedCircleBgColor, todaySelectedCircleBgColor);
-                otherSelectedCircleBgColor = typedArray.getColor(R.styleable.dayStyle_otherSelectedCircleBgColor, otherSelectedCircleBgColor);
+                color_headerTodayTextColor = typedArray.getColor(R.styleable.dayStyle_headerTodayTextColor, color_headerTodayTextColor);
+                color_headerNormalTextColorOdd = typedArray.getColor(R.styleable.dayStyle_headerNormalTextColorOdd, color_headerNormalTextColorOdd);
+                color_headerNormalTextColorEven = typedArray.getColor(R.styleable.dayStyle_headerNormalTextColorEven, color_headerNormalTextColorEven);
+                color_headerSelectedTextColor = typedArray.getColor(R.styleable.dayStyle_headerSelectedTextColor, color_headerSelectedTextColor);
+                color_todaySelectedCircleBgColor = typedArray.getColor(R.styleable.dayStyle_todaySelectedCircleBgColor, color_todaySelectedCircleBgColor);
+                color_otherSelectedCircleBgColor = typedArray.getColor(R.styleable.dayStyle_otherSelectedCircleBgColor, color_otherSelectedCircleBgColor);
 
                 typedArray.recycle();
             }
@@ -137,9 +149,9 @@ public class DayViewHeader extends LinearLayout {
         for (TextView tv:textViews) {
             tv.setBackgroundResource(0);
             if (textViews.indexOf(tv) == todayPst)
-                tv.setTextColor(headerTodayTextColor);
+                tv.setTextColor(color_headerTodayTextColor);
             else{
-                tv.setTextColor(((Integer)tv.getTag())==0?headerNormalTextColorEven:headerNormalTextColorOdd);
+                tv.setTextColor(((Integer)tv.getTag())==0? color_headerNormalTextColorEven : color_headerNormalTextColorOdd);
             }
         }
     }
@@ -148,13 +160,13 @@ public class DayViewHeader extends LinearLayout {
         int color;
 
         if (isToday){
-            color = todaySelectedCircleBgColor;
+            color = color_todaySelectedCircleBgColor;
         }else{
-            color = otherSelectedCircleBgColor;
+            color = color_otherSelectedCircleBgColor;
         }
-        Drawable drawable = parent.getResources().getDrawable(R.drawable.itime_day_rectangle);
+        Drawable drawable = parent.getResources().getDrawable(rs_header_bg);
         tv.setBackgroundDrawable(drawable);
-        tv.setTextColor(headerSelectedTextColor);
+        tv.setTextColor(color_headerSelectedTextColor);
         ((GradientDrawable)tv.getBackground()).setColor(color);
     }
 
@@ -213,15 +225,15 @@ public class DayViewHeader extends LinearLayout {
                 int month = calendar.get(calendar.MONTH);
                 int oddEvent = month%2;
                 //change month title paint color
-                monthTitlePaint.setColor((oddEvent==0) ? headerNormalTextColorEven : headerNormalTextColorOdd);
+                monthTitlePaint.setColor((oddEvent==0) ? color_headerNormalTextColorEven : color_headerNormalTextColorOdd);
 
                 dateView.setTag(oddEvent);
                 if (checkEqualDay(todayCalendar, calendar)) {
-                    dateView.setTextColor(headerTodayTextColor);
+                    dateView.setTextColor(color_headerTodayTextColor);
                     todayPst = day;
                     currentSelectedPst = day;
                 }else{
-                    dateView.setTextColor((oddEvent==0) ? headerNormalTextColorEven : headerNormalTextColorOdd);
+                    dateView.setTextColor((oddEvent==0) ? color_headerNormalTextColorEven : color_headerNormalTextColorOdd);
                 }
 
                 Text2Drawable monthTitleDrawable = null;
@@ -233,7 +245,7 @@ public class DayViewHeader extends LinearLayout {
                 }
                 //add dot
                 if (thisDayHasEvent){
-                    dayDot = getResources().getDrawable(R.drawable.itime_event_dot);
+                    dayDot = getResources().getDrawable(rs_event_dot);
                 }
                 dateView.setCompoundDrawablesWithIntrinsicBounds(null, monthTitleDrawable, null, dayDot);
                 dateView.setText(date);

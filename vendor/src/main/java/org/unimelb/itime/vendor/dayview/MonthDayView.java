@@ -8,10 +8,8 @@ import android.databinding.BindingMethods;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 import org.unimelb.itime.vendor.R;
-import org.unimelb.itime.vendor.eventview.DayDraggableEventView;
+import org.unimelb.itime.vendor.unitviews.DraggableEventView;
 import org.unimelb.itime.vendor.helper.MyCalendar;
 import org.unimelb.itime.vendor.listener.ITimeEventInterface;
 import org.unimelb.itime.vendor.listener.ITimeEventPackageInterface;
@@ -214,16 +212,22 @@ public class MonthDayView extends LinearLayout {
     }
 
     public void scrollTo(final Calendar calendar){
-        ViewTreeObserver vto = this.getViewTreeObserver();
-        final ViewGroup self = this;
-        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                self.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                headerRecyclerView.stopScroll();
-                headerScrollToDate(calendar);
-            }
-        });
+        if (this.getHeight() == 0){
+            ViewTreeObserver vto = this.getViewTreeObserver();
+            final ViewGroup self = this;
+            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    self.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                    headerRecyclerView.stopScroll();
+                    headerScrollToDate(calendar);
+                }
+            });
+        }else{
+            headerRecyclerView.stopScroll();
+            headerScrollToDate(calendar);
+        }
+
     }
 
     public void scrollToWithOffset(final long time){
@@ -411,7 +415,7 @@ public class MonthDayView extends LinearLayout {
                     }
                 }
             });
-            bodyView.setOnBodyListener(new OnBodyInnerListener());
+            bodyView.setOnBodyListener(new OnEventInnerListener());
         }
 
     }
@@ -479,9 +483,9 @@ public class MonthDayView extends LinearLayout {
         this.onHeaderListener = onHeaderListener;
     }
 
-    FlexibleLenViewBody.OnBodyListener OnBodyOuterListener;
+    EventController.OnEventListener OnBodyOuterListener;
 
-    public void setOnBodyOuterListener(FlexibleLenViewBody.OnBodyListener onBodyOuterListener){
+    public void setOnBodyOuterListener(EventController.OnEventListener onBodyOuterListener){
         this.OnBodyOuterListener = onBodyOuterListener;
     }
 
@@ -489,11 +493,11 @@ public class MonthDayView extends LinearLayout {
         void onMonthChanged(MyCalendar calendar);
     }
 
-    public class OnBodyInnerListener implements FlexibleLenViewBody.OnBodyListener{
+    public class OnEventInnerListener implements EventController.OnEventListener {
         int parentWidth = dm.widthPixels;
 
         @Override
-        public boolean isDraggable(DayDraggableEventView eventView) {
+        public boolean isDraggable(DraggableEventView eventView) {
             if (OnBodyOuterListener!=null){
                 return OnBodyOuterListener.isDraggable(eventView);
             }else{
@@ -503,7 +507,7 @@ public class MonthDayView extends LinearLayout {
         }
 
         @Override
-        public void onEventCreate(DayDraggableEventView eventView) {
+        public void onEventCreate(DraggableEventView eventView) {
             MyCalendar currentCal = (bodyPagerAdapter.getViewByPosition(bodyCurrentPosition)).getCalendar();
             eventView.getNewCalendar().setDay(currentCal.getDay());
             eventView.getNewCalendar().setMonth(currentCal.getMonth());
@@ -512,19 +516,19 @@ public class MonthDayView extends LinearLayout {
         }
 
         @Override
-        public void onEventClick(DayDraggableEventView eventView) {
+        public void onEventClick(DraggableEventView eventView) {
             if (OnBodyOuterListener != null){OnBodyOuterListener.onEventClick(eventView);}
 
         }
 
         @Override
-        public void onEventDragStart(DayDraggableEventView eventView) {
+        public void onEventDragStart(DraggableEventView eventView) {
             if (OnBodyOuterListener != null){OnBodyOuterListener.onEventDragStart(eventView);}
 
         }
 
         @Override
-        public void onEventDragging(DayDraggableEventView eventView, int x, int y) {
+        public void onEventDragging(DraggableEventView eventView, int x, int y) {
             boolean isSwiping = bodyPagerCurrentState == 0;
             if (isSwiping){
                 this.bodyAutoSwipe(eventView, x, y);
@@ -533,7 +537,7 @@ public class MonthDayView extends LinearLayout {
         }
 
         @Override
-        public void onEventDragDrop(DayDraggableEventView eventView) {
+        public void onEventDragDrop(DraggableEventView eventView) {
             MyCalendar currentCal = new MyCalendar((bodyPagerAdapter.getViewByPosition(bodyCurrentPosition)).getCalendar());
             currentCal.setOffsetByDate(eventView.getIndexInView());
             eventView.getNewCalendar().setDay(currentCal.getDay());
@@ -544,7 +548,7 @@ public class MonthDayView extends LinearLayout {
             if (OnBodyOuterListener != null){OnBodyOuterListener.onEventDragDrop(eventView);}
         }
 
-        private void bodyAutoSwipe(DayDraggableEventView eventView, int x, int y){
+        private void bodyAutoSwipe(DraggableEventView eventView, int x, int y){
             int offset = x > (parentWidth * 0.7) ? 1 : (x <= parentWidth * 0.05 ? -1 : 0);
             if (offset != 0){
                 int scrollTo = bodyCurrentPosition + offset;

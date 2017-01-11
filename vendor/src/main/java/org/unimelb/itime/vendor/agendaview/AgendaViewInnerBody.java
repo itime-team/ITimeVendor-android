@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.unimelb.itime.vendor.R;
 import org.unimelb.itime.vendor.helper.DensityUtil;
 import org.unimelb.itime.vendor.helper.LoadImgHelper;
 import org.unimelb.itime.vendor.listener.ITimeEventInterface;
@@ -30,6 +31,18 @@ import java.util.List;
 public class AgendaViewInnerBody extends RelativeLayout {
     private final String TAG = "MyAPP";
 
+    /*************************** Start of Color Setting **********************************/
+    private int color_title = R.color.title_text_color;
+    private int color_subtitle = R.color.sub_title_text_color;
+    private int color_now = R.color.time_red;
+    private int color_normal = R.color.sub_title_text_color;
+    /*************************** End of Color Setting **********************************/
+
+    /*************************** Start of Resources Setting ****************************/
+    private int rs_left_bar = R.drawable.itime_draggable_event_bg;
+    /*************************** End of Resources Setting ****************************/
+
+
     private RelativeLayout self = this;
 
     private LinearLayout leftInfo;
@@ -46,10 +59,6 @@ public class AgendaViewInnerBody extends RelativeLayout {
 
     private float textRegularSize = 13;
     private float textSmallSize = 11;
-
-    private int titleColor = getResources().getColor(org.unimelb.itime.vendor.R.color.title_text_color);
-    private int subColor = getResources().getColor(org.unimelb.itime.vendor.R.color.sub_title_text_color);
-    ;
 
     private int pic_height_width;
     private int paddingUpDown;
@@ -71,9 +80,6 @@ public class AgendaViewInnerBody extends RelativeLayout {
     private int status;
     private int currentDayType;
 
-    private int nowColor;
-    private int normalColor;
-
     private List<String> urls = new ArrayList<>();
 
     DateFormat date = new SimpleDateFormat("HH:mm a");
@@ -85,8 +91,6 @@ public class AgendaViewInnerBody extends RelativeLayout {
         this.event = event;
         this.pic_height_width = DensityUtil.dip2px(context, 50);
         this.paddingUpDown = DensityUtil.dip2px(context, 2);
-        this.nowColor = context.getResources().getColor(org.unimelb.itime.vendor.R.color.time_red);
-        this.normalColor = this.subColor;
 
         initEventShowAttrs(event);
         initAllViews();
@@ -99,8 +103,6 @@ public class AgendaViewInnerBody extends RelativeLayout {
         this.event = event;
         this.pic_height_width = DensityUtil.dip2px(context, 50);
         this.paddingUpDown = DensityUtil.dip2px(context, 2);
-        this.nowColor = context.getResources().getColor(org.unimelb.itime.vendor.R.color.time_red);
-        this.normalColor = this.subColor;
 
         initEventShowAttrs(event);
         initAllViews();
@@ -123,7 +125,7 @@ public class AgendaViewInnerBody extends RelativeLayout {
             leftTimeTv.setPadding(0, paddingUpDown, 0, 0);
             leftTimeTv.setText(duration.equals("All Day") ? "" : startTime);
             leftTimeTv.setTextSize(textSmallSize);
-            leftTimeTv.setTextColor(titleColor);
+            leftTimeTv.setTextColor(getResources().getColor(color_title));
             leftTimeTv.setGravity(Gravity.CENTER);
             leftInfo.addView(leftTimeTv);
         }
@@ -132,7 +134,7 @@ public class AgendaViewInnerBody extends RelativeLayout {
         durationTv.setText(duration);
         durationTv.setPadding(0, paddingUpDown, 0, 0);
         durationTv.setTextSize(textSmallSize);
-        durationTv.setTextColor(subColor);
+        durationTv.setTextColor(getResources().getColor(color_title));
         durationTv.setGravity(Gravity.CENTER);
         leftInfo.addView(durationTv);
 
@@ -140,7 +142,7 @@ public class AgendaViewInnerBody extends RelativeLayout {
         eventTypeView = new ImageView(context);
         eventTypeView.setId(generateViewId());
         RelativeLayout.LayoutParams eventTypeViewParams = new RelativeLayout.LayoutParams(DensityUtil.dip2px(context, 3), ViewGroup.LayoutParams.WRAP_CONTENT);
-        updateLeftBar(getResources().getDrawable(org.unimelb.itime.vendor.R.drawable.itime_draggable_event_bg), getEventColor(type));
+        updateLeftBar(getResources().getDrawable(rs_left_bar), getEventColor(type));
 
         rightInfo = new LinearLayout(context);
         rightInfo.setOrientation(LinearLayout.VERTICAL);
@@ -160,7 +162,7 @@ public class AgendaViewInnerBody extends RelativeLayout {
         eventNameTv.setPadding(0, paddingUpDown, 0, 0);
         eventNameTv.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
         eventNameTv.setTextSize(textRegularSize);
-        eventNameTv.setTextColor(titleColor);
+        eventNameTv.setTextColor(getResources().getColor(color_title));
         rightInfo.addView(eventNameTv);
 
         inviteeLayout = new LinearLayout(context);
@@ -174,17 +176,14 @@ public class AgendaViewInnerBody extends RelativeLayout {
         locationTv.setPadding(0, paddingUpDown, 0, 0);
         locationTv.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
         locationTv.setTextSize(textSmallSize);
-        locationTv.setTextColor(subColor);
+        locationTv.setTextColor(getResources().getColor(color_subtitle));
         rightInfo.addView(locationTv);
 
         //status icon
         eventStatusView = new ImageView(context);
         eventStatusView.setId(generateViewId());
         eventStatusView.setPadding(0, DensityUtil.dip2px(context, 10), DensityUtil.dip2px(context, 10), 0);
-//        int iconId = getStatusIcon(this.event.getDisplayStatus(), true);
-//        if (iconId != -1) {
-//            eventStatusView.setImageDrawable(context.getResources().getDrawable(iconId));
-//        }
+
         RelativeLayout.LayoutParams eventStatusViewParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         eventStatusViewParams.addRule(ALIGN_TOP, rightInfo.getId());
         eventStatusViewParams.addRule(ALIGN_PARENT_RIGHT);
@@ -206,7 +205,7 @@ public class AgendaViewInnerBody extends RelativeLayout {
         if (this.currentDayType == 0) {
             String str = getEventMentionStr(this.event);
             timeLeftTv.setText(str);
-            timeLeftTv.setTextColor(str.equals("Now") ? nowColor : normalColor);
+            timeLeftTv.setTextColor(getResources().getColor(str.equals("Now") ? color_now : color_normal));
         }
     }
 
@@ -237,19 +236,6 @@ public class AgendaViewInnerBody extends RelativeLayout {
 
     private void updateEventInfo(ITimeEventInterface event) {
 
-    }
-
-    private int getStatusIcon(int status, boolean useSmallIcon) {
-        switch (status) {
-            case 0:
-                if (useSmallIcon) {
-                    return org.unimelb.itime.vendor.R.drawable.itime_question_mark_small;
-                } else {
-                    return org.unimelb.itime.vendor.R.drawable.itime_question_mark;
-                }
-            default:
-                return -1;
-        }
     }
 
     private void initInviteeLayout(List<String> urls, LinearLayout container){

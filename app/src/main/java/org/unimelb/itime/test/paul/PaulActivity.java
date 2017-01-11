@@ -1,17 +1,12 @@
 package org.unimelb.itime.test.paul;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
-import android.widget.Toast;
 
 
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.unimelb.itime.test.R;
@@ -19,12 +14,12 @@ import org.unimelb.itime.test.bean.Event;
 import org.unimelb.itime.test.bean.TimeSlot;
 import org.unimelb.itime.test.david.DBManager;
 import org.unimelb.itime.test.david.EventManager;
-import org.unimelb.itime.vendor.dayview.FlexibleLenViewBody;
-import org.unimelb.itime.vendor.eventview.DayDraggableEventView;
-import org.unimelb.itime.vendor.timeslot.TimeSlotView;
+import org.unimelb.itime.vendor.dayview.EventController;
+import org.unimelb.itime.vendor.dayview.TimeSlotController;
+import org.unimelb.itime.vendor.unitviews.DraggableEventView;
+import org.unimelb.itime.vendor.unitviews.DraggableTimeSlotView;
 import org.unimelb.itime.vendor.weekview.WeekView;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -60,21 +55,21 @@ public class PaulActivity extends AppCompatActivity {
             }
         });
         weekView.setEventClassName(Event.class);
-        weekView.setOnBodyOuterListener(new FlexibleLenViewBody.OnBodyListener() {
+        weekView.setOnBodyOuterListener(new EventController.OnEventListener() {
             @Override
-            public boolean isDraggable(DayDraggableEventView eventView) {
+            public boolean isDraggable(DraggableEventView eventView) {
                 return false;
             }
 
             @Override
-            public void onEventCreate(DayDraggableEventView eventView) {
+            public void onEventCreate(DraggableEventView eventView) {
                 Calendar cal = Calendar.getInstance();
                 cal.setTimeInMillis(eventView.getStartTimeM());
                 Log.i(TAG, "cal: " + cal.getTime());
             }
 
             @Override
-            public void onEventClick(DayDraggableEventView eventView) {
+            public void onEventClick(DraggableEventView eventView) {
                 Calendar cal = Calendar.getInstance();
                 cal.setTimeInMillis(eventView.getEvent().getStartTime());
                 Log.i(TAG, "onEventClick: " + cal.getTime());
@@ -83,17 +78,17 @@ public class PaulActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onEventDragStart(DayDraggableEventView eventView) {
+            public void onEventDragStart(DraggableEventView eventView) {
 
             }
 
             @Override
-            public void onEventDragging(DayDraggableEventView eventView, int x, int y) {
+            public void onEventDragging(DraggableEventView eventView, int x, int y) {
 
             }
 
             @Override
-            public void onEventDragDrop(DayDraggableEventView eventView) {
+            public void onEventDragDrop(DraggableEventView eventView) {
                 Calendar cal = Calendar.getInstance();
                 cal.setTimeInMillis(eventView.getStartTimeM());
                 Log.i(TAG, "onEventDragDrop: " + cal.getTime());
@@ -110,39 +105,38 @@ public class PaulActivity extends AppCompatActivity {
 //        },5000);
         weekView.setDayEventMap(EventManager.getInstance().getEventsMap());
 
-        weekView.setOnTimeSlotOuterListener(new FlexibleLenViewBody.OnTimeSlotListener() {
+        weekView.setOnTimeSlotOuterListener(new TimeSlotController.OnTimeSlotListener() {
             @Override
-            public void onTimeSlotCreate(final TimeSlotView timeSlotView) {
+            public void onTimeSlotCreate(final DraggableTimeSlotView draggableTimeSlotView) {
                 // popup timeslot create page
                 TimeSlot timeSlot = new TimeSlot();
                 timeSlot.setTimeSlotUid(UUID.randomUUID().toString());
-                timeSlot.setStartTime(timeSlotView.getNewStartTime());
-                timeSlot.setEndTime(timeSlotView.getNewEndTime());
+                timeSlot.setStartTime(draggableTimeSlotView.getNewStartTime());
+                timeSlot.setEndTime(draggableTimeSlotView.getNewEndTime());
                 weekView.addTimeSlot(timeSlot);
                 weekView.reloadTimeSlots(false);
                 slots.add(timeSlot);
+            }
+
+            @Override
+            public void onTimeSlotClick(DraggableTimeSlotView draggableTimeSlotView) {
+            }
+
+            @Override
+            public void onTimeSlotDragStart(DraggableTimeSlotView draggableTimeSlotView) {
 
             }
 
             @Override
-            public void onTimeSlotClick(TimeSlotView timeSlotView) {
-            }
-
-            @Override
-            public void onTimeSlotDragStart(TimeSlotView timeSlotView) {
+            public void onTimeSlotDragging(DraggableTimeSlotView draggableTimeSlotView, int i, int i1) {
 
             }
 
             @Override
-            public void onTimeSlotDragging(TimeSlotView timeSlotView, int i, int i1) {
-
-            }
-
-            @Override
-            public void onTimeSlotDragDrop(TimeSlotView timeSlotView, long startTime, long endTime) {
-                if (timeSlotView.getTimeslot() != null){
-                    timeSlotView.getTimeslot().setStartTime(startTime);
-                    timeSlotView.getTimeslot().setEndTime(endTime);
+            public void onTimeSlotDragDrop(DraggableTimeSlotView draggableTimeSlotView, long startTime, long endTime) {
+                if (draggableTimeSlotView.getTimeslot() != null){
+                    draggableTimeSlotView.getTimeslot().setStartTime(startTime);
+                    draggableTimeSlotView.getTimeslot().setEndTime(endTime);
 //                    weekView.reloadTimeSlots(false);
                 }
 
@@ -211,7 +205,7 @@ public class PaulActivity extends AppCompatActivity {
 //        },1000);
     }
 
-    private void timeslotDrop(TimeSlotView timeSlotView, long startTime, long endTime) {
+    private void timeslotDrop(DraggableTimeSlotView draggableTimeSlotView, long startTime, long endTime) {
         // update timeslot struct
 
     }
