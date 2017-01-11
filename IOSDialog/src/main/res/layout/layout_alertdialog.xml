@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="20dp"
         android:gravity="center"
         android:textColor="@color/black"
         android:textSize="17sp"
@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="5dp"
         android:gravity="center"
         android:textColor="@color/text_gray"
         android:textSize="10sp" />
@@ -43,7 +43,7 @@
         <Button
             android:id="@+id/btn_neg"
             android:layout_width="wrap_content"
-            android:layout_height="43dp"
+            android:layout_height="49dp"
             android:layout_weight="1"
             android:background="@drawable/alertdialog_left_selector"
             android:gravity="center"
@@ -53,13 +53,13 @@
         <ImageView
             android:id="@+id/img_line"
             android:layout_width="0.5dp"
-            android:layout_height="43dp"
+            android:layout_height="49dp"
             android:background="@color/alertdialog_line" />
 
         <Button
             android:id="@+id/btn_pos"
             android:layout_width="wrap_content"
-            android:layout_height="43dp"
+            android:layout_height="49dp"
             android:layout_weight="1"
             android:background="@drawable/alertdialog_right_selector"
             android:gravity="center"
