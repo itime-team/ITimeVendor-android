@@ -89,8 +89,14 @@ public class EventManager {
     }
 
     private boolean isAllDayEvent(ITimeEventInterface event) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(event.getStartTime());
+        int hour = cal.get(Calendar.HOUR);
+        int minutes = cal.get(Calendar.MINUTE);
         long duration = event.getEndTime() - event.getStartTime();
-        boolean isAllDay = duration >= allDayMilliseconds;
+        boolean isAllDay = hour == 0
+                        && minutes == 0
+                        && duration >= (allDayMilliseconds * 0.9);
 
         return isAllDay;
     }
@@ -225,7 +231,7 @@ public class EventManager {
 
         @Override
         public List<ITimeEventInterface> getAllDayEvents() {
-            return null;
+            return allDayEventList;
         }
     }
 

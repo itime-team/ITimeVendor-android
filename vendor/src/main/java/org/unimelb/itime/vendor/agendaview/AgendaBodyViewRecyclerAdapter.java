@@ -68,16 +68,23 @@ public class AgendaBodyViewRecyclerAdapter extends RecyclerView.Adapter<AgendaBo
         long startTime = holder.bodyRow.getCalendar().getBeginOfDayMilliseconds();
 
         List<ITimeEventInterface> allEvents = new ArrayList<>();
-        if (this.eventPackage.getRegularEventDayMap().containsKey(startTime)){
-            allEvents.addAll(this.eventPackage.getRegularEventDayMap().get(startTime));
-        }else{
-            holder.bodyRow.setEventList(new ArrayList<ITimeEventInterface>());
+
+        //all day
+        for (ITimeEventInterface allDayEvent:this.eventPackage.getAllDayEvents()
+             ) {
+            if (isWithin(allDayEvent, holder.bodyRow.getCalendar().getCalendar())){
+                allEvents.add(allDayEvent);
+            }
         }
 
+        //regular
+        if (this.eventPackage.getRegularEventDayMap().containsKey(startTime)){
+            allEvents.addAll(this.eventPackage.getRegularEventDayMap().get(startTime));
+        }
+
+        //repeated
         if (this.eventPackage.getRepeatedEventDayMap().containsKey(startTime)){
             allEvents.addAll(this.eventPackage.getRepeatedEventDayMap().get(startTime));
-        }else{
-            holder.bodyRow.setEventList(new ArrayList<ITimeEventInterface>());
         }
 
         holder.bodyRow.setEventList(allEvents);
@@ -88,6 +95,22 @@ public class AgendaBodyViewRecyclerAdapter extends RecyclerView.Adapter<AgendaBo
     @Override
     public int getItemCount() {
         return this.upperBoundsOffset*2+1;
+    }
+
+    private boolean isWithin(ITimeEventInterface event, Calendar calendar){
+        long startTime = event.getStartTime();
+        long endTime = event.getEndTime();
+
+        MyCalendar calS = new MyCalendar(calendar);
+
+        MyCalendar calE = new MyCalendar(calendar);
+        calE.setHour(23);
+        calE.setMinute(59);
+
+        long todayStartTime =  calS.getBeginOfDayMilliseconds();
+        long todayEndTime =  calE.getCalendar().getTimeInMillis();
+
+        return todayEndTime >= startTime && todayStartTime <= endTime;
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder{

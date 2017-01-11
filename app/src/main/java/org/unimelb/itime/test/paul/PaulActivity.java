@@ -44,7 +44,7 @@ public class PaulActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_paul);
-        loadData();
+//        loadData();
 
         Button back = (Button) findViewById(R.id.back);
         final WeekView weekView = (WeekView) findViewById(R.id.week_view);

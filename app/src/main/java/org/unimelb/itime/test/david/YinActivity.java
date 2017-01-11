@@ -3,6 +3,8 @@ package org.unimelb.itime.test.david;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import org.unimelb.itime.test.R;
 import org.unimelb.itime.test.bean.Contact;
@@ -14,33 +16,37 @@ import org.unimelb.itime.vendor.dayview.MonthDayView;
 import org.unimelb.itime.vendor.unitviews.DraggableEventView;
 import org.unimelb.itime.vendor.helper.MyCalendar;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 public class YinActivity extends AppCompatActivity {
-    private final static String TAG = "MyAPP";
+    private final String TAG= "MyAPP";
     private DBManager dbManager;
     private EventManager eventManager;
     private MonthDayView monthDayView;
-    private MonthAgendaView monthAgendaView;
+
+    private Event event;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_yin);
+
+        eventThing();
+    }
+    private void eventThing(){
         dbManager = DBManager.getInstance(this);
         eventManager = EventManager.getInstance();
+        initData();
+        loadData();
+//        doInviteesThings();
 
-        initDB();
-//
-        init();
-
+        doMonthDayViewThings();
     }
 
-    private void init(){
-        loadData();
+    private void doMonthDayViewThings(){
+        Button back = (Button) findViewById(R.id.back);
         monthDayView = (MonthDayView) findViewById(R.id.monthDayView);
         monthDayView.setDayEventMap(eventManager.getEventsMap());
         monthDayView.setEventClassName(Event.class);
@@ -53,12 +59,19 @@ public class YinActivity extends AppCompatActivity {
         monthDayView.setOnBodyOuterListener(new EventController.OnEventListener() {
             @Override
             public boolean isDraggable(DraggableEventView eventView) {
-                return false;
+                return true;
             }
 
             @Override
             public void onEventCreate(DraggableEventView eventView) {
+                Calendar cal = Calendar.getInstance();
+                cal.setTimeInMillis(eventView.getStartTimeM());
+                Log.i(TAG, "onEventCreate: s" + cal.getTime());
+                cal.setTimeInMillis(eventView.getEndTimeM());
+                Log.i(TAG, "onEventCreate: " + cal.getTime());
 
+//                monthDayView.scrollToWithOffset(eventView.getStartTimeM());
+                monthDayView.reloadEvents();
             }
 
             @Override
@@ -67,7 +80,6 @@ public class YinActivity extends AppCompatActivity {
                 cal.setTimeInMillis(eventView.getStartTimeM());
 
                 EventManager.getInstance().updateEvent((Event) eventView.getEvent(),10,10);
-
             }
 
             @Override
@@ -84,71 +96,121 @@ public class YinActivity extends AppCompatActivity {
             public void onEventDragDrop(DraggableEventView eventView) {
                 Calendar cal = Calendar.getInstance();
                 cal.setTimeInMillis(eventView.getStartTimeM());
-//                Log.i(TAG, "onEventDragDrop: " + cal.getTime());
+                Log.i(TAG, "onEventDragDrop: s" + cal.getTime());
+                cal.setTimeInMillis(eventView.getEndTimeM());
+                Log.i(TAG, "onEventDragDrop: " + cal.getTime());
+
+//                monthDayView.scrollToWithOffset(eventView.getStartTimeM());
             }
 
         });
-//
-//        monthDayView.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                Event event = new Event();
-//                event.setEventUid("213123");
-//                event.setTitle("new added");
-//                event.setDisplayEventType(1);
-//                event.setDisplayStatus(1);
-//                event.setLocation("here");
-//                event.setNewStartTime(Calendar.getInstance().getTimeInMillis());
-//                event.setEndTime(Calendar.getInstance().getTimeInMillis() + 60 * 60 * 1000);
-//                EventManager.getInstance().addEvent(event);
-//
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 //                monthDayView.reloadEvents();
-//            }
-//        },5000);
+                loadData();
+            }
+        });
+    }
+
+    private void doMonthAgendaViewThings(){
+        Button back = (Button) findViewById(R.id.back);
+        final MonthAgendaView monthDayView = (MonthAgendaView) findViewById(R.id.monthAgendaView);
+        monthDayView.setDayEventMap(eventManager.getEventsMap());
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                monthDayView.backToToday();
+            }
+        });
+    }
+
+//    private void doInviteesThings(){
+//        InviteeFragment inviteeFragment = new InviteeFragment();
+//        getFragmentManager().beginTransaction().add(R.id.fragment, inviteeFragment).commit();
+//    }
+
+    private void initData(){
+        this.dbManager.clearDB();
+        this.initDB();
     }
 
     private void loadData(){
         List<Event> allEvents = dbManager.getAllEvents();
         EventManager.getInstance().getEventsMap().clearPackage();
+        Event testE = null;
         for (Event event: allEvents
                 ) {
+//            String[] rec = {"RRULE:FREQ=WEEKLY;INTERVAL=1"};
+//            event.setRecurrence(rec);
+            this.event = event;
             EventManager.getInstance().addEvent(event);
+//            testE = event;
         }
+//        final Event e=testE;
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    Event newE = (Event) e.clone();
+//                    newE.setEndTime(newE.getNewStartTime() + 60*3600);
+//                    EventManager.getInstance().updateRepeatedEvent(newE);
+//
+//                } catch (CloneNotSupportedException e1) {
+//                    e1.printStackTrace();
+//                }
+//            }
+//        }, 5000);
+
+//        EventManager.getInstance().loadRepeatedEvent(nowRepeatedStartAt.getTimeInMillis(),nowRepeatedEndAt.getTimeInMillis());
+
 
     }
 
-    private void initAllDayDB(){
+//    private void doMonthDayViewThings(){
+//        final MonthDayView monthDayFragment = (MonthDayView) findViewById(R.id.monthDayView);
+//
+////        monthDayFragment.postDelayed(new Runnable() {
+////            @Override
+////            public void run() {
+////                Event event = new Event();
+////                event.setTitle("new added");
+////                event.setNewStartTime(Calendar.getInstance().getTimeInMillis());
+////                event.setEndTime(Calendar.getInstance().getTimeInMillis() + 60 * 60 * 1000);
+////                EventManager.getInstance().addEvent(event);
+////            }
+////        },5000);
+//    }
 
-    }
+//    private void doMonthAgendaViewThings(){
+//        MonthAgendaView monthDayFragment = (MonthAgendaView) findViewById(R.id.monthAgendaView);
+//
+//        monthDayFragment.setDayEventMap(EventManager.getInstance().getEventsMap());
+//    }
 
     private void initDB(){
-        dbManager.clearDB();
         Calendar calendar = Calendar.getInstance();
         List<Event> events = new ArrayList<>();
         List<Contact> contacts = initContact();
-
         int[] type = {0,1,2};
         int[] status = {0,1};
-        long interval = 3500 * 1000;
-        int alldayCount = 0;
-        String uuuid = "";
+        long interval = 3600 * 1000;
+        calendar.set(Calendar.HOUR_OF_DAY,0);
+        calendar.set(Calendar.MINUTE,0);
+        long startTime = calendar.getTimeInMillis();
+        long endTime;
         for (int i = 1; i < 2; i++) {
-
-            long startTime = calendar.getTimeInMillis();
-//            long endTime = startTime + interval * (i%30);
-            long endTime = startTime + interval;
-            long duration = (endTime - startTime);
+            endTime = startTime + 1 * 23 * (3600*1000);
+//            long duration = (endTime - startTime);
 
             Event event = new Event();
             event.setEventUid("" + i);
-            event.setDisplayEventType(i%type.length);
+            event.setTitle("adawdwadwadaw" + i);
+            event.setDisplayEventType(0);
             event.setDisplayStatus("#63ADF2|slash|icon_normal");
             event.setLocation("here");
             event.setStartTime(startTime);
-            Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(startTime);
-            SimpleDateFormat sdf = new SimpleDateFormat("dd HH:mm");
-            event.setTitle(sdf.format(cal.getTime()) + "");
 
             List<Invitee> inviteeList = new ArrayList<>();
 
@@ -167,37 +229,12 @@ public class YinActivity extends AppCompatActivity {
             dbManager.insertInviteeList(inviteeList);
             event.setInvitee(inviteeList);
 
-            long realEnd = endTime;
-            long temp = duration;
-            while (temp > 3 * 60 * 60 * 1000 ){
-                temp = temp/2;
-                realEnd -= temp;
-            }
-
-            event.setEndTime(realEnd);
+            event.setEndTime(endTime);
             events.add(event);
 
-            if (duration >= 24 * 3600 * 1000 && alldayCount < 3){
-                String title = "All day";
-                for (int j = 0; j < 2; j++) {
-                    uuuid = uuuid + "a";
-                    Event event_clone = new Event();
-                    event_clone.setEventUid(uuuid);
-                    event_clone.setTitle(title);
-                    event_clone.setDisplayEventType(0);
-                    event_clone.setDisplayStatus("#63ADF2|slash|icon_normal");
-                    event_clone.setStartTime(startTime);
-                    event_clone.setEndTime(endTime);
-                    event_clone.setLocation("here");
-//                    event_clone.setInviteesUrls("");
-                    title = title + " all day";
-                    events.add(event_clone);
-                }
-                alldayCount = 0;
-            }
-
-            calendar.setTimeInMillis(endTime - 1000);
-
+//            startTime= i==2?startTime:endTime;
+            startTime = endTime;
+//            calendar.setTimeInMillis(startTime + 24*3600*1000);
         }
 
         dbManager.insertEventList(events);
@@ -213,5 +250,4 @@ public class YinActivity extends AppCompatActivity {
 
         return contacts;
     }
-
 }
