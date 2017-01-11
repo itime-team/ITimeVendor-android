@@ -1,6 +1,5 @@
 package org.unimelb.itime.vendor.listener;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -10,5 +9,6 @@ import java.util.Map;
 public interface ITimeEventPackageInterface {
     Map<Long, List<ITimeEventInterface>> getRegularEventDayMap();
     Map<Long, List<ITimeEventInterface>> getRepeatedEventDayMap();
+    List<ITimeEventInterface> getAllDayEvents();
     void clearPackage();
 }

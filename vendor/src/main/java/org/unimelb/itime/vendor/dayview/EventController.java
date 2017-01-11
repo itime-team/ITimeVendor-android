@@ -49,25 +49,36 @@ public class EventController {
 
     void setEventList(ITimeEventPackageInterface eventPackage) {
         this.clearAllEvents();
-        Map<Long, List<ITimeEventInterface>> dayEventMap = eventPackage.getRegularEventDayMap();
+        List<ITimeEventInterface> allDayEventList = eventPackage.getAllDayEvents();
+        Map<Long, List<ITimeEventInterface>> regularDayEventMap = eventPackage.getRegularEventDayMap();
         Map<Long, List<ITimeEventInterface>> repeatedDayEventMap = eventPackage.getRepeatedEventDayMap();
 
         MyCalendar tempCal = new MyCalendar(container.myCalendar);
         for (int i = 0; i < container.displayLen; i++) {
             long startTime = tempCal.getBeginOfDayMilliseconds();
-            if (dayEventMap != null && dayEventMap.containsKey(startTime)){
-                List<ITimeEventInterface> currentDayEvents = dayEventMap.get(startTime);
+
+            if (allDayEventList != null){
+                for (ITimeEventInterface allDayEvent: allDayEventList
+                     ) {
+                    if (this.isWithin(allDayEvent)) {
+                        this.addAllDayEvent(allDayEvent);
+                    }
+                }
+            }
+
+            if (regularDayEventMap != null && regularDayEventMap.containsKey(startTime)){
+                List<ITimeEventInterface> currentDayEvents = regularDayEventMap.get(startTime);
                 for (ITimeEventInterface event : currentDayEvents) {
-                    this.addEvent(event);
+                        this.addRegularEvent(event);
                 }
             }else {
-//                Log.i(TAG, "dayEventMap null: " + tempCal.getDay());
+                //Log.i(TAG, "regularDayEventMap null: " + tempCal.getDay());
             }
 
             if (repeatedDayEventMap != null && repeatedDayEventMap.containsKey(startTime)){
                 List<ITimeEventInterface> currentDayEvents = repeatedDayEventMap.get(startTime);
                 for (ITimeEventInterface event : currentDayEvents) {
-                    this.addEvent(event);
+                    this.addRegularEvent(event);
                 }
             }
 
@@ -80,27 +91,35 @@ public class EventController {
         }
     }
 
-    private void addEvent(ITimeEventInterface event) {
-        boolean isAllDayEvent = isAllDayEvent(event);
-
-        if (isAllDayEvent) {
-            addAllDayEvent(event);
-        } else {
-            addRegularEvent(event);
-        }
-    }
+//    private void addEvent(ITimeEventInterface event) {
+//        boolean isTodayAllDayEvent = isWithin(event) && isAllDayEvent(event);
+//
+//        if (isTodayAllDayEvent) {
+//            addAllDayEvent(event);
+//        } else {
+//            addRegularEvent(event);
+//        }
+//    }
 
     private void addAllDayEvent(ITimeEventInterface event) {
-        int offset = container.getContainerIndex(event.getStartTime());
-        if (offset < container.displayLen) {
-            DraggableEventView new_dgEvent = this.createDayDraggableEventView(event, true);
-            DayInnerHeaderEventLayout allDayEventLayout = container.allDayEventLayouts.get(offset);
-            allDayEventLayout.addView(new_dgEvent);
-            allDayEventLayout.getDgEvents().add(new_dgEvent);
-            allDayEventLayout.getEvents().add(event);
-        }else {
-            Log.i(TAG, "event in header offset error: " + offset);
+        long startTime = event.getStartTime();
+        long endTime = event.getEndTime();
+
+        while (startTime < endTime){
+            int offset = container.getContainerIndex(startTime);
+            if (offset > -1 && offset < container.displayLen) {
+                DraggableEventView new_dgEvent = this.createDayDraggableEventView(event, true);
+                DayInnerHeaderEventLayout allDayEventLayout = container.allDayEventLayouts.get(offset);
+                allDayEventLayout.addView(new_dgEvent);
+                allDayEventLayout.getDgEvents().add(new_dgEvent);
+                allDayEventLayout.getEvents().add(event);
+            }else {
+                Log.i(TAG, "event in header offset error: " + offset);
+            }
+
+            startTime = startTime + container.allDayMilliseconds;
         }
+
     }
 
     private void addRegularEvent(ITimeEventInterface event) {
@@ -120,6 +139,23 @@ public class EventController {
             Log.i(TAG, "event in body offset error: " + offset);
         }
 
+    }
+
+    private boolean isWithin(ITimeEventInterface event){
+        long startTime = event.getStartTime();
+        long endTime = event.getEndTime();
+
+        MyCalendar calS = new MyCalendar(container.getCalendar());
+
+        MyCalendar calE = new MyCalendar(container.getCalendar());
+        calE.getCalendar().add(Calendar.DATE, container.displayLen);
+        calE.setHour(23);
+        calE.setMinute(59);
+
+        long todayStartTime =  calS.getBeginOfDayMilliseconds();
+        long todayEndTime =  calE.getCalendar().getTimeInMillis();
+
+        return todayEndTime >= startTime && todayStartTime <= endTime;
     }
 
     private boolean isAllDayEvent(ITimeEventInterface event) {

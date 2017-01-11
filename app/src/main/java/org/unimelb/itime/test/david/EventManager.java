@@ -10,6 +10,7 @@ import org.unimelb.itime.test.bean.Event;
 import org.unimelb.itime.vendor.listener.ITimeContactInterface;
 import org.unimelb.itime.vendor.listener.ITimeEventInterface;
 import org.unimelb.itime.vendor.listener.ITimeEventPackageInterface;
+import org.unimelb.itime.vendor.listener.ITimeTimeSlotInterface;
 
 import java.io.EOFException;
 import java.lang.reflect.Array;
@@ -26,6 +27,8 @@ import java.util.Map;
 public class EventManager {
     private final String TAG = "MyAPP";
     private static EventManager ourInstance = new EventManager();
+
+    private List<ITimeEventInterface> allDayEventList = new ArrayList<>();
 
     private Map<Long, List<ITimeEventInterface>> regularEventMap = new HashMap<>();
 
@@ -44,6 +47,7 @@ public class EventManager {
 
     private Calendar calendar = Calendar.getInstance();
 
+    final long allDayMilliseconds = 24 * 60 * 60 * 1000;
 
     public static EventManager getInstance() {
         return ourInstance;
@@ -55,6 +59,7 @@ public class EventManager {
 
         eventsPackage.setRepeatedEventMap(repeatedEventMap);
         eventsPackage.setRegularEventMap(regularEventMap);
+        eventsPackage.setAllDayEventList(allDayEventList);
     }
 
     public ITimeEventPackageInterface getEventsMap(){
@@ -62,6 +67,10 @@ public class EventManager {
     }
 
     public void addEvent(Event event){
+        if (isAllDayEvent(event)){
+            allDayEventList.add(event);
+            return;
+        }
         //if not repeated
         if (event.getRecurrence().length == 0){
             Long startTime = event.getStartTime();
@@ -77,6 +86,13 @@ public class EventManager {
             orgRepeatedEventList.add(event);
             this.addRepeatedEvent(event,nowRepeatedStartAt.getTimeInMillis(),nowRepeatedEndAt.getTimeInMillis());
         }
+    }
+
+    private boolean isAllDayEvent(ITimeEventInterface event) {
+        long duration = event.getEndTime() - event.getStartTime();
+        boolean isAllDay = duration >= allDayMilliseconds;
+
+        return isAllDay;
     }
 
     private void addRepeatedEvent(Event event, long rangeStart, long rangeEnd){
@@ -173,16 +189,21 @@ public class EventManager {
         }
     }
 
-    public class EventsPackage implements ITimeEventPackageInterface{
+    private class EventsPackage implements ITimeEventPackageInterface{
 
+        private List<ITimeEventInterface> allDayEventList;
         private Map<Long, List<ITimeEventInterface>> regularEventMap;
         private Map<Long, List<ITimeEventInterface>> repeatedEventMap;
 
-        public void setRegularEventMap(Map<Long, List<ITimeEventInterface>> regularEventMap) {
+        void setAllDayEventList(List<ITimeEventInterface> allDayEventList) {
+            this.allDayEventList = allDayEventList;
+        }
+
+        void setRegularEventMap(Map<Long, List<ITimeEventInterface>> regularEventMap) {
             this.regularEventMap = regularEventMap;
         }
 
-        public void setRepeatedEventMap(Map<Long, List<ITimeEventInterface>> repeatedEventMap) {
+        void setRepeatedEventMap(Map<Long, List<ITimeEventInterface>> repeatedEventMap) {
             this.repeatedEventMap = repeatedEventMap;
         }
 
@@ -201,21 +222,26 @@ public class EventManager {
         public Map<Long,List<ITimeEventInterface>> getRepeatedEventDayMap() {
             return repeatedEventMap;
         }
+
+        @Override
+        public List<ITimeEventInterface> getAllDayEvents() {
+            return null;
+        }
     }
 
-    public class EventTracer{
+    private class EventTracer{
         private Map<Long, List<ITimeEventInterface>> repeatedEventMap;
         private ITimeEventInterface event;
         private long belongToDayOfBegin;
 
-        public EventTracer(Map<Long, List<ITimeEventInterface>> repeatedEventMap
+        EventTracer(Map<Long, List<ITimeEventInterface>> repeatedEventMap
                 , ITimeEventInterface event,long belongToDayOfBegin){
             this.repeatedEventMap = repeatedEventMap;
             this.event = event;
             this.belongToDayOfBegin = belongToDayOfBegin;
         }
 
-        public void removeSelfFromRepeatedEventMap(){
+        void removeSelfFromRepeatedEventMap(){
             repeatedEventMap.get(belongToDayOfBegin).remove(event);
         }
     }
