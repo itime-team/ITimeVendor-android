@@ -136,6 +136,14 @@ public class MonthDayView extends LinearLayout {
         headerRecyclerAdapter.setOnCheckIfHasEvent(new DayViewHeader.OnCheckIfHasEvent() {
             @Override
             public boolean todayHasEvent(long startOfDay) {
+                List<ITimeEventInterface> allDayEvents = eventPackage.getAllDayEvents();
+                for (ITimeEventInterface allDayEvent:allDayEvents
+                     ) {
+                    if (isWithin(allDayEvent,startOfDay,0)){
+                        return true;
+                    }
+                }
+
                 boolean hasRegular = eventPackage.getRegularEventDayMap().containsKey(startOfDay) && (eventPackage.getRegularEventDayMap().get(startOfDay).size() != 0);
                 boolean hasRepeated = eventPackage.getRepeatedEventDayMap().containsKey(startOfDay) && (eventPackage.getRepeatedEventDayMap().get(startOfDay).size() != 0);
                 return hasRegular || hasRepeated;
@@ -579,6 +587,27 @@ public class MonthDayView extends LinearLayout {
 
     }
 
+    private boolean isWithin(ITimeEventInterface event, long dayOfBegin, int index){
+        long startTime = event.getStartTime();
+        long endTime = event.getEndTime();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(dayOfBegin);
+
+        MyCalendar calS = new MyCalendar(calendar);
+        calS.setOffsetByDate(index);
+
+        MyCalendar calE = new MyCalendar(calendar);
+        calE.setOffsetByDate(index);
+        calE.setHour(23);
+        calE.setMinute(59);
+
+        long todayStartTime =  calS.getBeginOfDayMilliseconds();
+        long todayEndTime =  calE.getCalendar().getTimeInMillis();
+
+        return
+                todayEndTime >= startTime && todayStartTime <= endTime;
+    }
 }
 
 

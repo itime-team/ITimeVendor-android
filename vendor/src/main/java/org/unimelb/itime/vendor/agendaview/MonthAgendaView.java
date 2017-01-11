@@ -125,21 +125,17 @@ public class MonthAgendaView extends RelativeLayout{
 
             @Override
             public boolean todayHasEvent(long startOfDay) {
-                Map<Long, List<ITimeEventInterface>> regularMap = eventPackage.getRegularEventDayMap();
-                Map<Long, List<ITimeEventInterface>> repeatedMap = eventPackage.getRepeatedEventDayMap();
-
-                boolean hasRegular = regularMap.containsKey(startOfDay) && (regularMap.get(startOfDay).size() != 0);
-                if (hasRegular){
-                    return true;
-                }else{
-                    return repeatedMap.containsKey(startOfDay) && (repeatedMap.get(startOfDay).size() != 0);
+                List<ITimeEventInterface> allDayEvents = eventPackage.getAllDayEvents();
+                for (ITimeEventInterface allDayEvent:allDayEvents
+                        ) {
+                    if (isWithin(allDayEvent,startOfDay,0)){
+                        return true;
+                    }
                 }
 
-//
-//                if (eventPackage != null){
-//                    return eventPackage.getRegularEventDayMap().containsKey(startOfDay) && (eventPackage.getRegularEventDayMap().get(startOfDay).size() != 0);
-//                }
-//                return false;
+                boolean hasRegular = eventPackage.getRegularEventDayMap().containsKey(startOfDay) && (eventPackage.getRegularEventDayMap().get(startOfDay).size() != 0);
+                boolean hasRepeated = eventPackage.getRepeatedEventDayMap().containsKey(startOfDay) && (eventPackage.getRepeatedEventDayMap().get(startOfDay).size() != 0);
+                return hasRegular || hasRepeated;
             }
         });
         headerRecyclerView.setHasFixedSize(true);
@@ -463,5 +459,27 @@ public class MonthAgendaView extends RelativeLayout{
 
             }
         }
+    }
+
+    private boolean isWithin(ITimeEventInterface event, long dayOfBegin, int index){
+        long startTime = event.getStartTime();
+        long endTime = event.getEndTime();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(dayOfBegin);
+
+        MyCalendar calS = new MyCalendar(calendar);
+        calS.setOffsetByDate(index);
+
+        MyCalendar calE = new MyCalendar(calendar);
+        calE.setOffsetByDate(index);
+        calE.setHour(23);
+        calE.setMinute(59);
+
+        long todayStartTime =  calS.getBeginOfDayMilliseconds();
+        long todayEndTime =  calE.getCalendar().getTimeInMillis();
+
+        return
+                todayEndTime >= startTime && todayStartTime <= endTime;
     }
 }
