@@ -97,6 +97,8 @@ class WeekViewPagerAdapter extends PagerAdapter {
                 Log.i("debug", "slotsInfo: " + ((this.slotsInfo != null) ? "size 0":"null"));
             }
         }
+
+        updateTimeSlotsDuration(this.duration,false);
     }
 
     FlexibleLenViewBody getViewBodyByPosition(int position){

@@ -32,10 +32,6 @@ public class FlexibleLenBodyViewPagerAdapter extends PagerAdapter {
         this.upperBounds = upperBounds;
     }
 
-//    public void setOnBodyPageChanged(OnBodyPageChanged onBodyPageChanged){
-//        this.onBodyPageChanged = onBodyPageChanged;
-//    }
-
     public FlexibleLenViewBody getViewByPosition(int position){
         FlexibleLenViewBody viewAtPosition = vLists.get(position % vLists.size());
 
