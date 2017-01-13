@@ -34,6 +34,8 @@ public class DraggableTimeSlotView extends ViewGroup {
     private ImageView icon;
     private MyCalendar calendar = new MyCalendar(Calendar.getInstance());
 
+
+
     private WrapperTimeSlot wrapper;
     private ITimeTimeSlotInterface timeslot;
 
@@ -109,6 +111,10 @@ public class DraggableTimeSlotView extends ViewGroup {
         return this.wrapper.isSelected();
     }
 
+    public WrapperTimeSlot getWrapper() {
+        return wrapper;
+    }
+    
     private void updateIcon(){
         if (wrapper.isSelected()){
             icon.setImageDrawable(getResources().getDrawable(R.drawable.icon_event_attendee_selected));
