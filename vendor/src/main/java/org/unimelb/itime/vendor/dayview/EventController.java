@@ -370,8 +370,12 @@ public class EventController {
                     Log.i(TAG, "onDrag: drop " + index);
                     break;
                 case DragEvent.ACTION_DRAG_ENDED:
+                    if (dgView != null){
+                        dgView.getBackground().setAlpha(128);
+                    }
                     break;
                 default:
+                    Log.i(TAG, "onDrag: ");
                     break;
             }
 

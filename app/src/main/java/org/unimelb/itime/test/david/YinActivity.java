@@ -89,7 +89,7 @@ public class YinActivity extends AppCompatActivity {
 
             @Override
             public void onEventDragging(DraggableEventView eventView, int x, int y) {
-
+                Log.i(TAG, "onEventDragging: ");
             }
 
             @Override
@@ -201,7 +201,7 @@ public class YinActivity extends AppCompatActivity {
         long startTime = calendar.getTimeInMillis();
         long endTime;
         for (int i = 1; i < 2; i++) {
-            endTime = startTime + 1 * 23 * (3600*1000);
+            endTime = startTime + 1 * 1 * (3600*1000);
 //            long duration = (endTime - startTime);
 
             Event event = new Event();
