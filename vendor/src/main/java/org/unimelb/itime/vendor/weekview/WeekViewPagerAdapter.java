@@ -96,6 +96,7 @@ class WeekViewPagerAdapter extends PagerAdapter {
             }else {
                 Log.i("debug", "slotsInfo: " + ((this.slotsInfo != null) ? "size 0":"null"));
             }
+            bodyView.timeSlotAnimationChecker();
         }
 
         updateTimeSlotsDuration(this.duration,false);
