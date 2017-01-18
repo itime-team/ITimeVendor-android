@@ -1,7 +1,6 @@
 package org.unimelb.itime.vendor.wrapper;
 
 import org.unimelb.itime.vendor.listener.ITimeTimeSlotInterface;
-import org.unimelb.itime.vendor.weekview.WeekView;
 
 /**
  * Created by yuhaoliu on 4/01/2017.
