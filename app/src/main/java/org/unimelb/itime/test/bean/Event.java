@@ -56,6 +56,7 @@ public class Event implements ITimeEventInterface<Event>, Serializable, Cloneabl
     // later delete
     private transient long repeatEndsTime;
     private transient boolean isHost;
+    private transient boolean highlighted;
 
     public RuleModel getRule() {
         return rule;
@@ -149,6 +150,16 @@ public class Event implements ITimeEventInterface<Event>, Serializable, Cloneabl
             this.invitee = this.getInvitee();
         }
         return this.invitee;
+    }
+
+    @Override
+    public void setHighLighted(boolean hightlighted) {
+        this.highlighted = hightlighted;
+    }
+
+    @Override
+    public boolean isHighlighted() {
+        return this.highlighted;
     }
 
     public void setEventId(String id){ this.eventUid = id;}
@@ -509,8 +520,6 @@ public class Event implements ITimeEventInterface<Event>, Serializable, Cloneabl
     public int getEventType() {
         return this.eventType;
     }
-
-
 
     public void setEventType(int eventType) {
         this.eventType = eventType;

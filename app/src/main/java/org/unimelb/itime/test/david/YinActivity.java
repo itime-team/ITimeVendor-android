@@ -145,6 +145,7 @@ public class YinActivity extends AppCompatActivity {
 //            String[] rec = {"RRULE:FREQ=WEEKLY;INTERVAL=1"};
 //            event.setRecurrence(rec);
             this.event = event;
+            event.setHighLighted(true);
             EventManager.getInstance().addEvent(event);
 //            testE = event;
         }

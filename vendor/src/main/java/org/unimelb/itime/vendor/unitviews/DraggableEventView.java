@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.media.Image;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -147,15 +146,21 @@ public class DraggableEventView extends ViewGroup {
         //set background color base on type
         bg.setBackground(getResources().getDrawable(R.drawable.itime_draggable_event_bg));
         ((GradientDrawable)bg.getBackground()).setColor(color);
-        bg.getBackground().setAlpha(128);
+
+        if (!event.isHighlighted()){
+            bg.getBackground().setAlpha(128);
+        }
         //set leftBar color base on type
         updateLeftBar(getResources().getDrawable(R.drawable.itime_draggable_event_bg), color);
     }
 
+    @Override
     public void setBackground(Drawable drawable){
         bg.setBackground(drawable);
         ((GradientDrawable)bg.getBackground()).setColor(color);
-        bg.getBackground().setAlpha(128);
+        if (!event.isHighlighted()){
+            bg.getBackground().setAlpha(128);
+        }
     }
 
     @Override
@@ -218,7 +223,7 @@ public class DraggableEventView extends ViewGroup {
         int padding = DensityUtil.dip2px(getContext(), isAllDayEvent ? 1 : 3);
         title = new TextView(getContext());
         title.setTextSize(11);
-        title.setTextColor(getResources().getColor(R.color.black));
+        title.setTextColor(getResources().getColor(event.isHighlighted() ? R.color.white : R.color.black));
         title.setEllipsize(TextUtils.TruncateAt.END);
         title.setGravity(Gravity.CENTER_VERTICAL);
         title.setIncludeFontPadding(true);

@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.unimelb.itime.test.databinding.ActivityYinBinding;
 
 /**
  * Created by yuhaoliu on 16/09/16.
