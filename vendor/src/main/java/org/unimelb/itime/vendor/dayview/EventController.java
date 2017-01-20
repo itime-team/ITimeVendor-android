@@ -35,7 +35,7 @@ public class EventController {
     private OnEventListener onEventListener;
 
     private Map<ITimeEventInterface, Integer> regularEventViewMap = new HashMap<>();
-    private Map<String, DraggableEventView> uidDragViewMap = new HashMap<>();
+    private Map<ITimeEventInterface, DraggableEventView> uidDragViewMap = new HashMap<>();
     private ArrayList<DraggableEventView> allDayDgEventViews = new ArrayList<>();
 
     private CalendarEventOverlapHelper xHelper = new CalendarEventOverlapHelper();
@@ -204,7 +204,7 @@ public class EventController {
         }
 
         //add it to map
-        uidDragViewMap.put(event.getEventUid(), event_view);
+        uidDragViewMap.put(event, event_view);
 
         return event_view;
     }
@@ -440,7 +440,7 @@ public class EventController {
     }
 
     void showSingleEventAnim(ITimeEventInterface event){
-        final DraggableEventView eventView = this.uidDragViewMap.get(event.getEventUid());
+        final DraggableEventView eventView = this.uidDragViewMap.get(event);
         if (eventView!=null){
             eventView.showAlphaAnim();
         }
