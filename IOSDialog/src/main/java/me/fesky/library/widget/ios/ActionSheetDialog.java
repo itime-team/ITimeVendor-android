@@ -143,29 +143,29 @@ public class ActionSheetDialog {
 
             // 背景图片
             textView.setBackgroundResource(R.drawable.actionsheet_bottom_selector);
-//            if (size == 1) {
-//                if (showTitle) {
-//                    textView.setBackgroundResource(R.drawable.actionsheet_bottom_selector);
-//                } else {
-//                    textView.setBackgroundResource(R.drawable.actionsheet_single_selector);
-//                }
-//            } else {
-//                if (showTitle) {
-//                    if (i >= 1 && i < size) {
-//                        textView.setBackgroundResource(R.drawable.actionsheet_middle_selector);
-//                    } else {
-//                        textView.setBackgroundResource(R.drawable.actionsheet_bottom_selector);
-//                    }
-//                } else {
-//                    if (i == 1) {
-//                        textView.setBackgroundResource(R.drawable.actionsheet_top_selector);
-//                    } else if (i < size) {
-//                        textView.setBackgroundResource(R.drawable.actionsheet_middle_selector);
-//                    } else {
-//                        textView.setBackgroundResource(R.drawable.actionsheet_bottom_selector);
-//                    }
-//                }
-//            }
+            if (size == 1) {
+                if (showTitle) {
+                    textView.setBackgroundResource(R.drawable.actionsheet_bottom_selector);
+                } else {
+                    textView.setBackgroundResource(R.drawable.actionsheet_single_selector);
+                }
+            } else {
+                if (showTitle) {
+                    if (i >= 1 && i < size) {
+                        textView.setBackgroundResource(R.drawable.actionsheet_middle_selector);
+                    } else {
+                        textView.setBackgroundResource(R.drawable.actionsheet_bottom_selector);
+                    }
+                } else {
+                    if (i == 1) {
+                        textView.setBackgroundResource(R.drawable.actionsheet_top_selector);
+                    } else if (i < size) {
+                        textView.setBackgroundResource(R.drawable.actionsheet_middle_selector);
+                    } else {
+                        textView.setBackgroundResource(R.drawable.actionsheet_bottom_selector);
+                    }
+                }
+            }
 
             // 字体颜色
             if (color == null) {
@@ -179,7 +179,7 @@ public class ActionSheetDialog {
             int height = (int) (50 * scale + 0.5f);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, height);
-                    params.setMargins(0,(int)(5 * scale + 0.5f), 0, 0 );
+                    params.setMargins(0,(int)(1 * scale + 0.5f), 0, 0 );
             textView.setLayoutParams(params);
 
             // 点击事件
