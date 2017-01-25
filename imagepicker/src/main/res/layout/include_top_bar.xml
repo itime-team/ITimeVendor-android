@@ -35,6 +35,7 @@
         android:layout_marginRight="15dp"
         android:text="Done(3/9)"
         android:textColor="@drawable/selector_toolbar_right"
+        android:background="#FFFFFF"
         android:textSize="17dp"/>
 
     <ImageView

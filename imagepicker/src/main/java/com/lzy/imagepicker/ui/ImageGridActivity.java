@@ -64,10 +64,13 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
         findViewById(R.id.btn_back).setOnClickListener(this);
         mBtnOk = (Button) findViewById(R.id.btn_ok);
         mBtnOk.setOnClickListener(this);
+        mBtnOk.setAllCaps(false);
         mBtnDir = (Button) findViewById(R.id.btn_dir);
         mBtnDir.setOnClickListener(this);
+        mBtnDir.setAllCaps(false);
         mBtnPre = (Button) findViewById(R.id.btn_preview);
         mBtnPre.setOnClickListener(this);
+        mBtnPre.setAllCaps(false);
         mGridView = (GridView) findViewById(R.id.gridview);
         mFooterBar = findViewById(R.id.footer_bar);
         if (imagePicker.isMultiMode()) {
@@ -228,7 +231,9 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (data != null) {
-            if (resultCode == ImagePicker.RESULT_CODE_BACK) {
+            if(requestCode == ImagePicker.REQUEST_CODE_PREVIEW && resultCode == ImagePicker.RESULT_CODE_ITEMS){
+                mImageGridAdapter.notifyDataSetChanged();
+            }else if (resultCode == ImagePicker.RESULT_CODE_BACK) {
                 isOrigin = data.getBooleanExtra(ImagePreviewActivity.ISORIGIN, false);
             } else {
                 //从拍照界面返回
