@@ -263,7 +263,7 @@ public class ImagePicker {
     public void takePicture(Fragment fragment, int requestCode) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         takePictureIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        if (takePictureIntent.resolveActivity(fragment.getActivity().getPackageManager()) != null) {
+        //if (takePictureIntent.resolveActivity(fragment.getActivity().getPackageManager()) != null) {
             if (Utils.existSDCard())
                 takeImageFile = new File(Environment.getExternalStorageDirectory(), "/DCIM/camera/");
             else takeImageFile = Environment.getDataDirectory();
@@ -275,7 +275,7 @@ public class ImagePicker {
                 // 如果没有指定uri，则data就返回有数据！
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(takeImageFile));
             }
-        }
+        //}
         fragment.startActivityForResult(takePictureIntent, requestCode);
     }
 
