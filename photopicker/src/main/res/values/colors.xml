@@ -1,4 +1,5 @@
 <resources>
     <color name="white" >#ffffff</color>
     <color name="bg_floder_press">#bdbdbd</color>
+    <color name="text_color">#6D6D6D</color>
 </resources>

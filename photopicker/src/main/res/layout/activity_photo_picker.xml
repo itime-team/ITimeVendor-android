@@ -7,10 +7,11 @@
         android:layout_width="match_parent"
         android:layout_height="44dp"
         layout="@layout/tabbar_layout" />
+    <include layout="@layout/line"/>
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#191919">
+        android:background="#FFFFFF">
 
         <GridView
             android:id="@+id/photo_gridview"
@@ -23,17 +24,25 @@
             android:cacheColorHint="@android:color/transparent"
             android:listSelector="@android:color/transparent" >
         </GridView>
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true">
+            <include layout="@layout/line"
+                />
+            </FrameLayout>
             <RelativeLayout
                 android:id="@+id/bottom_tab_bar"
                 android:layout_width="match_parent"
                 android:layout_height="?android:attr/actionBarSize"
                 android:layout_alignParentBottom="true"
-                android:background="#BB000000">
+                android:background="#FFFFFF">
                 <TextView
                     android:id="@+id/floder_name"
                     android:layout_width="wrap_content"
@@ -52,7 +61,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:textColor="#A9ffffff"
+                    android:textColor="@color/text_color"
                     android:textSize="16sp"
                     android:layout_marginRight="12dp"
                     android:text="1024 photos"/>
