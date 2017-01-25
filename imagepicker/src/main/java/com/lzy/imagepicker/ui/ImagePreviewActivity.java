@@ -45,6 +45,7 @@ public class ImagePreviewActivity extends ImagePreviewBaseActivity implements Im
         mBtnOk = (Button) topBar.findViewById(R.id.btn_ok);
         mBtnOk.setVisibility(View.VISIBLE);
         mBtnOk.setOnClickListener(this);
+        mBtnOk.setAllCaps(false);
 
         bottomBar = findViewById(R.id.bottom_bar);
         bottomBar.setVisibility(View.VISIBLE);

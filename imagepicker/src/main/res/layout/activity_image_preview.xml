@@ -20,8 +20,18 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_alignParentBottom="true"
-        android:background="#cc22292c"
+        android:background="#FFFFFF"
         android:visibility="gone">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true">
+
+            <include layout="@layout/line"/>
+        </FrameLayout>
 
         <com.lzy.imagepicker.view.SuperCheckBox
             android:id="@+id/cb_origin"
@@ -31,7 +41,8 @@
             android:layout_marginLeft="10dp"
             android:paddingLeft="8dp"
             android:text="原图(3.07M)"
-            android:textColor="#FFF"/>
+            android:textColor="#FFF"
+            android:visibility="gone"/>
 
         <com.lzy.imagepicker.view.SuperCheckBox
             android:id="@+id/cb_check"
@@ -44,7 +55,7 @@
             android:drawablePadding="4dp"
             android:includeFontPadding="true"
             android:paddingLeft="8dp"
-            android:text="选择"
-            android:textColor="#ffffff"/>
+            android:text="select"
+            android:textColor="@color/text_color"/>
     </RelativeLayout>
 </RelativeLayout>
