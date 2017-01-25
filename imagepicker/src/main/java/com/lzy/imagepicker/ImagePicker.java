@@ -118,6 +118,10 @@ public class ImagePicker {
         this.isSaveRectangle = isSaveRectangle;
     }
 
+    public void setSelectedLimit(int limit){
+        this.selectLimit = limit;
+    }
+
     public int getOutPutX() {
         return outPutX;
     }
