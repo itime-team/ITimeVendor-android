@@ -11,7 +11,7 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_centerVertical="true"
-        android:src="@drawable/ic_back_arrow_white"
+        android:src="@drawable/ic_back_arrow"
         android:layout_marginLeft="15dp"
         />
 
