@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -41,7 +42,7 @@ public class DraggableEventView extends ViewGroup {
     private boolean isAllDayEvent = false;
 
     private String status;
-    private String icon_name;
+    private String iconName;
 
     private Paint p = new Paint();
     private ImageView bg;
@@ -72,7 +73,7 @@ public class DraggableEventView extends ViewGroup {
             }else{
                 this.color = Color.parseColor(attrs[0]);
                 this.status = attrs[1];
-                this.icon_name = attrs[2];
+                this.iconName = attrs[2];
             }
         }
     }
@@ -199,6 +200,10 @@ public class DraggableEventView extends ViewGroup {
                         && !status.equals("")
                         && status.equals("slash")){
                     drawSlash(canvas);
+                }
+
+                if (!iconName.equals("icon_question")){
+                    icon.setVisibility(View.INVISIBLE);
                 }
             }
         };
