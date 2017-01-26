@@ -202,7 +202,7 @@ public class DraggableEventView extends ViewGroup {
                     drawSlash(canvas);
                 }
 
-                if (!iconName.equals("icon_question")){
+                if (iconName != null && !iconName.equals("icon_question")){
                     icon.setVisibility(View.INVISIBLE);
                 }
             }
