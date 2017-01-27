@@ -239,6 +239,7 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
                 mImageGridAdapter.notifyDataSetChanged();
             }else if (resultCode == ImagePicker.RESULT_CODE_BACK) {
                 isOrigin = data.getBooleanExtra(ImagePreviewActivity.ISORIGIN, false);
+                mImageGridAdapter.notifyDataSetChanged();
             } else {
                 //从拍照界面返回
                 //点击 X , 没有选择照片
