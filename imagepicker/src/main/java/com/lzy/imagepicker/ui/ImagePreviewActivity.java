@@ -123,6 +123,7 @@ public class ImagePreviewActivity extends ImagePreviewBaseActivity implements Im
         } else if (id == R.id.btn_back) {
             Intent intent = new Intent();
             intent.putExtra(ImagePreviewActivity.ISORIGIN, isOrigin);
+            intent.putExtra(ImagePicker.EXTRA_RESULT_ITEMS, imagePicker.getSelectedImages());
             setResult(ImagePicker.RESULT_CODE_BACK, intent);
             finish();
         }
