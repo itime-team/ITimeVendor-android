@@ -23,9 +23,9 @@
         style="@style/SuperCheckboxTheme"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:scaleX="3"
-        android:scaleY="3"
+        android:scaleX="2"
+        android:scaleY="2"
         android:layout_gravity="top|right"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp"/>
 </FrameLayout>
