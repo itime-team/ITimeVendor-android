@@ -7,7 +7,7 @@
     <color name="transparent">#00000000</color>
     <color name="text_color">#6D6D6D</color>
     <color name="textBlue">#0076FF</color>
-    <color name="divider_line">#AAAAAA</color>
+    <color name="divider_line">#e0e0e0</color>
     <color name = "hintText">#949494</color>
     <color name="disabled">#e0e0e0</color>
 </resources>
