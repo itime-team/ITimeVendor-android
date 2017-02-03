@@ -153,7 +153,7 @@ public class DraggableTimeSlotView extends ViewGroup {
 
     public void showAlphaAnim(){
         ValueAnimator alphaAnimation = ObjectAnimator.ofFloat(this, View.ALPHA, 0,1);
-        alphaAnimation.setDuration(2000); // milliseconds
+        alphaAnimation.setDuration(1200); // milliseconds
         alphaAnimation.addListener(new AnimatorListenerAdapter()
         {
             @Override
