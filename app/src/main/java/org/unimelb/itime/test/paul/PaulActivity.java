@@ -19,6 +19,7 @@ import org.unimelb.itime.vendor.dayview.TimeSlotController;
 import org.unimelb.itime.vendor.unitviews.DraggableEventView;
 import org.unimelb.itime.vendor.unitviews.DraggableTimeSlotView;
 import org.unimelb.itime.vendor.weekview.WeekView;
+import org.unimelb.itime.vendor.wrapper.WrapperTimeSlot;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -109,13 +110,13 @@ public class PaulActivity extends AppCompatActivity {
             @Override
             public void onTimeSlotCreate(final DraggableTimeSlotView draggableTimeSlotView) {
                 // popup timeslot create page
-                TimeSlot timeSlot = new TimeSlot();
-                timeSlot.setTimeSlotUid(UUID.randomUUID().toString());
-                timeSlot.setStartTime(draggableTimeSlotView.getNewStartTime());
-                timeSlot.setEndTime(draggableTimeSlotView.getNewEndTime());
-                weekView.addTimeSlot(timeSlot);
-                weekView.reloadTimeSlots(false);
-                slots.add(timeSlot);
+//                TimeSlot timeSlot = new TimeSlot();
+//                timeSlot.setTimeSlotUid(UUID.randomUUID().toString());
+//                timeSlot.setStartTime(draggableTimeSlotView.getNewStartTime());
+//                timeSlot.setEndTime(draggableTimeSlotView.getNewEndTime());
+//                weekView.addTimeSlot(timeSlot);
+//                weekView.reloadTimeSlots(false);
+//                slots.add(timeSlot);
             }
 
             @Override
@@ -157,7 +158,9 @@ public class PaulActivity extends AppCompatActivity {
             slot.setEndTime(interval + calendar.getTimeInMillis()+ 3600*1000);
             slot.setTimeSlotUid(UUID.randomUUID().toString());
             this.slots.add(slot);
-            weekView.addTimeSlot(slot);
+            WrapperTimeSlot slotwrapper = new WrapperTimeSlot(slot);
+            slotwrapper.setAnimated(true);
+            weekView.addTimeSlot(slotwrapper);
 //            weekView.showTimeslotAnim(slot);
         }
 
@@ -175,34 +178,16 @@ public class PaulActivity extends AppCompatActivity {
 //                weekView.reloadTimeSlots(true);
 //            }
 //        },3000);
-//
 
+        weekView.reloadTimeSlots(false);
 
-//        weekView.reloadTimeSlots(false);
+        weekView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                weekView.updateTimeSlotsDuration(2*3600*1000,true);
+            }
+        },5000);
 
-//        weekView.showEventAnim(event);
-//        weekView.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                weekView.updateTimeSlotsDuration(2*3600*1000,true);
-//            }
-//        },5000);
-//        weekView.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                weekView.showEventAnim(event);
-//            }
-//        },0);
-//
-//        weekView.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                Calendar calendar = Calendar.getInstance();
-//                calendar.set(Calendar.HOUR_OF_DAY,18);
-//                calendar.set(Calendar.MINUTE,30);
-//                weekView.scrollToWithOffset(calendar.getTimeInMillis());
-//            }
-//        },1000);
     }
 
     private void timeslotDrop(DraggableTimeSlotView draggableTimeSlotView, long startTime, long endTime) {

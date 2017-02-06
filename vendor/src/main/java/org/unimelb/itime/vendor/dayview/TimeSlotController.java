@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import org.unimelb.itime.vendor.listener.ITimeTimeSlotInterface;
 import org.unimelb.itime.vendor.unitviews.DraggableEventView;
 import org.unimelb.itime.vendor.unitviews.DraggableTimeSlotView;
+import org.unimelb.itime.vendor.weekview.WeekView;
 import org.unimelb.itime.vendor.wrapper.WrapperTimeSlot;
 
 import java.text.SimpleDateFormat;
@@ -260,12 +261,6 @@ public class TimeSlotController {
     void addSlot(WrapperTimeSlot wrapper, boolean animate){
         int offset = container.getContainerIndex(wrapper.getTimeSlot().getStartTime());
 
-        if (container.rightArrow!= null && offset >= container.displayLen){
-            container.rightArrow.setVisibility(VISIBLE);
-        }else if (container.rightArrow!= null && offset <= -1){
-            container.leftArrow.setVisibility(VISIBLE);
-        }
-
         if (offset < container.displayLen && offset > -1){
             DraggableTimeSlotView draggableTimeSlotView = createTimeSlotView(wrapper);
 
@@ -275,6 +270,18 @@ public class TimeSlotController {
             resizeTimeSlot(draggableTimeSlotView,animate);
             slotViews.add(draggableTimeSlotView);
             draggableTimeSlotView.requestLayout();
+        }
+
+        if (container.rightArrowVisibility == WeekView.TIMESLOT_AUTO){
+            if (container.rightArrow!= null && offset >= container.displayLen){
+                container.rightArrow.setVisibility(VISIBLE);
+            }
+        }
+
+        if (container.leftArrowVisibility == WeekView.TIMESLOT_AUTO){
+            if (container.leftArrow!= null && offset <= -1){
+                container.leftArrow.setVisibility(VISIBLE);
+            }
         }
     }
 
@@ -311,7 +318,11 @@ public class TimeSlotController {
         }
     }
 
-
+    void showAllSlotAnim(){
+        for (int i = 0; i < slotViews.size(); i++) {
+            slotViews.get(i).showAlphaAnim();
+        }
+    }
 
     void timeSlotAnimationChecker(){
         boolean topShow = false;
@@ -330,8 +341,18 @@ public class TimeSlotController {
                 }else{
                     bottomShow = true;
                 }
+
+                slotview.onScreen = false;
             } else {
+                if (!slotview.onScreen && slotview.getWrapper().isAnimated()){
+                    slotview.showAlphaAnim();
+                }
+
+                if (!slotview.getWrapper().isRead()){
+                    slotview.getWrapper().setRead(true);
+                }
                 //showing
+                slotview.onScreen = true;
             }
 
             if (topShow && bottomShow){
@@ -339,8 +360,13 @@ public class TimeSlotController {
             }
         }
 
-        container.topArrow.setVisibility(topShow?VISIBLE:INVISIBLE);
-        container.bottomArrow.setVisibility(bottomShow?VISIBLE:INVISIBLE);
+        if (container.topArrowVisibility == WeekView.TIMESLOT_AUTO){
+            container.topArrow.setVisibility(topShow?VISIBLE:INVISIBLE);
+        }
+
+        if (container.bottomArrowVisibility == WeekView.TIMESLOT_AUTO){
+            container.bottomArrow.setVisibility(bottomShow?VISIBLE:INVISIBLE);
+        }
     }
 
     private void resizeTimeSlot(DraggableTimeSlotView draggableTimeSlotView, boolean animate){

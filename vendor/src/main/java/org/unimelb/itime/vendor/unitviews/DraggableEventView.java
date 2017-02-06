@@ -146,10 +146,13 @@ public class DraggableEventView extends ViewGroup {
 
         //set background color base on type
         bg.setBackground(getResources().getDrawable(R.drawable.itime_draggable_event_bg));
-        ((GradientDrawable)bg.getBackground()).setColor(color);
 
         if (!event.isHighlighted()){
+            ((GradientDrawable)bg.getBackground()).setColor(color);
             bg.getBackground().setAlpha(128);
+        }else {
+            color = getResources().getColor(R.color.private_et);
+            ((GradientDrawable)bg.getBackground()).setColor(color);
         }
         //set leftBar color base on type
         updateLeftBar(getResources().getDrawable(R.drawable.itime_draggable_event_bg), color);

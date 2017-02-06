@@ -16,6 +16,7 @@ import android.widget.ScrollView;
 import org.unimelb.itime.vendor.dayview.EventController;
 import org.unimelb.itime.vendor.dayview.FlexibleLenBodyViewPager;
 import org.unimelb.itime.vendor.dayview.FlexibleLenViewBody;
+import org.unimelb.itime.vendor.dayview.MonthDayView;
 import org.unimelb.itime.vendor.dayview.TimeSlotController;
 import org.unimelb.itime.vendor.unitviews.DraggableEventView;
 import org.unimelb.itime.vendor.helper.DensityUtil;
@@ -47,6 +48,10 @@ import static android.support.v4.view.ViewPager.SCROLL_STATE_IDLE;
         }
 )
 public class WeekView extends LinearLayout {
+    public static final int TIMESLOT_KEEP_SHOW = 1;
+    public static final int TIMESLOT_KEEP_HIDE = -1;
+    public static final int TIMESLOT_AUTO = 0;
+
     private final DisplayMetrics dm = getResources().getDisplayMetrics();
     private MyCalendar monthDayViewCalendar = new MyCalendar(Calendar.getInstance());
 
@@ -68,6 +73,7 @@ public class WeekView extends LinearLayout {
     private EventController.OnEventListener OnBodyOuterListener;
     private TimeSlotController.OnTimeSlotListener onTimeSlotOuterListener;
     private OnHeaderListener onHeaderListener;
+    private OnFlexScroll onFlexScroll;
 
     public WeekView(Context context) {
         super(context);
@@ -133,6 +139,13 @@ public class WeekView extends LinearLayout {
                 @Override
                 public void onScrollChanged() {
                     FlexibleLenViewBody currentShow = adapter.getViewBodyByPosition(weekViewPager.getCurrentItem());
+
+                    //scroll listener
+                    Calendar nowTime = currentShow.getCurrentTime();
+                    if (nowTime != null && onFlexScroll != null){
+                        onFlexScroll.onScroll(nowTime.getTimeInMillis());
+                    }
+
                     if (bodyPagerCurrentState == SCROLL_STATE_IDLE){
                         currentShow.timeSlotAnimationChecker();
                     }
@@ -201,6 +214,8 @@ public class WeekView extends LinearLayout {
                     //when slide down
                     FlexibleLenViewBody currentShow = adapter.getViewBodyByPosition(weekViewPager.getCurrentItem());
                     currentShow.timeSlotAnimationChecker();
+//                    currentShow.showAllSlotAnim();
+//                    reloadTimeSlots(false);
                 }
             }
         });
@@ -323,7 +338,7 @@ public class WeekView extends LinearLayout {
         }
     }
 
-    public <T extends ITimeTimeSlotInterface>void showTimeslotAnim(final T ... timeslots){
+    public <T extends ITimeTimeSlotInterface> void showTimeslotAnim(final T ... timeslots){
 
         for (final FlexibleLenViewBody body: bodyViewList
                 ) {
@@ -386,6 +401,16 @@ public class WeekView extends LinearLayout {
         }
 
         return null;
+    }
+
+    public void setArrowVisibility(int l, int t, int r, int b){
+        for (FlexibleLenViewBody body:bodyViewList
+             ) {
+            body.leftArrowVisibility = l;
+            body.topArrowVisibility = t;
+            body.rightArrowVisibility = r;
+            body.bottomArrowVisibility = b;
+        }
     }
 
     public void setOnHeaderListener(OnHeaderListener onHeaderListener){
@@ -604,6 +629,14 @@ public class WeekView extends LinearLayout {
      */
     public interface OnHeaderListener{
         void onMonthChanged(MyCalendar calendar);
+    }
+
+    public void setOnFlexScroll(OnFlexScroll onFlexScroll) {
+        this.onFlexScroll = onFlexScroll;
+    }
+
+    interface OnFlexScroll{
+        void onScroll(long currentTime);
     }
 
 }

@@ -28,6 +28,7 @@ import org.unimelb.itime.vendor.listener.ITimeEventPackageInterface;
 import org.unimelb.itime.vendor.listener.ITimeTimeSlotInterface;
 import org.unimelb.itime.vendor.unitviews.DraggableEventView;
 import org.unimelb.itime.vendor.unitviews.DraggableTimeSlotView;
+import org.unimelb.itime.vendor.weekview.WeekView;
 import org.unimelb.itime.vendor.wrapper.WrapperTimeSlot;
 
 import java.text.DateFormat;
@@ -105,11 +106,17 @@ public class FlexibleLenViewBody extends FrameLayout {
     private int leftSideWidth = 40;
     protected int lineHeight = 50;
     private int timeTextSize = 20;
+    private int topAllDayHeight;
 
     protected int layoutWidthPerDay;
     protected int layoutHeightPerDay;
 
     protected int displayLen = 7;
+
+    public Integer leftArrowVisibility = WeekView.TIMESLOT_AUTO;
+    public Integer rightArrowVisibility = WeekView.TIMESLOT_AUTO;
+    public Integer topArrowVisibility = WeekView.TIMESLOT_AUTO;
+    public Integer bottomArrowVisibility = WeekView.TIMESLOT_AUTO;
 
     protected float nowTapX = 0;
     protected float nowTapY = 0;
@@ -227,7 +234,7 @@ public class FlexibleLenViewBody extends FrameLayout {
         topAllDayEventLayouts.setPadding(0,topAllDayEventLayoutsPadding,0,topAllDayEventLayoutsPadding);
 
         topAllDayEventLayouts.setId(View.generateViewId());
-        int topAllDayHeight = DensityUtil.dip2px(context, 40);
+        topAllDayHeight = DensityUtil.dip2px(context, 40);
         LinearLayout.LayoutParams topAllDayEventLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, topAllDayHeight);
         topAllDayEventLayouts.setLayoutParams(topAllDayEventLayoutParams);
         this.initInnerHeaderEventLayouts(topAllDayEventLayouts);
@@ -273,10 +280,28 @@ public class FlexibleLenViewBody extends FrameLayout {
     }
 
     public void resetAnimationViews(){
-        leftArrow.setVisibility(INVISIBLE);
-        rightArrow.setVisibility(INVISIBLE);
-        topArrow.setVisibility(INVISIBLE);
-        bottomArrow.setVisibility(INVISIBLE);
+        resetArrow(leftArrow, leftArrowVisibility);
+        resetArrow(rightArrow, rightArrowVisibility);
+        resetArrow(topArrow, topArrowVisibility);
+        resetArrow(bottomArrow, bottomArrowVisibility);
+//        leftArrow.setVisibility(INVISIBLE);
+//        rightArrow.setVisibility(INVISIBLE);
+//        topArrow.setVisibility(INVISIBLE);
+//        bottomArrow.setVisibility(INVISIBLE);
+    }
+
+    private void resetArrow(View v, Integer obj){
+        switch (obj){
+            case WeekView.TIMESLOT_AUTO:
+                v.setVisibility(INVISIBLE);
+                break;
+            case WeekView.TIMESLOT_KEEP_HIDE:
+                v.setVisibility(INVISIBLE);
+                break;
+            case WeekView.TIMESLOT_KEEP_SHOW:
+                v.setVisibility(VISIBLE);
+                break;
+        }
     }
 
     private void initTimeSlotArrow(){
@@ -502,7 +527,6 @@ public class FlexibleLenViewBody extends FrameLayout {
      */
     public void resetViews() {
         clearAllEvents();
-
         localAnimationLayout.removeView(nowTime);
         localAnimationLayout.removeView(nowTimeLine);
 
@@ -735,6 +759,42 @@ public class FlexibleLenViewBody extends FrameLayout {
 
         msgWindow.setTranslationX(toX);
         msgWindow.setTranslationY(toY);
+    }
+
+    public Calendar getCurrentTime(){
+        if (this.scrollContainerView != null && this.myCalendar != null){
+            int nowY = this.scrollContainerView.getScrollY() - topAllDayHeight;
+            //update the event time
+            String new_time = positionToTimeTreeMap.get(nearestTimeSlotKey(nowY));
+            if (new_time == null){
+                return null;
+            }
+            //important! update event time after drag
+            String[] time_parts = new_time.split(":");
+            int hour = Integer.valueOf(time_parts[0]);
+            int minute = Integer.valueOf(time_parts[1]);
+
+            MyCalendar cal = new MyCalendar(this.myCalendar);
+            cal.setHour(hour);
+            cal.setMinute(minute);
+
+//            return cal.getCalendar().getTimeInMillis();
+            return cal.getCalendar();
+        }
+
+        return null;
+    }
+
+    public TimeSlotController getTimeSlotController() {
+        return timeSlotController;
+    }
+
+    public EventController getEventController() {
+        return eventController;
+    }
+
+    public void showAllSlotAnim(){
+        this.timeSlotController.showAllSlotAnim();
     }
 
     /********************************* For common Listener use *************************************/

@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,6 +63,7 @@ public class MonthDayView extends LinearLayout {
     private DayViewHeaderRecyclerAdapter headerRecyclerAdapter;
 
     private ITimeEventPackageInterface eventPackage;
+    public OnFlexScroll onFlexScroll;
 
     private int bodyPagerCurrentState = 0;
 
@@ -398,6 +400,12 @@ public class MonthDayView extends LinearLayout {
                 public void onScrollChanged() {
                     FlexibleLenViewBody currentShow = bodyPagerAdapter.getViewByPosition(bodyPager.getCurrentItem());
                     if (currentShow.getScrollView() == scroller){
+                        //scroll listener
+                        Calendar nowTime = currentShow.getCurrentTime();
+                        if (nowTime != null && onFlexScroll != null){
+                            onFlexScroll.onScroll(nowTime.getTimeInMillis());
+                        }
+
                         int scrollY = scroller.getScrollY(); // For ScrollView
                         int scrollX = scroller.getScrollX(); // For ScrollView
 
@@ -607,6 +615,14 @@ public class MonthDayView extends LinearLayout {
 
         return
                 todayEndTime >= startTime && todayStartTime <= endTime;
+    }
+
+    public void setOnFlexScroll(OnFlexScroll onFlexScroll) {
+        this.onFlexScroll = onFlexScroll;
+    }
+
+    interface OnFlexScroll{
+        void onScroll(long currentTime);
     }
 }
 

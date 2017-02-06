@@ -9,7 +9,8 @@ import org.unimelb.itime.vendor.listener.ITimeTimeSlotInterface;
 public class WrapperTimeSlot {
     private ITimeTimeSlotInterface timeSlot = null;
     private boolean isSelected = false;
-    private boolean isAnimated = false;
+    private boolean isAnimated = true;
+    private boolean isRead = false;
 
     public WrapperTimeSlot(ITimeTimeSlotInterface timeSlot) {
         this.timeSlot = timeSlot;
@@ -39,4 +40,11 @@ public class WrapperTimeSlot {
         this.timeSlot = timeSlot;
     }
 
+    public boolean isRead() {
+        return isRead;
+    }
+
+    public void setRead(boolean read) {
+        isRead = read;
+    }
 }

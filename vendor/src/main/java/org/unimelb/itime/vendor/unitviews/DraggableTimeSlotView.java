@@ -25,6 +25,7 @@ public class DraggableTimeSlotView extends ViewGroup {
     public static int TYPE_NORMAL = 0;
     public static int TYPE_TEMP = 1;
 
+    public boolean onScreen = false;
     private int type = 0;
     private int indexInView = 0;
     private long newStartTime = 0;
@@ -33,8 +34,6 @@ public class DraggableTimeSlotView extends ViewGroup {
 
     private ImageView icon;
     private MyCalendar calendar = new MyCalendar(Calendar.getInstance());
-
-
 
     private WrapperTimeSlot wrapper;
     private ITimeTimeSlotInterface timeslot;
