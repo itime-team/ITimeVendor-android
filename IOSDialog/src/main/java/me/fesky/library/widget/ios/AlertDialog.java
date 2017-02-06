@@ -71,7 +71,7 @@ public class AlertDialog {
     public AlertDialog setTitle(String title) {
         showTitle = true;
         if ("".equals(title)) {
-            txt_title.setText("标题");
+            txt_title.setText("");
         } else {
             txt_title.setText(title);
         }
@@ -81,7 +81,7 @@ public class AlertDialog {
     public AlertDialog setMsg(String msg) {
         showMsg = true;
         if ("".equals(msg)) {
-            txt_msg.setText("内容");
+            txt_msg.setText("");
         } else {
             txt_msg.setText(msg);
         }
@@ -97,7 +97,7 @@ public class AlertDialog {
                                          final View.OnClickListener listener) {
         showPosBtn = true;
         if ("".equals(text)) {
-            btn_pos.setText("确定");
+            btn_pos.setText("");
         } else {
             btn_pos.setText(text);
         }
@@ -115,7 +115,7 @@ public class AlertDialog {
                                          final View.OnClickListener listener) {
         showNegBtn = true;
         if ("".equals(text)) {
-            btn_neg.setText("取消");
+            btn_neg.setText("");
         } else {
             btn_neg.setText(text);
         }
@@ -131,7 +131,7 @@ public class AlertDialog {
 
     private void setLayout() {
         if (!showTitle && !showMsg) {
-            txt_title.setText("提示");
+            txt_title.setText("");
             txt_title.setVisibility(View.VISIBLE);
         }
 
@@ -144,7 +144,7 @@ public class AlertDialog {
         }
 
         if (!showPosBtn && !showNegBtn) {
-            btn_pos.setText("确定");
+            btn_pos.setText("");
             btn_pos.setVisibility(View.VISIBLE);
             btn_pos.setBackgroundResource(R.drawable.alertdialog_single_selector);
             btn_pos.setOnClickListener(new View.OnClickListener() {
