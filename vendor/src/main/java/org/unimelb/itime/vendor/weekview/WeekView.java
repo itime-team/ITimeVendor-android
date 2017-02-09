@@ -635,7 +635,7 @@ public class WeekView extends LinearLayout {
         this.onFlexScroll = onFlexScroll;
     }
 
-    interface OnFlexScroll{
+    public interface OnFlexScroll{
         void onScroll(long currentTime);
     }
 
