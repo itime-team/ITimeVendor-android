@@ -135,9 +135,14 @@ public class WeekView extends LinearLayout {
 
             final ScrollView scroller = bodyView.getScrollView();
 
-            scroller.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            this.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
                 @Override
                 public void onScrollChanged() {
+                    if (WeekView.this.getParent() == null){
+                        WeekView.this.getViewTreeObserver().removeOnScrollChangedListener(this);
+                        return;
+                    }
+
                     FlexibleLenViewBody currentShow = adapter.getViewBodyByPosition(weekViewPager.getCurrentItem());
 
                     //scroll listener

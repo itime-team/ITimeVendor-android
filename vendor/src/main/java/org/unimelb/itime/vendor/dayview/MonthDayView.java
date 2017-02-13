@@ -394,10 +394,15 @@ public class MonthDayView extends LinearLayout {
             bodyView.setCalendar(new MyCalendar(calendar));
 
             final ScrollView scroller = bodyView.getScrollView();
-
-            scroller.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            this.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
                 @Override
                 public void onScrollChanged() {
+                    if (MonthDayView.this.getParent() == null){
+                        MonthDayView.this.getViewTreeObserver().removeOnScrollChangedListener(this);
+                        return;
+                    }
+
+                    Log.i(TAG, "onScrollChanged: " + MonthDayView.this.getParent());
                     FlexibleLenViewBody currentShow = bodyPagerAdapter.getViewByPosition(bodyPager.getCurrentItem());
                     if (currentShow.getScrollView() == scroller){
                         //scroll listener
@@ -623,6 +628,11 @@ public class MonthDayView extends LinearLayout {
 
     public interface OnFlexScroll{
         void onScroll(long currentTime);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
     }
 }
 
