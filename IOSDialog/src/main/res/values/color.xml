@@ -2,8 +2,8 @@
 <resources>
 
     <color name="trans">#00000000</color>
-    <color name="black">#000000</color>
-    <color name="alertdialog_line">#c6c6c6</color>
+    <color name="black">#030303</color>
+    <color name="alertdialog_line">#aaaaaa</color>
     <color name="actionsheet_blue">#0076FF</color>
     <color name="actionsheet_red">#FD4A2E</color>
     <color name="actionsheet_gray">#8F8F8F</color>
