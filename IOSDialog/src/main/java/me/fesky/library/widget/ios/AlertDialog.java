@@ -110,6 +110,7 @@ public class AlertDialog {
                 dialog.dismiss();
             }
         });
+        btn_pos.setAllCaps(false);
         if(toggle){
             btn_pos.setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL));
         }
@@ -131,6 +132,7 @@ public class AlertDialog {
                 dialog.dismiss();
             }
         });
+        btn_neg.setAllCaps(false);
         if(toggle){
             btn_neg.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
         }
