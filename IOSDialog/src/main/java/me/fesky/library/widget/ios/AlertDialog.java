@@ -2,6 +2,7 @@ package me.fesky.library.widget.ios;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,7 @@ public class AlertDialog {
     private boolean showMsg = false;
     private boolean showPosBtn = false;
     private boolean showNegBtn = false;
+    private boolean toggle = false;
 
     public AlertDialog(Context context) {
         this.context = context;
@@ -108,6 +110,9 @@ public class AlertDialog {
                 dialog.dismiss();
             }
         });
+        if(toggle){
+            btn_pos.setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL));
+        }
         return this;
     }
 
@@ -126,6 +131,14 @@ public class AlertDialog {
                 dialog.dismiss();
             }
         });
+        if(toggle){
+            btn_pos.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+        }
+        return this;
+    }
+
+    public AlertDialog toggle(){
+        toggle=!toggle;
         return this;
     }
 
@@ -173,6 +186,8 @@ public class AlertDialog {
             btn_neg.setBackgroundResource(R.drawable.alertdialog_single_selector);
         }
     }
+
+
 
     public void show() {
         setLayout();
