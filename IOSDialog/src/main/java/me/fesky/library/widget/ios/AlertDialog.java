@@ -132,7 +132,7 @@ public class AlertDialog {
             }
         });
         if(toggle){
-            btn_pos.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+            btn_neg.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
         }
         return this;
     }
