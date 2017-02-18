@@ -32,12 +32,9 @@ public class DayViewHeader extends LinearLayout {
     public String TAG = "MyAPP";
     public int rowPst = -1;
 
-    private int width = 0;
-    private int height = 0;
-    private int paddingTop = 0;
-    private int paddingBottom = 0;
-    private int paddingLeft = 0;
-    private int viewWidth = 0;
+    private int paddingWithBg;
+    private int paddingWithText;
+
     private int textSize = 16;
 
     private int currentSelectedPst = 0;
@@ -84,33 +81,30 @@ public class DayViewHeader extends LinearLayout {
 
     public DayViewHeader(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.setOrientation(LinearLayout.HORIZONTAL);
-        this.context = parent.getContext();
-
-        this.dateLayout = new LinearLayout(parent.getContext());
-        parent.addView(dateLayout);
         loadAttributes(attrs,context);
-
-        monthTitlePaint.setTextSize((DensityUtil.sp2px(context,textSize) * textTitleRatio));
-        monthTitlePaint.setTextAlign(Paint.Align.LEFT);
-        monthTitlePaint.setStyle(Paint.Style.FILL);
+        init();
     }
 
     public DayViewHeader(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        loadAttributes(attrs,context);
+        init();
+    }
+
+    private void init(){
         this.setOrientation(LinearLayout.HORIZONTAL);
         this.context = parent.getContext();
 
         this.dateLayout = new LinearLayout(parent.getContext());
         parent.addView(dateLayout);
-        loadAttributes(attrs,context);
 
         //init paint
         monthTitlePaint.setTextSize(DensityUtil.sp2px(context,textSize) * textTitleRatio);
         monthTitlePaint.setStyle(Paint.Style.FILL);
         monthTitlePaint.setTextAlign(Paint.Align.LEFT);
+        paddingWithBg = DensityUtil.dip2px(context,15);
+        paddingWithText = DensityUtil.dip2px(context,5);
     }
-
     private void loadAttributes(AttributeSet attrs, Context context) {
         if (attrs != null && context != null) {
             TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.dayStyle, 0, 0);
@@ -148,6 +142,7 @@ public class DayViewHeader extends LinearLayout {
     public void clearAllBg(){
         for (TextView tv:textViews) {
             tv.setBackgroundResource(0);
+            tv.setPadding(paddingWithText,paddingWithText,paddingWithText,paddingWithText);
             if (textViews.indexOf(tv) == todayPst)
                 tv.setTextColor(color_headerTodayTextColor);
             else{
@@ -335,6 +330,7 @@ public class DayViewHeader extends LinearLayout {
 
                 //local changing
                 TextView tv = (TextView) view;
+                tv.setPadding(paddingWithBg,paddingWithBg,paddingWithBg,paddingWithBg);
                 tv.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
                 boolean isToday = textViews.indexOf(tv) == todayPst;
                 setFstDayOfMonthText(tv);
