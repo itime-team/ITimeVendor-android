@@ -144,8 +144,8 @@ public class MonthAgendaView extends RelativeLayout{
         headerRecyclerView.setLayoutManager(headerLinearLayoutManager);
         headerRecyclerView.addItemDecoration(new DayViewHeaderRecyclerDivider(context));
         final DisplayMetrics dm = getResources().getDisplayMetrics();
-        init_height = (dm.widthPixels / 7) * 2;
-        scroll_height = (dm.widthPixels / 7) * 4;
+        init_height = (dm.widthPixels / 7 - 20) * 2;
+        scroll_height = (dm.widthPixels / 7 - 20) * 4;
 
         ViewGroup.LayoutParams recycler_layoutParams = headerRecyclerView.getLayoutParams();
         recycler_layoutParams.height = init_height;

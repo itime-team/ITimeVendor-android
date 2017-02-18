@@ -25,6 +25,8 @@ public class DayViewHeaderCell extends FrameLayout {
     }
 
     public void setContainer(TextView container) {
+        this.removeAllViews();
         this.container = container;
+        this.addView(container);
     }
 }

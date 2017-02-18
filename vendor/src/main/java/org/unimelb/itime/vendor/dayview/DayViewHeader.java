@@ -66,7 +66,7 @@ public class DayViewHeader extends LinearLayout {
     private Context context;
     private ViewGroup parent = this;
     private LinearLayout dateLayout;
-    public ArrayList<TextView> textViews = new ArrayList<>();
+    public ArrayList<DayViewHeaderCell> textViews = new ArrayList<>();
     
     private OnCalendarHeaderDayClickListener onCalendarHeaderDayClickListener;
     private OnCheckIfHasEvent onCheckIfHasEvent;
@@ -102,7 +102,7 @@ public class DayViewHeader extends LinearLayout {
         monthTitlePaint.setTextSize(DensityUtil.sp2px(context,textSize) * textTitleRatio);
         monthTitlePaint.setStyle(Paint.Style.FILL);
         monthTitlePaint.setTextAlign(Paint.Align.LEFT);
-        paddingWithBg = DensityUtil.dip2px(context,15);
+        paddingWithBg = DensityUtil.dip2px(context,6);
         paddingWithText = DensityUtil.dip2px(context,5);
     }
     private void loadAttributes(AttributeSet attrs, Context context) {
@@ -140,13 +140,13 @@ public class DayViewHeader extends LinearLayout {
     }
 
     public void clearAllBg(){
-        for (TextView tv:textViews) {
-            tv.setBackgroundResource(0);
-            tv.setPadding(paddingWithText,paddingWithText,paddingWithText,paddingWithText);
-            if (textViews.indexOf(tv) == todayPst)
-                tv.setTextColor(color_headerTodayTextColor);
+        for (DayViewHeaderCell cell:textViews) {
+            cell.getContainer().setBackgroundResource(0);
+            cell.setPadding(paddingWithText,paddingWithText,paddingWithText,paddingWithText);
+            if (textViews.indexOf(cell) == todayPst)
+                cell.getContainer().setTextColor(color_headerTodayTextColor);
             else{
-                tv.setTextColor(((Integer)tv.getTag())==0? color_headerNormalTextColorEven : color_headerNormalTextColorOdd);
+                cell.getContainer().setTextColor(((Integer)cell.getTag())==0? color_headerNormalTextColorEven : color_headerNormalTextColorOdd);
             }
         }
     }
@@ -195,7 +195,7 @@ public class DayViewHeader extends LinearLayout {
 
         if (textViews.size() != 0){
             for (int day = 0; day < 7; day++) {
-                TextView dateView = textViews.get(day);
+                TextView dateView = textViews.get(day).getContainer();
                 String date = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
                 dateView.setGravity(Gravity.CENTER);
 
@@ -255,9 +255,11 @@ public class DayViewHeader extends LinearLayout {
 
     public void initCurrentWeekHeaders(){
         for (int day = 0; day < 7; day++) {
+            DayViewHeaderCell cell = new DayViewHeaderCell(context);
             TextView dateView = new TextView(parent.getContext());
-            dateView.setTag(0);
-            textViews.add(dateView);
+            cell.setTag(0);
+            cell.setContainer(dateView);
+            textViews.add(cell);
         }
     }
 
@@ -267,19 +269,20 @@ public class DayViewHeader extends LinearLayout {
         int cellWidth = dm.widthPixels/7 - 20;
         for (int day = 0; day < textViews.size() ; day++) {
             //init date
-            TextView dateView = textViews.get(day); //new TextView(context);
-            dateView.setOnClickListener(new MyOnClickListener());
+            DayViewHeaderCell cell = textViews.get(day);
+            TextView dateView = cell.getContainer(); //new TextView(context);
+            cell.setOnClickListener(new MyOnClickListener());
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(cellWidth, cellWidth,1.0f);//viewWidth
-            params.topMargin = 10;
+            params.topMargin = 0;
             params.leftMargin = 10;
             params.rightMargin = 10;
-            params.bottomMargin = 10;
+            params.bottomMargin = 0;
             params.gravity = Gravity.CENTER_VERTICAL;
-            dateView.setLayoutParams(params);
+            cell.setLayoutParams(params);
             dateView.setTextSize(textSize);
             dateView.setText(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
 
-            dateLayout.addView(dateView);
+            dateLayout.addView(cell);
             //update the date after using
             calendar.set(Calendar.DATE,calendar.get(Calendar.DATE)+1);
         }
@@ -329,15 +332,16 @@ public class DayViewHeader extends LinearLayout {
                 onCalendarHeaderDayClickListener.onClick(view);
 
                 //local changing
-                TextView tv = (TextView) view;
-                tv.setPadding(paddingWithBg,paddingWithBg,paddingWithBg,paddingWithBg);
+                DayViewHeaderCell cell = (DayViewHeaderCell) view;
+                TextView tv = cell.getContainer();
+                cell.setPadding(paddingWithBg,paddingWithBg,paddingWithBg,paddingWithBg);
                 tv.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-                boolean isToday = textViews.indexOf(tv) == todayPst;
+                boolean isToday = textViews.indexOf(cell) == todayPst;
                 setFstDayOfMonthText(tv);
                 setCircleColor(tv,isToday);
 
                 //body changing
-                currentSelectedPst = textViews.indexOf(tv);
+                currentSelectedPst = textViews.indexOf(cell);
                 onCalendarHeaderDayClickListener.setCurrentSelectIndexInRow(currentSelectedPst);
 
                 //synchronize body part
