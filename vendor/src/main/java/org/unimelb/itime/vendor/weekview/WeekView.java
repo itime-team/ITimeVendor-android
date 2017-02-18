@@ -151,6 +151,7 @@ public class WeekView extends LinearLayout {
                         onFlexScroll.onScroll(nowTime.getTimeInMillis());
                     }
 
+                    //for scrolling end
                     if (bodyPagerCurrentState == SCROLL_STATE_IDLE){
                         currentShow.timeSlotAnimationChecker();
                     }
@@ -215,12 +216,14 @@ public class WeekView extends LinearLayout {
             @Override
             public void onPageScrollStateChanged(int state) {
                 bodyPagerCurrentState = state;
+
                 if (state == SCROLL_STATE_IDLE){
+
                     //when slide down
                     FlexibleLenViewBody currentShow = adapter.getViewBodyByPosition(weekViewPager.getCurrentItem());
+                    //reset timeslot visibility to hidden
+                    currentShow.resetTimeSlotViews();
                     currentShow.timeSlotAnimationChecker();
-//                    currentShow.showAllSlotAnim();
-//                    reloadTimeSlots(false);
                 }
             }
         });

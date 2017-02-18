@@ -242,6 +242,7 @@ public class TimeSlotController {
         return draggableTimeSlotView;
     }
 
+
     void enableTimeSlot(){
         container.isTimeSlotEnable = true;
         for (int i = 0; i < container.displayLen; i++) {
@@ -311,6 +312,13 @@ public class TimeSlotController {
         this.slotViews.clear();
     }
 
+    void resetTimeSlotViews(){
+        for (DraggableTimeSlotView draggableTimeSlotView :slotViews
+                ) {
+            draggableTimeSlotView.resetView();
+        }
+    }
+
     void showSingleTimeslotAnim(ITimeTimeSlotInterface timeslot){
         final DraggableTimeSlotView timeslotViewDraggable = findTimeslotView(slotViews, timeslot);
         if (timeslotViewDraggable !=null){
@@ -368,6 +376,8 @@ public class TimeSlotController {
             container.bottomArrow.setVisibility(bottomShow?VISIBLE:INVISIBLE);
         }
     }
+
+
 
     private void resizeTimeSlot(DraggableTimeSlotView draggableTimeSlotView, boolean animate){
         final DayInnerBodyEventLayout.LayoutParams params = (DayInnerBodyEventLayout.LayoutParams) draggableTimeSlotView.getLayoutParams();

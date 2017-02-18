@@ -38,6 +38,9 @@ public class DraggableTimeSlotView extends ViewGroup {
     private WrapperTimeSlot wrapper;
     private ITimeTimeSlotInterface timeslot;
 
+    private ValueAnimator bgAlphaAnimation;
+    private ValueAnimator frameAlphaAnimation;
+
     public DraggableTimeSlotView(Context context, WrapperTimeSlot wrapper) {
         super(context);
         this.wrapper = wrapper;
@@ -53,10 +56,21 @@ public class DraggableTimeSlotView extends ViewGroup {
     public void init(){
         initBackground();
         initIcon();
+        initAnimation();
+    }
+
+    public void resetView(){
+        this.onScreen = false;
+        if (this.bgAlphaAnimation != null){
+            this.bgAlphaAnimation.cancel();
+        }
+        if (this.frameAlphaAnimation != null){
+            this.frameAlphaAnimation.cancel();
+        }
     }
 
     public void initBackground(){
-        this.setBackgroundDrawable(getResources().getDrawable(R.drawable.time_block_background));
+        this.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_timeslot_border));
     }
 
     public void initIcon(){
@@ -151,24 +165,34 @@ public class DraggableTimeSlotView extends ViewGroup {
     }
 
     public void showAlphaAnim(){
-        ValueAnimator alphaAnimation = ObjectAnimator.ofFloat(this, View.ALPHA, 0,1);
-        alphaAnimation.setDuration(1200); // milliseconds
-        alphaAnimation.addListener(new AnimatorListenerAdapter()
+        if (bgAlphaAnimation != null && !bgAlphaAnimation.isRunning() && frameAlphaAnimation != null && !frameAlphaAnimation.isRunning()){
+            bgAlphaAnimation.start();
+        }
+    }
+
+    private void initAnimation(){
+        bgAlphaAnimation = ObjectAnimator.ofFloat(this, View.ALPHA, 0,1);
+        frameAlphaAnimation = ObjectAnimator.ofFloat(this, View.ALPHA, 0,1);
+        frameAlphaAnimation.setDuration(200);
+        bgAlphaAnimation.setDuration(300); // milliseconds
+        bgAlphaAnimation.setRepeatCount(1);
+        bgAlphaAnimation.setRepeatMode(ValueAnimator.REVERSE);
+        bgAlphaAnimation.addListener(new AnimatorListenerAdapter()
         {
             @Override
             public void onAnimationStart(Animator animation) {
                 super.onAnimationStart(animation);
-                DraggableTimeSlotView.this.setBackgroundResource(R.drawable.icon_timeslot_bg);
-//                TimeSlotView.this.setBackgroundResource(R.drawable.time_block_background);
+                DraggableTimeSlotView.this.setBackgroundResource(R.drawable.bg_timeslot_shape);
             }
 
             @Override
             public void onAnimationEnd(Animator animation)
             {
-                DraggableTimeSlotView.this.setBackgroundResource(R.drawable.time_block_background);
+                DraggableTimeSlotView.this.setBackgroundResource(R.drawable.bg_timeslot_border);
+                frameAlphaAnimation.start();
             }
         });
-        alphaAnimation.start();
+        bgAlphaAnimation.setStartDelay(500);
     }
 
     public ITimeTimeSlotInterface getTimeslot() {

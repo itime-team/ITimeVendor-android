@@ -89,7 +89,7 @@ public class WeekViewHeader extends LinearLayout {
                 color = getResources().getColor(color_header_text_normal);
             }
 
-            String dayOfWeek = cal.getCalendar().getDisplayName(Calendar.DAY_OF_WEEK,Calendar.SHORT, Locale.getDefault());
+            String dayOfWeek = cal.getCalendar().getDisplayName(Calendar.DAY_OF_WEEK,Calendar.SHORT, Locale.getDefault()).toUpperCase();
             String nthDay = cal.getCalendar().get(Calendar.DAY_OF_MONTH) + "";
             singleHeaderDayView.updateText(dayOfWeek, nthDay,color);
             cal.setOffsetByDate(1);

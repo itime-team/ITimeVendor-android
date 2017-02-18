@@ -104,8 +104,8 @@ class WeekViewPagerAdapter extends PagerAdapter {
 
     FlexibleLenViewBody getViewBodyByPosition(int position){
         LinearLayout viewAtPosition = views.get(position % views.size());
-
-        return (FlexibleLenViewBody) viewAtPosition.getChildAt(1);
+        FlexibleLenViewBody nowBody = (FlexibleLenViewBody) viewAtPosition.getChildAt(1);
+        return nowBody;
     }
 
     @Override
@@ -171,9 +171,9 @@ class WeekViewPagerAdapter extends PagerAdapter {
 
                     updateTimeSlotsDuration(duration,false);
                 }else {
-//                    Log.i(TAG, "slotsInfo: " + ((this.slotsInfo != null) ? "size 0":"null"));
+                    Log.i("test", "slotsInfo: " + ((this.slotsInfo != null) ? "size 0":"null"));
                 }
-
+                nowBody.timeSlotAnimationChecker();
             }
         }
     }

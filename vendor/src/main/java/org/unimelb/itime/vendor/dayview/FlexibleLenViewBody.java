@@ -280,14 +280,11 @@ public class FlexibleLenViewBody extends FrameLayout {
     }
 
     public void resetAnimationViews(){
+        //reset arrows
         resetArrow(leftArrow, leftArrowVisibility);
         resetArrow(rightArrow, rightArrowVisibility);
         resetArrow(topArrow, topArrowVisibility);
         resetArrow(bottomArrow, bottomArrowVisibility);
-//        leftArrow.setVisibility(INVISIBLE);
-//        rightArrow.setVisibility(INVISIBLE);
-//        topArrow.setVisibility(INVISIBLE);
-//        bottomArrow.setVisibility(INVISIBLE);
     }
 
     private void resetArrow(View v, Integer obj){
@@ -825,6 +822,10 @@ public class FlexibleLenViewBody extends FrameLayout {
         timeSlotController.clearTimeSlots();
     }
 
+    public void resetTimeSlotViews(){
+        timeSlotController.resetTimeSlotViews();
+    }
+
     public void addSlot(WrapperTimeSlot wrapper, boolean animate){
         timeSlotController.addSlot(wrapper,animate);
     }
@@ -863,5 +864,4 @@ public class FlexibleLenViewBody extends FrameLayout {
             }
         }
     }
-
 }
