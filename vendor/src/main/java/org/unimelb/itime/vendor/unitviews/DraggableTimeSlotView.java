@@ -62,10 +62,10 @@ public class DraggableTimeSlotView extends ViewGroup {
     public void resetView(){
         this.onScreen = false;
         if (this.bgAlphaAnimation != null){
-            this.bgAlphaAnimation.cancel();
+//            this.bgAlphaAnimation.cancel();
         }
         if (this.frameAlphaAnimation != null){
-            this.frameAlphaAnimation.cancel();
+//            this.frameAlphaAnimation.cancel();
         }
     }
 
