@@ -35,11 +35,13 @@ public class DayViewHeader extends LinearLayout {
     private int paddingWithBg;
     private int paddingWithText;
 
-    private int textSize = 16;
+    private int textSize = 14;
 
     private int currentSelectedPst = 0;
     //means default is none;
     private int todayPst = -1;
+
+    private int monthTitleSize = 11;
 
     /**
      * Color category
@@ -99,7 +101,9 @@ public class DayViewHeader extends LinearLayout {
         parent.addView(dateLayout);
 
         //init paint
-        monthTitlePaint.setTextSize(DensityUtil.sp2px(context,textSize) * textTitleRatio);
+        this.monthTitleSize = DensityUtil.dip2px(getContext(),12);
+//        monthTitlePaint.setTextSize(DensityUtil.sp2px(context,textSize) * textTitleRatio);
+        monthTitlePaint.setTextSize(this.monthTitleSize);
         monthTitlePaint.setStyle(Paint.Style.FILL);
         monthTitlePaint.setTextAlign(Paint.Align.LEFT);
         paddingWithBg = DensityUtil.dip2px(context,6);
@@ -243,6 +247,7 @@ public class DayViewHeader extends LinearLayout {
                     dayDot = getResources().getDrawable(rs_event_dot);
                 }
                 dateView.setCompoundDrawablesWithIntrinsicBounds(null, monthTitleDrawable, null, dayDot);
+
                 dateView.setText(date);
                 dateView.requestLayout();
                 calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH) + 1);

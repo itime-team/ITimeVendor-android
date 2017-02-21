@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutCompat;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
@@ -134,12 +135,13 @@ public class WeekView extends LinearLayout {
             bodyView.setOnTimeSlotListener(new OnTimeSlotInnerListener());
 
             final ScrollView scroller = bodyView.getScrollView();
-
-            this.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            ViewTreeObserver vto = scroller.getViewTreeObserver();
+            vto.addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
                 @Override
                 public void onScrollChanged() {
-                    if (WeekView.this.getParent() == null){
-                        WeekView.this.getViewTreeObserver().removeOnScrollChangedListener(this);
+                    //if detached remove this listener
+                    if (!scroller.isShown()){
+                        scroller.getViewTreeObserver().removeOnScrollChangedListener(this);
                         return;
                     }
 
@@ -157,13 +159,20 @@ public class WeekView extends LinearLayout {
                     }
 
                     if (currentShow.getScrollView() == scroller){
-                        int scrollY = scroller.getScrollY(); // For ScrollView
-                        int scrollX = scroller.getScrollX(); // For ScrollView
+                        final int scrollY = scroller.getScrollY(); // For ScrollView
 
-                        for (FlexibleLenViewBody body:bodyViewList
+                        for (final FlexibleLenViewBody body:bodyViewList
                                 ) {
-                            if (body != currentShow){
-                                body.getScrollView().scrollTo(scrollX,scrollY);
+                            if (body.getScrollView().getHeight() == 0){
+                                body.getScrollView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                                    @Override
+                                    public void onGlobalLayout() {
+                                        body.getScrollView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                                        body.getScrollView().setScrollY(scrollY);
+                                    }
+                                });
+                            }else {
+                                body.getScrollView().setScrollY(scrollY);
                             }
                         }
                     }
@@ -171,7 +180,6 @@ public class WeekView extends LinearLayout {
             });
             bodyViewList.add(bodyView);
         }
-
     }
 
     private void initWeekViews(){
@@ -288,7 +296,6 @@ public class WeekView extends LinearLayout {
                 weekViewPager.setCurrentItem(upperBoundsOffset + getRowDiff(temp),false);
                 FlexibleLenViewBody currentBody = adapter.getViewBodyByPosition(weekViewPager.getCurrentItem());
                 currentBody.scrollToTime(time);
-
                 }
             });
 

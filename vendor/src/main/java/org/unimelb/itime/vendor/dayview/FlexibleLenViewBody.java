@@ -53,8 +53,8 @@ public class FlexibleLenViewBody extends FrameLayout {
     /*************************** Start of Color Setting **********************************/
     private int color_allday_bg = Color.parseColor("#EBEBEB");
     private int color_allday_title = R.color.black;
-    private int color_bg_day_even = R.color.color_75white;
-    private int color_bg_day_odd = R.color.color_f2f2f5;
+    private int color_bg_day_even = R.color.color_f2f2f5;
+    private int color_bg_day_odd = R.color.color_75white;
     private int color_msg_window_text = R.color.text_enable;
     private int color_time_text = R.color.text_enable;
     private int color_nowtime = R.color.text_today_color;
@@ -244,6 +244,7 @@ public class FlexibleLenViewBody extends FrameLayout {
 
         timeLayout = new FrameLayout(getContext());
         timeLayout.setId(View.generateViewId());
+        timeLayout.setBackgroundColor(getResources().getColor(color_bg_day_odd));
         FrameLayout.LayoutParams leftSideRLayoutParams = new FrameLayout.LayoutParams(leftSideWidth, ViewGroup.LayoutParams.MATCH_PARENT);
         timeLayout.setLayoutParams(leftSideRLayoutParams);
         leftSideRLayoutParams.topMargin = topAllDayHeight + 2 * topAllDayEventLayoutsPadding;
@@ -719,13 +720,23 @@ public class FlexibleLenViewBody extends FrameLayout {
     }
 
     public void scrollToTime(long time) {
+        Log.i(TAG, "ppp-real current: " + this);
         String hourWithMinutes = sdf.format(new Date(time));
 
         String[] components = hourWithMinutes.split(":");
         float trickTime = Integer.valueOf(components[0]) + Integer.valueOf(components[1]) / (float) 100;
         final int getStartY = nearestTimeSlotValue(trickTime);
-
-        scrollContainerView.scrollTo(scrollContainerView.getScrollX(), (int)(getStartY + bodyContainerLayout.getY() - DensityUtil.dip2px(context,10)));
+        if (scrollContainerView.getHeight() == 0){
+            scrollContainerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    scrollContainerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    scrollContainerView.scrollTo(scrollContainerView.getScrollX(), (int)(getStartY + bodyContainerLayout.getY() - DensityUtil.dip2px(context,10)));
+                }
+            });
+        }else{
+            scrollContainerView.scrollTo(scrollContainerView.getScrollX(), (int)(getStartY + bodyContainerLayout.getY() - DensityUtil.dip2px(context,10)));
+        }
     }
 
     protected void msgWindowFollow(int tapX, int tapY, int index, View followView) {

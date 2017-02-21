@@ -34,7 +34,6 @@ public class FlexibleLenBodyViewPagerAdapter extends PagerAdapter {
 
     public FlexibleLenViewBody getViewByPosition(int position){
         FlexibleLenViewBody viewAtPosition = vLists.get(position % vLists.size());
-
         return viewAtPosition;
     }
 

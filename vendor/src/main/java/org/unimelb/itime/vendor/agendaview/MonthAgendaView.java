@@ -312,13 +312,12 @@ public class MonthAgendaView extends RelativeLayout{
     }
 
     public void scrollTo(final Calendar calendar){
-        if (this.getHeight() == 0){
-            ViewTreeObserver vto = this.getViewTreeObserver();
-            final ViewGroup self = this;
+        if (headerRecyclerView.getHeight() == 0){
+            ViewTreeObserver vto = headerRecyclerView.getViewTreeObserver();
             vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
-                    self.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                    headerRecyclerView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                     headerRecyclerView.stopScroll();
                     bodyRecyclerView.stopScroll();
                     headerScrollToDate(calendar);
@@ -339,6 +338,8 @@ public class MonthAgendaView extends RelativeLayout{
 
         DayViewHeader headerView =
                 (DayViewHeader) headerLinearLayoutManager.findViewByPosition(headerRecyclerAdapter.rowPst);
+//        DayViewHeader headerView =(DayViewHeader) headerLinearLayoutManager.findViewByPosition(headerLinearLayoutManager.findFirstVisibleItemPosition());
+
         if (headerView != null){
             MyCalendar tempH = new MyCalendar(headerView.getCalendar());
             tempH.setHour(0);
