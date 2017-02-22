@@ -75,6 +75,7 @@ public class WeekView extends LinearLayout {
     private TimeSlotController.OnTimeSlotListener onTimeSlotOuterListener;
     private OnHeaderListener onHeaderListener;
     private OnFlexScroll onFlexScroll;
+    private ViewTreeObserver.OnScrollChangedListener onScrollChangedListener;
 
     public WeekView(Context context) {
         super(context);
@@ -133,53 +134,57 @@ public class WeekView extends LinearLayout {
             bodyView.setCalendar(new MyCalendar(calendar));
             bodyView.setOnBodyListener(new OnEventInnerListener());
             bodyView.setOnTimeSlotListener(new OnTimeSlotInnerListener());
+            bodyViewList.add(bodyView);
+        }
 
-            final ScrollView scroller = bodyView.getScrollView();
-            ViewTreeObserver vto = scroller.getViewTreeObserver();
-            vto.addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-                @Override
-                public void onScrollChanged() {
-                    //if detached remove this listener
-                    if (!scroller.isShown()){
-                        scroller.getViewTreeObserver().removeOnScrollChangedListener(this);
-                        return;
-                    }
+        ViewTreeObserver vto = this.getViewTreeObserver();
+        vto.addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                //if detached remove this listener
+                if(onScrollChangedListener == null){
+                    onScrollChangedListener = this;
+                }
 
-                    FlexibleLenViewBody currentShow = adapter.getViewBodyByPosition(weekViewPager.getCurrentItem());
+//                if (!scroller.isShown()){
+//                    scroller.getViewTreeObserver().removeOnScrollChangedListener(this);
+//                    return;
+//                }
 
-                    //scroll listener
-                    Calendar nowTime = currentShow.getCurrentTime();
-                    if (nowTime != null && onFlexScroll != null){
-                        onFlexScroll.onScroll(nowTime.getTimeInMillis());
-                    }
+                FlexibleLenViewBody currentShow = adapter.getViewBodyByPosition(weekViewPager.getCurrentItem());
 
-                    //for scrolling end
-                    if (bodyPagerCurrentState == SCROLL_STATE_IDLE){
-                        currentShow.timeSlotAnimationChecker();
-                    }
+                //scroll listener
+                Calendar nowTime = currentShow.getCurrentTime();
+                ScrollView scroller = currentShow.getScrollView();
+                if (nowTime != null && onFlexScroll != null){
+                    onFlexScroll.onScroll(nowTime.getTimeInMillis());
+                }
 
-                    if (currentShow.getScrollView() == scroller){
-                        final int scrollY = scroller.getScrollY(); // For ScrollView
+                //for scrolling end
+                if (bodyPagerCurrentState == SCROLL_STATE_IDLE){
+                    currentShow.timeSlotAnimationChecker();
+                }
 
-                        for (final FlexibleLenViewBody body:bodyViewList
-                                ) {
-                            if (body.getScrollView().getHeight() == 0){
-                                body.getScrollView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                                    @Override
-                                    public void onGlobalLayout() {
-                                        body.getScrollView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                                        body.getScrollView().setScrollY(scrollY);
-                                    }
-                                });
-                            }else {
-                                body.getScrollView().setScrollY(scrollY);
-                            }
+                if (currentShow.getScrollView() == scroller){
+                    final int scrollY = scroller.getScrollY(); // For ScrollView
+
+                    for (final FlexibleLenViewBody body:bodyViewList
+                            ) {
+                        if (body.getScrollView().getHeight() == 0){
+                            body.getScrollView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                                @Override
+                                public void onGlobalLayout() {
+                                    body.getScrollView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                                    body.getScrollView().setScrollY(scrollY);
+                                }
+                            });
+                        }else {
+                            body.getScrollView().setScrollY(scrollY);
                         }
                     }
                 }
-            });
-            bodyViewList.add(bodyView);
-        }
+            }
+        });
     }
 
     private void initWeekViews(){
@@ -241,6 +246,7 @@ public class WeekView extends LinearLayout {
 
         MyCalendar tempH = new MyCalendar(Calendar.getInstance());
         MyCalendar tempB = new MyCalendar(body_fst_cal);
+        tempH.setToSameBeginOfDay(tempB);
 
         int date_offset =  Math.round((float)(tempB.getCalendar().getTimeInMillis() - tempH.getCalendar().getTimeInMillis()) / (float)(1000*60*60*24));
 
@@ -497,6 +503,14 @@ public class WeekView extends LinearLayout {
                 onTimeSlotOuterListener.onTimeSlotDragDrop(draggableTimeSlotView, draggableTimeSlotView.getNewStartTime(), draggableTimeSlotView.getNewEndTime());
             }
         }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        if (this.onScrollChangedListener != null){
+            this.getViewTreeObserver().removeOnScrollChangedListener(onScrollChangedListener);
+        }
+        super.onDetachedFromWindow();
     }
 
     private class OnEventInnerListener implements EventController.OnEventListener {

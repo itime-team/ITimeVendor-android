@@ -12,6 +12,7 @@ public class MyCalendar {
 
     private int hour;
     private int minute;
+    private int millisecond;
 
     public MyCalendar(Calendar calendar) {
         this.cloneFromCalendar(calendar);
@@ -57,6 +58,15 @@ public class MyCalendar {
         this.minute = minute;
     }
 
+    public int getMillisecond() {
+        return millisecond;
+    }
+
+    public void setMillisecond(int millisecond) {
+        this.millisecond = millisecond;
+    }
+
+
     public int getDayOfWeek(){
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR,this.getYear());
@@ -93,7 +103,7 @@ public class MyCalendar {
         calendar.set(Calendar.DAY_OF_MONTH,this.getDay());
         calendar.set(Calendar.HOUR_OF_DAY,this.getHour());
         calendar.set(Calendar.MINUTE, this.getMinute());
-
+        calendar.set(Calendar.MILLISECOND, this.getMillisecond());
 
         return calendar;
     }
@@ -121,6 +131,12 @@ public class MyCalendar {
         return  calendar.getTimeInMillis();
     }
 
+    public void setToSameBeginOfDay(MyCalendar target){
+        this.hour = target.getHour();
+        this.minute = target.getMinute();
+        this.millisecond = target.getMillisecond();
+    }
+
     public String toString(){
         int year = this.getYear();
         int month = this.getMonth();
@@ -137,5 +153,7 @@ public class MyCalendar {
         this.day = myCalendar.getDay();
         this.hour = myCalendar.getHour();
         this.minute = myCalendar.getMinute();
+        this.millisecond = myCalendar.getMillisecond();
     }
+
 }

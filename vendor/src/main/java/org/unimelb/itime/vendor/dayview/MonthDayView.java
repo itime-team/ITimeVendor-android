@@ -69,6 +69,8 @@ public class MonthDayView extends LinearLayout {
 
     private int bodyPagerCurrentState = 0;
 
+    private ViewTreeObserver.OnScrollChangedListener onScrollChangedListener;
+
     public MonthDayView(Context context) {
         super(context);
         initView();
@@ -373,6 +375,7 @@ public class MonthDayView extends LinearLayout {
         headerRecyclerView.scrollToPosition(n);
     }
 
+
     private void initBody(){
         int size = 4;
         Calendar calendar = Calendar.getInstance(Locale.getDefault());
@@ -401,15 +404,17 @@ public class MonthDayView extends LinearLayout {
             });
             bodyView.setOnBodyListener(new OnEventInnerListener());
         }
-
         this.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
             @Override
             public void onScrollChanged() {
                 //if detached remove this listener
-                if (!MonthDayView.this.isShown()){
-                    MonthDayView.this.getViewTreeObserver().removeOnScrollChangedListener(this);
-                    return;
+                if(onScrollChangedListener == null){
+                    onScrollChangedListener = this;
                 }
+//                if (!MonthDayView.this.isShown()){
+//                    MonthDayView.this.getViewTreeObserver().removeOnScrollChangedListener(this);
+//                    return;
+//                }
 
                 FlexibleLenViewBody currentShow = bodyPagerAdapter.getViewByPosition(bodyPager.getCurrentItem());
                 //scroll listener
@@ -629,6 +634,9 @@ public class MonthDayView extends LinearLayout {
 
     @Override
     protected void onDetachedFromWindow() {
+        if (this.onScrollChangedListener != null){
+            this.getViewTreeObserver().removeOnScrollChangedListener(onScrollChangedListener);
+        }
         super.onDetachedFromWindow();
     }
 }
