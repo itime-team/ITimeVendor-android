@@ -201,7 +201,7 @@ public class DavidActivity extends AppCompatActivity {
         long startTime = calendar.getTimeInMillis();
         long endTime;
         for (int i = 1; i < 2; i++) {
-            endTime = startTime + 1 * 24 * (3600*1000);
+            endTime = startTime + (3600*1000);
 //            long duration = (endTime - startTime);
 
             Event event = new Event();
@@ -214,17 +214,14 @@ public class DavidActivity extends AppCompatActivity {
 
             List<Invitee> inviteeList = new ArrayList<>();
 
-            Invitee invitee1 = new Invitee();
-            invitee1.setEventUid("" + i);
-            invitee1.setContact(contacts.get(0));
-            invitee1.setInviteeUid(contacts.get(0).getContactUid());
-            inviteeList.add(invitee1);
-
-            Invitee invitee2 = new Invitee();
-            invitee2.setEventUid("" + i);
-            invitee2.setContact(contacts.get(1));
-            invitee2.setInviteeUid(contacts.get(1).getContactUid());
-            inviteeList.add(invitee2);
+            for (Contact contact:contacts
+                 ) {
+                Invitee invitee1 = new Invitee();
+                invitee1.setEventUid("" + i);
+                invitee1.setContact(contact);
+                invitee1.setInviteeUid(contact.getContactUid());
+                inviteeList.add(invitee1);
+            }
 
             dbManager.insertInviteeList(inviteeList);
             event.setInvitee(inviteeList);
@@ -242,7 +239,7 @@ public class DavidActivity extends AppCompatActivity {
 
     private List<Contact> initContact(){
         List<Contact> contacts = new ArrayList<>();
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 20; i++) {
             Contact contact = new Contact(""+i, "http://img.zybus.com/uploads/allimg/131213/1-131213111353.jpg", "name " + i);
             contacts.add(contact);
             dbManager.insertContact(contact);

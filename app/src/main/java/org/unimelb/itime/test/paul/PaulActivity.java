@@ -66,16 +66,12 @@ public class PaulActivity extends AppCompatActivity {
             public void onEventCreate(DraggableEventView eventView) {
                 Calendar cal = Calendar.getInstance();
                 cal.setTimeInMillis(eventView.getStartTimeM());
-                Log.i(TAG, "cal: " + cal.getTime());
             }
 
             @Override
             public void onEventClick(DraggableEventView eventView) {
                 Calendar cal = Calendar.getInstance();
                 cal.setTimeInMillis(eventView.getEvent().getStartTime());
-                Log.i(TAG, "onEventClick: " + cal.getTime());
-//                Log.i(TAG, "click2: " + " title: " + eventView.getEvent().getTitle());
-//                weekView.reloadEvents();
             }
 
             @Override
@@ -92,8 +88,6 @@ public class PaulActivity extends AppCompatActivity {
             public void onEventDragDrop(DraggableEventView eventView) {
                 Calendar cal = Calendar.getInstance();
                 cal.setTimeInMillis(eventView.getStartTimeM());
-                Log.i(TAG, "onEventDragDrop: " + cal.getTime());
-//                weekView.reloadEvents();
             }
 
         });

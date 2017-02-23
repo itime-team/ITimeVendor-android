@@ -12,6 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Transformation;
+
 import org.unimelb.itime.vendor.R;
 import org.unimelb.itime.vendor.helper.DensityUtil;
 import org.unimelb.itime.vendor.helper.LoadImgHelper;
@@ -24,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 /**
  * Created by yuhaoliu on 31/08/16.
@@ -114,6 +118,7 @@ public class AgendaViewInnerBody extends RelativeLayout {
         leftInfo.setOrientation(LinearLayout.VERTICAL);
         RelativeLayout.LayoutParams leftInfoParams = new RelativeLayout.LayoutParams((int) (screenWidth * 0.2), ViewGroup.LayoutParams.WRAP_CONTENT);
         leftInfoParams.addRule(ALIGN_PARENT_LEFT);
+        leftInfoParams.addRule(CENTER_VERTICAL);
         leftInfo.setGravity(Gravity.CENTER_VERTICAL);
         leftInfo.setId(generateViewId());
         this.addView(leftInfo, leftInfoParams);
@@ -168,7 +173,9 @@ public class AgendaViewInnerBody extends RelativeLayout {
         inviteeLayout = new LinearLayout(context);
         LinearLayout.LayoutParams inviteeLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         inviteeLayout.setOrientation(LinearLayout.HORIZONTAL);
+        inviteeLayout.setGravity(Gravity.CENTER_VERTICAL);
         this.initInviteeLayout(this.urls, inviteeLayout);
+
         rightInfo.addView(inviteeLayout, inviteeLayoutParams);
 
         locationTv = new TextView(context);
@@ -241,10 +248,10 @@ public class AgendaViewInnerBody extends RelativeLayout {
     private void initInviteeLayout(List<String> urls, LinearLayout container){
 
         for (int i = 0; i < urls.size(); i++) {
-            if (i < 4){
+            if (urls.size() <= 4 || (urls.size() > 4 && i < 3)){
                 container.addView(addImage(urls.get(i)));
             }else{
-                int moreNo = urls.size() - (i + 1);
+                container.addView(addDotted());
                 break;
             }
         }
@@ -253,17 +260,25 @@ public class AgendaViewInnerBody extends RelativeLayout {
     private ImageView addImage(String url) {
         ImageView img = new ImageView(context);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(pic_height_width, pic_height_width);
-        img.setPadding(5, 5, 5, 5);
+        int padding = DensityUtil.dip2px(getContext(),5);
+        img.setPadding(padding, padding, padding, padding);
         img.setLayoutParams(params);
-        LoadImgHelper.getInstance().bindUrlWithImageView(context, url, img);
+        int size = DensityUtil.dip2px(getContext(),20);
+        Transformation transformation = new RoundedCornersTransformation(size/10,0);
+        LoadImgHelper.getInstance().bindUrlWithImageView(context,transformation, url, img, size);
 
         return img;
     }
 
-//    private ImageView addMorePeopleIcon(int text){
-//        ImageView icon = new ImageView(context);
-//
-//    }
+    private ImageView addDotted(){
+        ImageView img = new ImageView(context);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        int padding = DensityUtil.dip2px(getContext(),5);
+        img.setPadding(padding, padding, padding, padding);
+        img.setLayoutParams(params);
+        img.setImageDrawable(getResources().getDrawable(R.drawable.icon_three_dot));
+        return img;
+    }
 
     private void initEventShowAttrs(ITimeEventInterface event) {
         type = event.getDisplayEventType();
