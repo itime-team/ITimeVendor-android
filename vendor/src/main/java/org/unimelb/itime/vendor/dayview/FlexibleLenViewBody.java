@@ -247,13 +247,13 @@ public class FlexibleLenViewBody extends FrameLayout {
         timeLayout.setBackgroundColor(getResources().getColor(color_bg_day_odd));
         FrameLayout.LayoutParams leftSideRLayoutParams = new FrameLayout.LayoutParams(leftSideWidth, ViewGroup.LayoutParams.MATCH_PARENT);
         timeLayout.setLayoutParams(leftSideRLayoutParams);
-        leftSideRLayoutParams.topMargin = topAllDayHeight + 2 * topAllDayEventLayoutsPadding;
+        leftSideRLayoutParams.topMargin = topAllDayHeight;
         bodyContainerLayout.addView(timeLayout);
 
         dividerBgRLayout = new FrameLayout(getContext());
         dividerBgRLayout.setId(View.generateViewId());
         FrameLayout.LayoutParams dividerBgRLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        dividerBgRLayoutParams.topMargin = topAllDayHeight + 2 * topAllDayEventLayoutsPadding;
+        dividerBgRLayoutParams.topMargin = topAllDayHeight;
         dividerBgRLayoutParams.leftMargin = leftSideWidth;
         dividerBgRLayout.setLayoutParams(dividerBgRLayoutParams);
         bodyContainerLayout.addView(dividerBgRLayout);
