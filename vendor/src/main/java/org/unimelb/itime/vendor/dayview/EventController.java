@@ -1,14 +1,23 @@
 package org.unimelb.itime.vendor.dayview;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.ClipData;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
 import android.util.Pair;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 
+import org.unimelb.itime.vendor.R;
 import org.unimelb.itime.vendor.helper.CalendarEventOverlapHelper;
 import org.unimelb.itime.vendor.helper.DensityUtil;
 import org.unimelb.itime.vendor.helper.MyCalendar;
@@ -221,7 +230,7 @@ public class EventController {
 
         int eventHeight = 1 * container.lineHeight;//one hour
         DraggableEventView.LayoutParams params = new DraggableEventView.LayoutParams(200, eventHeight);
-        event_view.setX(tapY - eventHeight / 2);
+        event_view.setY(tapY - eventHeight / 2);
         event_view.setOnLongClickListener(new EventLongClickListener());
         event_view.setLayoutParams(params);
 
@@ -266,19 +275,51 @@ public class EventController {
 
     private class EventLongClickListener implements View.OnLongClickListener {
         @Override
-        public boolean onLongClick(View view) {
+        public boolean onLongClick(final View view) {
 
             if (container.tempDragView != null || onEventListener !=null && onEventListener.isDraggable((DraggableEventView) view)){
                 ClipData data = ClipData.newPlainText("", "");
                 View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(
                         view);
-                view.startDrag(data, shadowBuilder, view, 0);
                 if (container.tempDragView != null) {
                     view.setVisibility(View.INVISIBLE);
                 } else {
                     view.setVisibility(View.VISIBLE);
                 }
-                view.getBackground().setAlpha(255);
+//                view.getBackground().setAlpha(255);
+                ValueAnimator alpha = ValueAnimator.ofObject(new ArgbEvaluator(), 128, 255);
+                alpha.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animator) {
+                        view.getBackground().setAlpha((int) animator.getAnimatedValue());
+                    }
+
+                });
+                alpha.setDuration(200);
+                ObjectAnimator scaleX = ObjectAnimator.ofFloat(view, "scaleX", 1f,0.8f);
+                ObjectAnimator scaleY = ObjectAnimator.ofFloat(view, "scaleY", 1f,0.8f);
+
+                scaleX.setRepeatCount(1);
+                scaleX.setRepeatMode(ValueAnimator.REVERSE);
+                scaleX.setDuration(120);
+                scaleY.setDuration(120);
+                scaleY.setRepeatCount(1);
+                scaleY.setRepeatMode(ValueAnimator.REVERSE);
+
+                AnimatorSet scaleDown = new AnimatorSet();
+                scaleDown.play(alpha).with(scaleY).with(scaleX);
+                scaleX.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                        View p= (View) view.getParent();
+                        if (p != null){
+                            p.invalidate();
+                        }
+                    }
+                });
+                scaleDown.start();
+                view.startDrag(data, shadowBuilder, view, 0);
             }
             return false;
         }
@@ -298,6 +339,7 @@ public class EventController {
             DraggableEventView dgView = (DraggableEventView) event.getLocalState();
             switch (event.getAction()) {
                 case DragEvent.ACTION_DRAG_STARTED:
+                    Log.i(TAG, "ACTION_DRAG_STARTED: ");
                     break;
                 case DragEvent.ACTION_DRAG_LOCATION:
                     int rawX = (int) (container.layoutWidthPerDay * index + event.getX());
@@ -309,6 +351,7 @@ public class EventController {
                         Log.i(TAG, "onDrag: null onEventDragListener");
                     }
                     container.msgWindowFollow(rawX, (int) event.getY(), index, (View) event.getLocalState());
+                    Log.i(TAG, "ACTION_DRAG_LOCATION: ");
                     break;
                 case DragEvent.ACTION_DRAG_ENTERED:
                     container.msgWindow.setVisibility(View.VISIBLE);
@@ -390,14 +433,57 @@ public class EventController {
             if (container.tempDragView == null) {
                 DayInnerBodyEventLayout container = (DayInnerBodyEventLayout) v;
                 EventController.this.container.tempDragView = createTempDayDraggableEventView(EventController.this.container.nowTapX, EventController.this.container.nowTapY);
+                EventController.this.container.tempDragView.setAlpha(0);
                 container.addView(EventController.this.container.tempDragView);
 
-                EventController.this.container.tempDragView.postDelayed(new Runnable() {
+                EventController.this.container.tempDragView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
-                    public void run() {
-                        EventController.this.container.tempDragView.performLongClick();
+                    public void onGlobalLayout() {
+                        EventController.this.container.tempDragView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        ObjectAnimator scaleX = ObjectAnimator.ofFloat(EventController.this.container.tempDragView, "scaleX", 0f,1f);
+                        ObjectAnimator scaleY = ObjectAnimator.ofFloat(EventController.this.container.tempDragView, "scaleY", 0f,1f);
+                        ObjectAnimator alpha = ObjectAnimator.ofFloat(EventController.this.container.tempDragView, "alpha", 0f,1f);
+                        alpha.setDuration(180);
+                        scaleX.setDuration(120);
+                        scaleY.setDuration(120);
+
+                        AnimatorSet scaleDown = new AnimatorSet();
+                        scaleDown.play(alpha).with(scaleY).with(scaleX);
+                        scaleX.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                            @Override
+                            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                                View p= (View) EventController.this.container.tempDragView.getParent();
+                                if (p != null){
+                                    p.invalidate();
+                                }
+                            }
+                        });
+                        scaleDown.addListener(new Animator.AnimatorListener() {
+                            @Override
+                            public void onAnimationStart(Animator animation) {
+
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                EventController.this.container.tempDragView.performLongClick();
+                                EventController.this.container.tempDragView = null;
+                            }
+
+                            @Override
+                            public void onAnimationCancel(Animator animation) {
+
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animator animation) {
+
+                            }
+                        });
+
+                        scaleDown.start();
                     }
-                }, 100);
+                });
             }
 
             return true;

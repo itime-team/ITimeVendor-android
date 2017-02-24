@@ -379,11 +379,19 @@ public class FlexibleLenViewBody extends FrameLayout {
             eventLayout.setBackgroundColor(getResources().getColor(displayLen == 1 ? color_bg_day_odd : (i%2 == 0 ? color_bg_day_even : color_bg_day_odd)));
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT,1f);
 
-            int eventLayoutPadding = DensityUtil.dip2px(context, 1);
+            final int eventLayoutPadding = DensityUtil.dip2px(context, 1);
             eventLayout.setPadding(eventLayoutPadding,0,eventLayoutPadding,0);
 
             parent.addView(eventLayout,params);
             if (!isTimeSlotEnable){
+                eventLayout.setOnTouchListener(new OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        nowTapX = event.getX();
+                        nowTapY = event.getY();
+                        return false;
+                    }
+                });
                 eventLayout.setOnDragListener(eventController.new EventDragListener(i));
                 eventLayout.setOnLongClickListener(eventController.new CreateEventListener());
             }else {
