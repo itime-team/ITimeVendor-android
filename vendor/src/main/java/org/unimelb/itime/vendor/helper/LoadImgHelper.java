@@ -5,6 +5,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 
 import org.unimelb.itime.vendor.R;
 import org.unimelb.itime.vendor.listener.ITimeContactInterface;
@@ -31,11 +32,11 @@ public class LoadImgHelper {
         }
     }
 
-    public void bindUrlWithImageView(Context mContext, String url, ImageView img_v){
+    public void bindUrlWithImageView(Context mContext, Transformation transformation,String url, ImageView img_v, int size){
         if (url != null && !url.equals("")){
-            Picasso.with(mContext).load(url).placeholder(R.drawable.invitee_selected_loading).into(img_v);
+            Picasso.with(mContext).load(url).resize(size,size).transform(transformation).placeholder(R.drawable.invitee_selected_loading).into(img_v);
         }else {
-            Picasso.with(mContext).load(R.drawable.invitee_selected_default_picture).into(img_v);
+            Picasso.with(mContext).load(R.drawable.invitee_selected_default_picture).transform(transformation).resize(size,size).into(img_v);
         }
     }
 }

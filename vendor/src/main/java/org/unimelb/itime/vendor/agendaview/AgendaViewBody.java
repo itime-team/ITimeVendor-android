@@ -139,7 +139,7 @@ public class AgendaViewBody extends LinearLayout{
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dividerImgV.setLayoutParams(params);
         dividerImgV.setImageDrawable(getResources().getDrawable(rs_divider));
-        dividerImgV.setPadding(DensityUtil.dip2px(context, 5),0,0,0);
+        dividerImgV.setPadding(DensityUtil.dip2px(context, 10),0,0,0);
 
         return  dividerImgV;
     }

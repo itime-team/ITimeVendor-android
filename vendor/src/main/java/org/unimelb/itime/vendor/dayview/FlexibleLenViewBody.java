@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -129,6 +130,9 @@ public class FlexibleLenViewBody extends FrameLayout {
     ImageView rightArrow;
     ImageView topArrow;
     ImageView bottomArrow;
+
+    final Handler uiHandler= new Handler();
+    private Thread uiUpdateThread;
 
     private TimeSlotController timeSlotController;
     private EventController eventController;
@@ -525,6 +529,11 @@ public class FlexibleLenViewBody extends FrameLayout {
      */
     public void resetViews() {
         clearAllEvents();
+        resetNowTimeViews();
+        startUIUpdateThread();
+    }
+
+    private void resetNowTimeViews(){
         localAnimationLayout.removeView(nowTime);
         localAnimationLayout.removeView(nowTimeLine);
 
@@ -536,7 +545,36 @@ public class FlexibleLenViewBody extends FrameLayout {
             }
             tempCal.setOffsetByDate(1);
         }
+    }
 
+    private void startUIUpdateThread(){
+        uiUpdateThread = new Thread(){
+            @Override
+            public void run() {
+                while (true){
+                    try {
+                        Thread.sleep(5000);
+                        uiHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                resetNowTimeViews();
+                            }
+                        });
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        uiUpdateThread.start();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (this.uiUpdateThread != null && !this.uiUpdateThread.isInterrupted()){
+            this.uiUpdateThread.interrupt();
+        }
     }
 
     /**
