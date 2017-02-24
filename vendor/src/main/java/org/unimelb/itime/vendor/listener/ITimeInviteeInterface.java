@@ -18,6 +18,8 @@ public interface ITimeInviteeInterface {
 
     String getUserId();
 
+    boolean isContact();
+
     /**
      *
      * @return {activated, unactivated}
