@@ -4,6 +4,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.Nullable;
@@ -174,7 +177,7 @@ public class DraggableEventView extends ViewGroup {
 
     private void initDarkLeftBorder(){
         leftBar = new ImageView(this.getContext());
-        LayoutParams param = new LayoutParams(DensityUtil.dip2px(getContext(), 3),0);
+        LayoutParams param = new LayoutParams(DensityUtil.dip2px(getContext(), 2.5f),0);
         this.addView(leftBar,param);
     }
 
@@ -326,5 +329,27 @@ public class DraggableEventView extends ViewGroup {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    private Path path = new Path();
+    private RectF rect = new RectF();
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+
+        // compute the path
+        path.reset();
+        rect.set(0, 0, w, h);
+        path.addRoundRect(rect, 15, 15, Path.Direction.CW);
+        path.close();
+    }
+
+    @Override
+    protected void dispatchDraw(Canvas canvas) {
+        int save = canvas.save();
+        canvas.clipPath(path);
+        super.dispatchDraw(canvas);
+        canvas.restoreToCount(save);
     }
 }
