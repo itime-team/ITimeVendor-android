@@ -285,7 +285,7 @@ public class MonthDayView extends LinearLayout {
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    headerScrollToDate(Calendar.getInstance(),false);
+                    headerScrollToDate(Calendar.getInstance(),true);
                 }
 
                 @Override

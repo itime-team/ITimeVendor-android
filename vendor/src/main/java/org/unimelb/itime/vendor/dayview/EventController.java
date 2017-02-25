@@ -286,7 +286,7 @@ public class EventController {
                 } else {
                     view.setVisibility(View.VISIBLE);
                 }
-//                view.getBackground().setAlpha(255);
+
                 ValueAnimator alpha = ValueAnimator.ofObject(new ArgbEvaluator(), 128, 255);
                 alpha.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
@@ -351,7 +351,6 @@ public class EventController {
                         Log.i(TAG, "onDrag: null onEventDragListener");
                     }
                     container.msgWindowFollow(rawX, (int) event.getY(), index, (View) event.getLocalState());
-                    Log.i(TAG, "ACTION_DRAG_LOCATION: ");
                     break;
                 case DragEvent.ACTION_DRAG_ENTERED:
                     container.msgWindow.setVisibility(View.VISIBLE);
@@ -417,9 +416,6 @@ public class EventController {
                         dgView.getBackground().setAlpha(128);
                     }
                     break;
-                default:
-                    Log.i(TAG, "onDrag: ");
-                    break;
             }
 
             return true;
@@ -430,7 +426,7 @@ public class EventController {
 
         @Override
         public boolean onLongClick(View v) {
-            if (container.tempDragView == null) {
+//            if (container.tempDragView == null) {
                 DayInnerBodyEventLayout container = (DayInnerBodyEventLayout) v;
                 EventController.this.container.tempDragView = createTempDayDraggableEventView(EventController.this.container.nowTapX, EventController.this.container.nowTapY);
                 EventController.this.container.tempDragView.setAlpha(0);
@@ -466,8 +462,9 @@ public class EventController {
 
                             @Override
                             public void onAnimationEnd(Animator animation) {
-                                EventController.this.container.tempDragView.performLongClick();
-                                EventController.this.container.tempDragView = null;
+                                if (EventController.this.container.tempDragView != null){
+                                    EventController.this.container.tempDragView.performLongClick();
+                                }
                             }
 
                             @Override
@@ -484,7 +481,7 @@ public class EventController {
                         scaleDown.start();
                     }
                 });
-            }
+//            }
 
             return true;
         }
