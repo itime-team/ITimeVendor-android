@@ -18,6 +18,7 @@ import org.unimelb.itime.vendor.listener.ITimeEventInterface;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -100,7 +101,7 @@ public class AgendaViewBody extends LinearLayout{
 
     private void displayEvents(final List<ITimeEventInterface> events){
         this.rowBody.removeAllViews();
-
+        Collections.sort(events);
         if (events.size() != 0){
             for (int i = 0; i < events.size(); i++) {
                 final ITimeEventInterface currentEvent = events.get(i);
