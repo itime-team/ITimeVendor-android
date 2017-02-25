@@ -766,7 +766,6 @@ public class FlexibleLenViewBody extends FrameLayout {
     }
 
     public void scrollToTime(long time) {
-        Log.i(TAG, "ppp-real current: " + this);
         String hourWithMinutes = sdf.format(new Date(time));
 
         String[] components = hourWithMinutes.split(":");
@@ -777,11 +776,11 @@ public class FlexibleLenViewBody extends FrameLayout {
                 @Override
                 public void onGlobalLayout() {
                     scrollContainerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    scrollContainerView.scrollTo(scrollContainerView.getScrollX(), (int)(getStartY + bodyContainerLayout.getY() - DensityUtil.dip2px(context,10)));
+                    scrollContainerView.scrollTo(scrollContainerView.getScrollX(),(getStartY) + topAllDayHeight);
                 }
             });
         }else{
-            scrollContainerView.scrollTo(scrollContainerView.getScrollX(), (int)(getStartY + bodyContainerLayout.getY() - DensityUtil.dip2px(context,10)));
+            scrollContainerView.scrollTo(scrollContainerView.getScrollX(), (getStartY) + topAllDayHeight);
         }
     }
 
