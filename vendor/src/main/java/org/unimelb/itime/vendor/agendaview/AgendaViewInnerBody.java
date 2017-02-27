@@ -1,10 +1,12 @@
 package org.unimelb.itime.vendor.agendaview;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -79,6 +81,7 @@ public class AgendaViewInnerBody extends RelativeLayout {
     private String eventName;
     private String location;
     private String timeLeft;
+    private String iconName;
 
     private int type;
     private int status;
@@ -96,6 +99,7 @@ public class AgendaViewInnerBody extends RelativeLayout {
         this.pic_height_width = DensityUtil.dip2px(context, 50);
         this.paddingUpDown = DensityUtil.dip2px(context, 2);
 
+        initAttrs();
         initEventShowAttrs(event);
         initAllViews();
     }
@@ -108,6 +112,7 @@ public class AgendaViewInnerBody extends RelativeLayout {
         this.pic_height_width = DensityUtil.dip2px(context, 50);
         this.paddingUpDown = DensityUtil.dip2px(context, 2);
 
+        initAttrs();
         initEventShowAttrs(event);
         initAllViews();
     }
@@ -190,6 +195,8 @@ public class AgendaViewInnerBody extends RelativeLayout {
         eventStatusView = new ImageView(context);
         eventStatusView.setId(generateViewId());
         eventStatusView.setPadding(0, DensityUtil.dip2px(context, 10), DensityUtil.dip2px(context, 10), 0);
+        eventStatusView.setImageDrawable(getResources().getDrawable(R.drawable.itime_question_mark));
+        eventStatusView.setVisibility(iconName.equals("icon_question") ? VISIBLE : GONE);
 
         RelativeLayout.LayoutParams eventStatusViewParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         eventStatusViewParams.addRule(ALIGN_TOP, rightInfo.getId());
@@ -201,7 +208,7 @@ public class AgendaViewInnerBody extends RelativeLayout {
         setTimeLeftTv(timeLeftTv);
         timeLeftTv.setGravity(Gravity.CENTER);
         timeLeftTv.setTextSize(textRegularSize);
-        timeLeftTv.setPadding(0, 0, DensityUtil.dip2px(context, 10), DensityUtil.dip2px(context, 10));
+        timeLeftTv.setPadding(0, 0, DensityUtil.dip2px(context, 10), DensityUtil.dip2px(context, 5));
         RelativeLayout.LayoutParams timeLeftTvParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         timeLeftTvParams.addRule(ALIGN_BOTTOM, rightInfo.getId());
         timeLeftTvParams.addRule(ALIGN_PARENT_RIGHT);
@@ -241,8 +248,16 @@ public class AgendaViewInnerBody extends RelativeLayout {
         }
     }
 
-    private void updateEventInfo(ITimeEventInterface event) {
-
+    private void initAttrs(){
+        String dpStatus = event.getDisplayStatus();
+        if (dpStatus != null && !dpStatus.equals("")){
+            String[] attrs = dpStatus.split("\\|");
+            if (attrs.length < 3){
+                Log.i(TAG, "initAttrs: attrs is not sufficient.");
+            }else{
+                this.iconName = attrs[2];
+            }
+        }
     }
 
     private void initInviteeLayout(List<String> urls, LinearLayout container){

@@ -569,7 +569,8 @@ public class FlexibleLenViewBody extends FrameLayout {
                             }
                         });
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+//                        e.printStackTrace();
+//                        Thread.currentThread().interrupt();
                     }
                 }
             }
