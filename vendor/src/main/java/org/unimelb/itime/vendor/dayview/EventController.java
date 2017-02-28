@@ -263,10 +263,10 @@ public class EventController {
 
     private int getEventY(ITimeEventInterface event) {
         String hourWithMinutes = container.sdf.format(new Date(event.getStartTime()));
-
         String[] components = hourWithMinutes.split(":");
         float trickTime = Integer.valueOf(components[0]) + Integer.valueOf(components[1]) / (float) 100;
         int getStartY = container.nearestTimeSlotValue(trickTime);
+        Log.i(TAG, "timeline: event T: " + hourWithMinutes + " P: "+ getStartY);
 
         return getStartY;
     }

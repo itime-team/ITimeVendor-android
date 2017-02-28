@@ -61,7 +61,6 @@ public class DayInnerBodyEventLayout extends ViewGroup {
 
     }
 
-    int a = 1;
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -101,7 +100,6 @@ public class DayInnerBodyEventLayout extends ViewGroup {
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         int cCount = getChildCount();
         int paddingLeft  = this.getPaddingLeft();
-        int paddingRight  = this.getPaddingRight();
 
         for (int i = 0; i < cCount; i++) {
             View child = getChildAt(i);

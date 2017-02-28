@@ -213,6 +213,9 @@ public class FlexibleLenViewBody extends FrameLayout {
         bodyContainerLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         scrollContainerView.addView(bodyContainerLayout);
 
+        int topAllDayEventLayoutsPadding = DensityUtil.dip2px(context, 3);
+        topAllDayHeight = DensityUtil.dip2px(context, 40);
+
         topAllDayLayout = new LinearLayout(getContext());
         topAllDayLayout.setOrientation(LinearLayout.HORIZONTAL);
         topAllDayLayout.setBackgroundColor(color_allday_bg);
@@ -234,12 +237,10 @@ public class FlexibleLenViewBody extends FrameLayout {
         topAllDayLayout.addView(allDayTitleTv);
 
         topAllDayEventLayouts = new LinearLayout(getContext());
-        int topAllDayEventLayoutsPadding = DensityUtil.dip2px(context, 3);
         topAllDayEventLayouts.setPadding(0,topAllDayEventLayoutsPadding,0,topAllDayEventLayoutsPadding);
 
         topAllDayEventLayouts.setId(View.generateViewId());
-        topAllDayHeight = DensityUtil.dip2px(context, 40);
-        LinearLayout.LayoutParams topAllDayEventLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, topAllDayHeight);
+        LinearLayout.LayoutParams topAllDayEventLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, topAllDayHeight - topAllDayEventLayoutsPadding * 2);
         topAllDayEventLayouts.setLayoutParams(topAllDayEventLayoutParams);
         this.initInnerHeaderEventLayouts(topAllDayEventLayouts);
         topAllDayLayout.addView(topAllDayEventLayouts);
@@ -267,7 +268,7 @@ public class FlexibleLenViewBody extends FrameLayout {
         eventLayout.setOrientation(LinearLayout.HORIZONTAL);
         FrameLayout.LayoutParams eventLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         this.initInnerBodyEventLayouts(eventLayout);
-        eventLayoutParams.topMargin = topAllDayHeight + 2 * topAllDayEventLayoutsPadding;
+        eventLayoutParams.topMargin = topAllDayHeight;
         eventLayoutParams.leftMargin = leftSideWidth;
         eventLayout.setLayoutParams(eventLayoutParams);
 
@@ -275,7 +276,7 @@ public class FlexibleLenViewBody extends FrameLayout {
 
         localAnimationLayout = new RelativeLayout(context);
         FrameLayout.LayoutParams localAnimationLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        localAnimationLayoutParams.topMargin = topAllDayHeight + 2 * topAllDayEventLayoutsPadding;
+        localAnimationLayoutParams.topMargin = topAllDayHeight;
         localAnimationLayout.setLayoutParams(localAnimationLayoutParams);
         bodyContainerLayout.addView(localAnimationLayout);
     }
@@ -506,6 +507,7 @@ public class FlexibleLenViewBody extends FrameLayout {
             ImageView dividerImageView = new ImageView(context);
             dividerImageView.setImageResource(rs_divider_line);
             dividerImageView.setY(this.nearestTimeSlotValue(numOfDottedLine));
+            Log.i(TAG, "timeline: T: " + numOfDottedLine + " P: "+ this.nearestTimeSlotValue(numOfDottedLine));
             dividerImageView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
             dividerImageView.setLayoutParams(params);
             dividerImageView.setPadding(0, 0, 0, 0);
