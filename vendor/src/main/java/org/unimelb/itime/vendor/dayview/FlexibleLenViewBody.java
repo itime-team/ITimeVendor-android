@@ -792,12 +792,21 @@ public class FlexibleLenViewBody extends FrameLayout {
         float toY;
 
         toY = tapY - followView.getHeight() / 2 - msgWindow.getHeight();
-        if (tapX + msgWindow.getWidth() / 2 > dividerBgRLayout.getWidth()) {
+        if (toY <= 0){
+            toY = tapY + followView.getHeight() / 2;
+        }
+        //for msg window in center
+//        if (tapX + msgWindow.getWidth() / 2 > dividerBgRLayout.getWidth()) {
+//            toX = dividerBgRLayout.getWidth() - msgWindow.getWidth();
+//        } else if (tapX - msgWindow.getWidth() / 2 < 0) {
+//            toX = 0;
+//        } else {
+//            toX = tapX - msgWindow.getWidth() / 2;
+//        }
+        //for left
+        toX = 0;
+        if (tapX < msgWindow.getWidth() * 1.5){
             toX = dividerBgRLayout.getWidth() - msgWindow.getWidth();
-        } else if (tapX - msgWindow.getWidth() / 2 < 0) {
-            toX = 0;
-        } else {
-            toX = tapX - msgWindow.getWidth() / 2;
         }
         int nearestProperPosition = nearestTimeSlotKey(tapY - followView.getHeight() / 2);
         if (nearestProperPosition != -1) {
