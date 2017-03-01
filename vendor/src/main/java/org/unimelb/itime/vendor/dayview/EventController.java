@@ -15,7 +15,12 @@ import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.LinearLayout;
+
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+import com.daimajia.androidanimations.library.attention.RubberBandAnimator;
 
 import org.unimelb.itime.vendor.R;
 import org.unimelb.itime.vendor.helper.CalendarEventOverlapHelper;
@@ -286,6 +291,11 @@ public class EventController {
                 } else {
                     view.setVisibility(View.VISIBLE);
                 }
+                YoYo.with(Techniques.Bounce).
+                        pivot(YoYo.CENTER_PIVOT, YoYo.CENTER_PIVOT)
+                        .interpolate(new AccelerateDecelerateInterpolator())
+                        .duration(1000)
+                        .playOn(view);
 
                 ValueAnimator alpha = ValueAnimator.ofObject(new ArgbEvaluator(), 128, 255);
                 alpha.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -296,29 +306,30 @@ public class EventController {
                     }
 
                 });
-                alpha.setDuration(200);
-                ObjectAnimator scaleX = ObjectAnimator.ofFloat(view, "scaleX", 1f,0.8f);
-                ObjectAnimator scaleY = ObjectAnimator.ofFloat(view, "scaleY", 1f,0.8f);
-
-                scaleX.setRepeatCount(1);
-                scaleX.setRepeatMode(ValueAnimator.REVERSE);
-                scaleX.setDuration(120);
-                scaleY.setDuration(120);
-                scaleY.setRepeatCount(1);
-                scaleY.setRepeatMode(ValueAnimator.REVERSE);
-
-                AnimatorSet scaleDown = new AnimatorSet();
-                scaleDown.play(alpha).with(scaleY).with(scaleX);
-                scaleX.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                        View p= (View) view.getParent();
-                        if (p != null){
-                            p.invalidate();
-                        }
-                    }
-                });
-                scaleDown.start();
+                alpha.setDuration(500);
+//                ObjectAnimator scaleX = ObjectAnimator.ofFloat(view, "scaleX", 1f,0.8f);
+//                ObjectAnimator scaleY = ObjectAnimator.ofFloat(view, "scaleY", 1f,0.8f);
+//
+//                scaleX.setRepeatCount(1);
+//                scaleX.setRepeatMode(ValueAnimator.REVERSE);
+//                scaleX.setDuration(120);
+//                scaleY.setDuration(120);
+//                scaleY.setRepeatCount(1);
+//                scaleY.setRepeatMode(ValueAnimator.REVERSE);
+//
+//                AnimatorSet scaleDown = new AnimatorSet();
+//                scaleDown.play(alpha).with(scaleY).with(scaleX);
+//                scaleX.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//                    @Override
+//                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
+//                        View p= (View) view.getParent();
+//                        if (p != null){
+//                            p.invalidate();
+//                        }
+//                    }
+//                });
+//                scaleDown.start();
+                alpha.start();
                 view.startDrag(data, shadowBuilder, view, 0);
             }
             return false;
@@ -339,7 +350,6 @@ public class EventController {
             DraggableEventView dgView = (DraggableEventView) event.getLocalState();
             switch (event.getAction()) {
                 case DragEvent.ACTION_DRAG_STARTED:
-                    Log.i(TAG, "ACTION_DRAG_STARTED: ");
                     break;
                 case DragEvent.ACTION_DRAG_LOCATION:
                     int rawX = (int) (container.layoutWidthPerDay * index + event.getX());
@@ -431,7 +441,7 @@ public class EventController {
                 EventController.this.container.tempDragView = createTempDayDraggableEventView(EventController.this.container.nowTapX, EventController.this.container.nowTapY);
                 EventController.this.container.tempDragView.setAlpha(0);
                 container.addView(EventController.this.container.tempDragView);
-
+//
                 EventController.this.container.tempDragView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
