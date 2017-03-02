@@ -21,6 +21,7 @@ public class WrapperTimeSlot {
         wrapper.setSelected(wrapperTimeSlot.isSelected());
         wrapper.setRead(wrapperTimeSlot.isRead());
         wrapper.setAnimated(wrapperTimeSlot.isAnimated());
+        return wrapper;
     }
 
     public boolean isAnimated() {
