@@ -1,11 +1,12 @@
 package org.unimelb.itime.vendor.weekview;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import org.unimelb.itime.vendor.R;
@@ -31,7 +32,6 @@ public class WeekViewHeader extends LinearLayout {
     private int rs_today_bg = R.drawable.itime_day_rectangle;
     /*************************** End of Resources Setting ****************************/
 
-
     MyCalendar myCalendar;
 
     private int displayLen = 7;
@@ -44,21 +44,18 @@ public class WeekViewHeader extends LinearLayout {
         super(context);
         this.context = context;
         this.init();
-        this.initDays();
     }
 
     public WeekViewHeader(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
         this.init();
-        this.initDays();
     }
+
 
     private void init(){
         this.setOrientation(HORIZONTAL);
-    }
 
-    private void initDays(){
         for (int i = 0; i < displayLen; i++) {
             SingleHeaderDayView singleHeaderDayView = new SingleHeaderDayView(context);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,1f);
@@ -95,4 +92,6 @@ public class WeekViewHeader extends LinearLayout {
             cal.setOffsetByDate(1);
         }
     }
+
+
 }

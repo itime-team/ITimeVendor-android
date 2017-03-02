@@ -189,7 +189,7 @@ public class EventController {
         DraggableEventView event_view = new DraggableEventView(context, event, isAllDayEvent);
         event_view.setType(DraggableEventView.TYPE_NORMAL);
         int padding = DensityUtil.dip2px(context,1);
-        event_view.setPadding(0,padding,0,0);
+        event_view.setPadding(0,padding,0,padding);
         if (!container.isTimeSlotEnable){
             event_view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -271,7 +271,6 @@ public class EventController {
         String[] components = hourWithMinutes.split(":");
         float trickTime = Integer.valueOf(components[0]) + Integer.valueOf(components[1]) / (float) 100;
         int getStartY = container.nearestTimeSlotValue(trickTime);
-        Log.i(TAG, "timeline: event T: " + hourWithMinutes + " P: "+ getStartY);
 
         return getStartY;
     }
@@ -341,7 +340,7 @@ public class EventController {
         int currentEventNewHour = -1;
         int currentEventNewMinutes = -1;
 
-        public EventDragListener(int index) {
+        EventDragListener(int index) {
             this.index = index;
         }
 
@@ -472,7 +471,8 @@ public class EventController {
 
                             @Override
                             public void onAnimationEnd(Animator animation) {
-                                if (EventController.this.container.tempDragView != null){
+                                if (EventController.this.container.tempDragView != null
+                                        && EventController.this.container.tempDragView.getParent() != null){
                                     EventController.this.container.tempDragView.performLongClick();
                                 }
                             }

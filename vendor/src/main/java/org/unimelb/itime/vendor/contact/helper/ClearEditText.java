@@ -15,6 +15,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.EditText;
 
 import org.unimelb.itime.vendor.R;
+import org.unimelb.itime.vendor.helper.DensityUtil;
 
 /**
  * @Description:带删除按钮的EditText
@@ -26,7 +27,9 @@ public class ClearEditText extends EditText implements
 	 * 删除按钮的引用
 	 */
     private Drawable mClearDrawable; 
- 
+
+    private int clearResponeRange;
+
     public ClearEditText(Context context) { 
     	this(context, null); 
     } 
@@ -42,7 +45,8 @@ public class ClearEditText extends EditText implements
     }
     
     
-    private void init() { 
+    private void init() {
+        clearResponeRange = DensityUtil.dip2px(getContext(),20);
     	//获取EditText的DrawableRight,假如没有设置我们就使用默认的图片
     	mClearDrawable = getCompoundDrawables()[2]; 
         if (mClearDrawable == null) { 
@@ -66,7 +70,7 @@ public class ClearEditText extends EditText implements
         if (getCompoundDrawables()[2] != null) { 
             if (event.getAction() == MotionEvent.ACTION_UP) { 
             	boolean touchable = event.getX() > (getWidth() 
-                        - getPaddingRight() - mClearDrawable.getIntrinsicWidth()) 
+                        - getPaddingRight() - (mClearDrawable.getIntrinsicWidth() + clearResponeRange))
                         && (event.getX() < ((getWidth() - getPaddingRight())));
                 if (touchable) { 
                     this.setText(""); 

@@ -18,6 +18,10 @@ public class SingleHeaderDayView extends LinearLayout {
     TextView nthDayTv;
     LinearLayout container;
 
+    //sp
+    private int dayOfWeekTvSize = 11;
+    private int nthDayTvSize = 14;
+
     public SingleHeaderDayView(Context context) {
         super(context);
         init();
@@ -43,6 +47,7 @@ public class SingleHeaderDayView extends LinearLayout {
         LinearLayout.LayoutParams dayParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dayParams.gravity = Gravity.CENTER;
         dayOfWeekTv = new TextView(getContext());
+        dayOfWeekTv.setTextSize(dayOfWeekTvSize);
         dayOfWeekTv.setGravity(Gravity.CENTER);
         container.addView(dayOfWeekTv,dayParams);
 
@@ -50,6 +55,7 @@ public class SingleHeaderDayView extends LinearLayout {
         nthParams.gravity = Gravity.CENTER;
         nthDayTv = new TextView(getContext());
         nthDayTv.setGravity(Gravity.CENTER);
+        nthDayTv.setTextSize(nthDayTvSize);
         container.addView(nthDayTv,nthParams);
     }
 

@@ -104,8 +104,9 @@ public class FlexibleLenViewBody extends FrameLayout {
     //tag: false-> moving, true, done
     protected View tempDragView = null;
 
-    private int leftSideWidth = 40;
-    protected int lineHeight = 50;
+    private int leftSideWidth = 50;
+    //dp
+    protected int lineHeight = 45;
     private int timeTextSize = 20;
     private int topAllDayHeight;
 
@@ -486,15 +487,19 @@ public class FlexibleLenViewBody extends FrameLayout {
     }
 
     private void initTimeText(String[] HOURS) {
+        int height = DensityUtil.dip2px(context,20);
         for (int time = 0; time < HOURS.length; time++) {
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
             TextView timeView = new TextView(context);
-            params.setMargins(0, lineHeight * time, 0, 0);
             timeView.setLayoutParams(params);
             timeView.setTextColor(context.getResources().getColor(color_time_text));
             timeView.setText(HOURS[time]);
-            timeView.setTextSize(12);
+            timeView.setTextSize(11);
             timeView.setGravity(Gravity.CENTER);
+            timeView.measure(0, 0);
+            int timeTextY = nearestTimeSlotValue(time);
+            params.setMargins(0, timeTextY - height/2, 0, 0);
+
             timeTextSize = (int) timeView.getTextSize() + timeView.getPaddingTop();
             timeLayout.addView(timeView);
         }

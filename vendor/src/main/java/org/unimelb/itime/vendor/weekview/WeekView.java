@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
@@ -194,6 +196,7 @@ public class WeekView extends LinearLayout {
             weekView.setOrientation(VERTICAL);
             weekView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             weekView.addView(this.headerViewList.get(i));
+            weekView.addView(this.getDivider());
             weekView.addView(this.bodyViewList.get(i));
             this.weekViewList.add(weekView);
         }
@@ -668,6 +671,16 @@ public class WeekView extends LinearLayout {
         void onScroll(long currentTime);
     }
 
+    private ImageView getDivider() {
+        ImageView dividerImgV;
+        //divider
+        dividerImgV = new ImageView(context);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dividerImgV.setLayoutParams(params);
+        dividerImgV.setImageDrawable(getResources().getDrawable(org.unimelb.itime.vendor.R.drawable.itime_header_divider_line));
+
+        return dividerImgV;
+    }
 }
 
 

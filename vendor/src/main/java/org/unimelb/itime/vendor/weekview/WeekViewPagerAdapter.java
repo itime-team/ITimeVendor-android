@@ -47,7 +47,8 @@ class WeekViewPagerAdapter extends PagerAdapter {
     void enableTimeSlot(){
         for (LinearLayout weekView : views
                 ) {
-            FlexibleLenViewBody bodyView = (FlexibleLenViewBody)weekView.getChildAt(1);
+            //0 header, 1 divider, 2 means body
+            FlexibleLenViewBody bodyView = (FlexibleLenViewBody)weekView.getChildAt(2);
             bodyView.enableTimeSlot();
         }
     }
@@ -55,7 +56,7 @@ class WeekViewPagerAdapter extends PagerAdapter {
     void removeAllOptListener(){
         for (LinearLayout weekView : views
                 ) {
-            FlexibleLenViewBody bodyView = (FlexibleLenViewBody)weekView.getChildAt(1);
+            FlexibleLenViewBody bodyView = (FlexibleLenViewBody)weekView.getChildAt(2);
             bodyView.removeOptListener();
         }
     }
@@ -68,25 +69,29 @@ class WeekViewPagerAdapter extends PagerAdapter {
         this.duration = duration;
         for (LinearLayout weekView : views
                 ) {
-            FlexibleLenViewBody bodyView = (FlexibleLenViewBody)weekView.getChildAt(1);
+            FlexibleLenViewBody bodyView = (FlexibleLenViewBody)weekView.getChildAt(2);
             bodyView.updateTimeSlotsDuration(duration, animate);
         }
     }
 
     void reloadEvents(){
+        Log.i("test", "time -- S reloadEvents: " + System.currentTimeMillis());
         for (LinearLayout weekView : views
                 ) {
-            FlexibleLenViewBody bodyView = (FlexibleLenViewBody)weekView.getChildAt(1);
+            FlexibleLenViewBody bodyView = (FlexibleLenViewBody)weekView.getChildAt(2);
             if (this.eventPackage != null){
+                Log.i("test", "time -- Inner S reloadEvents: " + System.currentTimeMillis());
                 bodyView.setEventList(this.eventPackage);
+                Log.i("test", "time -- Inner E reloadEvents: " + System.currentTimeMillis());
             }
         }
+        Log.i("test", "time -- E reloadEvents: " + System.currentTimeMillis());
     }
 
     void reloadTimeSlots(boolean animate){
         for (LinearLayout weekView : views
                 ) {
-            FlexibleLenViewBody bodyView = (FlexibleLenViewBody)weekView.getChildAt(1);
+            FlexibleLenViewBody bodyView = (FlexibleLenViewBody)weekView.getChildAt(2);
             bodyView.clearTimeSlots();
             if (this.slotsInfo != null){
                 for (int j = 0; j < this.slotsInfo.size(); j++) {
@@ -104,7 +109,7 @@ class WeekViewPagerAdapter extends PagerAdapter {
 
     FlexibleLenViewBody getViewBodyByPosition(int position){
         LinearLayout viewAtPosition = views.get(position % views.size());
-        FlexibleLenViewBody nowBody = (FlexibleLenViewBody) viewAtPosition.getChildAt(1);
+        FlexibleLenViewBody nowBody = (FlexibleLenViewBody) viewAtPosition.getChildAt(2);
         return nowBody;
     }
 
@@ -171,7 +176,7 @@ class WeekViewPagerAdapter extends PagerAdapter {
 
                     updateTimeSlotsDuration(duration,false);
                 }else {
-                    Log.i("test", "slotsInfo: " + ((this.slotsInfo != null) ? "size 0":"null"));
+                    Log.i("debug", "slotsInfo: " + ((this.slotsInfo != null) ? "size 0":"null"));
                 }
                 nowBody.timeSlotAnimationChecker();
             }

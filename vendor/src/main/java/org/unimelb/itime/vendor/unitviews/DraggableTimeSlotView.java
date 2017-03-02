@@ -70,7 +70,7 @@ public class DraggableTimeSlotView extends ViewGroup {
     }
 
     public void initBackground(){
-        this.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_timeslot_border));
+        this.setBackgroundDrawable(getResources().getDrawable(R.drawable.icon_timeslot_empty));
     }
 
     public void initIcon(){
@@ -182,13 +182,13 @@ public class DraggableTimeSlotView extends ViewGroup {
             @Override
             public void onAnimationStart(Animator animation) {
                 super.onAnimationStart(animation);
-                DraggableTimeSlotView.this.setBackgroundResource(R.drawable.bg_timeslot_shape);
+                DraggableTimeSlotView.this.setBackgroundResource(R.drawable.icon_timeslot_fill);
             }
 
             @Override
             public void onAnimationEnd(Animator animation)
             {
-                DraggableTimeSlotView.this.setBackgroundResource(R.drawable.bg_timeslot_border);
+                DraggableTimeSlotView.this.setBackgroundResource(R.drawable.icon_timeslot_empty);
                 frameAlphaAnimation.start();
             }
         });
