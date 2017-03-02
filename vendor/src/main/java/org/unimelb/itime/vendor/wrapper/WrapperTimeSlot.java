@@ -16,6 +16,13 @@ public class WrapperTimeSlot {
         this.timeSlot = timeSlot;
     }
 
+    public WrapperTimeSlot(WrapperTimeSlot wrapperTimeSlot){
+        this.timeSlot = wrapperTimeSlot.getTimeSlot();
+        this.isSelected = wrapperTimeSlot.isSelected;
+        this.isRead = wrapperTimeSlot.isRead;
+        this.isAnimated = wrapperTimeSlot.isAnimated;
+    }
+
     public boolean isAnimated() {
         return isAnimated;
     }
