@@ -16,11 +16,11 @@ public class WrapperTimeSlot {
         this.timeSlot = timeSlot;
     }
 
-    public WrapperTimeSlot(WrapperTimeSlot wrapperTimeSlot){
-        this.timeSlot = wrapperTimeSlot.getTimeSlot();
-        this.isSelected = wrapperTimeSlot.isSelected;
-        this.isRead = wrapperTimeSlot.isRead;
-        this.isAnimated = wrapperTimeSlot.isAnimated;
+    public WrapperTimeSlot copyWrapperTimeslot(WrapperTimeSlot wrapperTimeSlot){
+        WrapperTimeSlot wrapper = new WrapperTimeSlot(wrapperTimeSlot.getTimeSlot());
+        wrapper.setSelected(wrapperTimeSlot.isSelected());
+        wrapper.setRead(wrapperTimeSlot.isRead());
+        wrapper.setAnimated(wrapperTimeSlot.isAnimated());
     }
 
     public boolean isAnimated() {
