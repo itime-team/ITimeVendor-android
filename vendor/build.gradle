@@ -42,7 +42,7 @@ dependencies {
     compile 'jp.wasabeef:picasso-transformations:2.1.0'
     // If you want to use the GPU Filters
     compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
-    compile 'com.android.support:support-compat:25.1.1'
+
     compile 'com.daimajia.easing:library:2.0@aar'
     compile 'com.daimajia.androidanimations:library:2.2@aar'
 }

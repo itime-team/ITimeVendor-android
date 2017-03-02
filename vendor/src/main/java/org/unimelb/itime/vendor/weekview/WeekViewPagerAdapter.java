@@ -75,17 +75,13 @@ class WeekViewPagerAdapter extends PagerAdapter {
     }
 
     void reloadEvents(){
-        Log.i("test", "time -- S reloadEvents: " + System.currentTimeMillis());
         for (LinearLayout weekView : views
                 ) {
             FlexibleLenViewBody bodyView = (FlexibleLenViewBody)weekView.getChildAt(2);
             if (this.eventPackage != null){
-                Log.i("test", "time -- Inner S reloadEvents: " + System.currentTimeMillis());
                 bodyView.setEventList(this.eventPackage);
-                Log.i("test", "time -- Inner E reloadEvents: " + System.currentTimeMillis());
             }
         }
-        Log.i("test", "time -- E reloadEvents: " + System.currentTimeMillis());
     }
 
     void reloadTimeSlots(boolean animate){
