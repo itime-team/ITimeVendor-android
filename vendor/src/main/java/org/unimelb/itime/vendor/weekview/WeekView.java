@@ -258,10 +258,8 @@ public class WeekView extends LinearLayout {
 
         if (date_offset > 0){
             row_diff = row_diff + (day_diff > 7 ? 1:0);
-            day_diff = day_diff > 7 ? day_diff%7 : day_diff;
         }else if(date_offset < 0){
             row_diff = row_diff + (day_diff <= 0 ? -1:0);
-            day_diff = day_diff <= 0 ? (7 + day_diff):day_diff;
         }
 
         return row_diff;

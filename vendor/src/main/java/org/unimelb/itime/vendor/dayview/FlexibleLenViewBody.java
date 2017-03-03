@@ -201,19 +201,6 @@ public class FlexibleLenViewBody extends FrameLayout {
     private void initViews() {
         this.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        scrollContainerView = new ScrollContainerView(context);
-        scrollContainerView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        this.addView(scrollContainerView);
-
-        globalAnimationLayout = new RelativeLayout(context);
-        RelativeLayout.LayoutParams animationLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        globalAnimationLayout.setLayoutParams(animationLayoutParams);
-        this.addView(globalAnimationLayout);
-
-        bodyContainerLayout = new FrameLayout(context);
-        bodyContainerLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        scrollContainerView.addView(bodyContainerLayout);
-
         int topAllDayEventLayoutsPadding = DensityUtil.dip2px(context, 3);
         topAllDayHeight = DensityUtil.dip2px(context, 40);
 
@@ -234,7 +221,6 @@ public class FlexibleLenViewBody extends FrameLayout {
         allDayTitleTv.setGravity(Gravity.CENTER_VERTICAL);
         allDayTitleTv.setLayoutParams(allDayTitleTvParams);
         allDayTitleTv.measure(0,0);
-        leftSideWidth = allDayTitleTv.getMeasuredWidth();
         topAllDayLayout.addView(allDayTitleTv);
 
         topAllDayEventLayouts = new LinearLayout(getContext());
@@ -246,7 +232,24 @@ public class FlexibleLenViewBody extends FrameLayout {
         this.initInnerHeaderEventLayouts(topAllDayEventLayouts);
         topAllDayLayout.addView(topAllDayEventLayouts);
 
-        bodyContainerLayout.addView(topAllDayLayout);
+        this.addView(topAllDayLayout);
+
+        scrollContainerView = new ScrollContainerView(context);
+        LinearLayout.LayoutParams scrollParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        scrollParams.setMargins(0,topAllDayHeight,0,0);
+        scrollContainerView.setLayoutParams(scrollParams);
+        this.addView(scrollContainerView);
+
+        globalAnimationLayout = new RelativeLayout(context);
+        RelativeLayout.LayoutParams animationLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        globalAnimationLayout.setLayoutParams(animationLayoutParams);
+        this.addView(globalAnimationLayout);
+
+        bodyContainerLayout = new FrameLayout(context);
+        bodyContainerLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        scrollContainerView.addView(bodyContainerLayout);
+
+        leftSideWidth = allDayTitleTv.getMeasuredWidth();
 
         timeLayout = new FrameLayout(getContext());
         timeLayout.setId(View.generateViewId());
