@@ -12,13 +12,13 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.unimelb.itime.vendor.R;
 import org.unimelb.itime.vendor.helper.DensityUtil;
 import org.unimelb.itime.vendor.helper.MyCalendar;
-import org.unimelb.itime.vendor.helper.Text2Drawable;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -35,7 +35,7 @@ public class DayViewHeader extends LinearLayout {
     private int paddingWithBg;
     private int paddingWithText;
 
-    private int textSize = 14;
+    private int textSize = 15;
 
     private int currentSelectedPst = 0;
     //means default is none;
@@ -59,11 +59,6 @@ public class DayViewHeader extends LinearLayout {
     private int rs_header_bg = R.drawable.itime_day_rectangle;
     private int rs_event_dot = R.drawable.itime_event_dot;
     /*************************** End of Resources Setting ****************************/
-
-    //Colors
-
-
-    private float textTitleRatio = 1f;
 
     private Context context;
     private ViewGroup parent = this;
@@ -102,12 +97,11 @@ public class DayViewHeader extends LinearLayout {
 
         //init paint
         this.monthTitleSize = DensityUtil.dip2px(getContext(),12);
-//        monthTitlePaint.setTextSize(DensityUtil.sp2px(context,textSize) * textTitleRatio);
         monthTitlePaint.setTextSize(this.monthTitleSize);
         monthTitlePaint.setStyle(Paint.Style.FILL);
         monthTitlePaint.setTextAlign(Paint.Align.LEFT);
-        paddingWithBg = DensityUtil.dip2px(context,6);
-        paddingWithText = DensityUtil.dip2px(context,5);
+        paddingWithBg = DensityUtil.dip2px(context,8);
+        paddingWithText = DensityUtil.dip2px(context,2);
     }
     private void loadAttributes(AttributeSet attrs, Context context) {
         if (attrs != null && context != null) {
@@ -145,12 +139,15 @@ public class DayViewHeader extends LinearLayout {
 
     public void clearAllBg(){
         for (DayViewHeaderCell cell:textViews) {
-            cell.getContainer().setBackgroundResource(0);
+            cell.getDateView().setBackgroundResource(0);
+            cell.getTitleView().setText("");
+            cell.getDotView().setImageDrawable(null);
             cell.setPadding(paddingWithText,paddingWithText,paddingWithText,paddingWithText);
+
             if (textViews.indexOf(cell) == todayPst)
-                cell.getContainer().setTextColor(color_headerTodayTextColor);
+                cell.getDateView().setTextColor(color_headerTodayTextColor);
             else{
-                cell.getContainer().setTextColor(((Integer)cell.getTag())==0? color_headerNormalTextColorEven : color_headerNormalTextColorOdd);
+                cell.getDateView().setTextColor(((Integer)cell.getTag())==0? color_headerNormalTextColorEven : color_headerNormalTextColorOdd);
             }
         }
     }
@@ -199,7 +196,8 @@ public class DayViewHeader extends LinearLayout {
 
         if (textViews.size() != 0){
             for (int day = 0; day < 7; day++) {
-                TextView dateView = textViews.get(day).getContainer();
+                DayViewHeaderCell cell = textViews.get(day);
+                TextView dateView = cell.getDateView();
                 String date = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
                 dateView.setGravity(Gravity.CENTER);
 
@@ -211,7 +209,6 @@ public class DayViewHeader extends LinearLayout {
                 checkCalendar.set(Calendar.SECOND,0);
                 checkCalendar.set(Calendar.MILLISECOND,0);
                 long dayMilliSeconds = checkCalendar.getTimeInMillis();
-
 
                 boolean thisDayHasEvent = false;
                 if (onCheckIfHasEvent != null){
@@ -235,18 +232,15 @@ public class DayViewHeader extends LinearLayout {
                     dateView.setTextColor((oddEvent==0) ? color_headerNormalTextColorEven : color_headerNormalTextColorOdd);
                 }
 
-                Text2Drawable monthTitleDrawable = null;
-                Drawable dayDot = null;
                 //add title
                 if (date.equals("1")){
                     String monthTitle = calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault());
-                    monthTitleDrawable = new Text2Drawable(monthTitlePaint, monthTitle);
+                    cell.getTitleView().setText(monthTitle);
                 }
                 //add dot
                 if (thisDayHasEvent){
-                    dayDot = getResources().getDrawable(rs_event_dot);
+                    cell.getDotView().setImageDrawable(getResources().getDrawable(rs_event_dot));
                 }
-                dateView.setCompoundDrawablesWithIntrinsicBounds(null, monthTitleDrawable, null, dayDot);
 
                 dateView.setText(date);
                 dateView.requestLayout();
@@ -254,7 +248,6 @@ public class DayViewHeader extends LinearLayout {
             }
 
             parent.invalidate();
-
         }
     }
 
@@ -263,7 +256,9 @@ public class DayViewHeader extends LinearLayout {
             DayViewHeaderCell cell = new DayViewHeaderCell(context);
             TextView dateView = new TextView(parent.getContext());
             cell.setTag(0);
-            cell.setContainer(dateView);
+            TextView titleView = new TextView(parent.getContext());
+            ImageView dotView = new ImageView(parent.getContext());
+            cell.setDateView(dateView,titleView,dotView);
             textViews.add(cell);
         }
     }
@@ -275,8 +270,10 @@ public class DayViewHeader extends LinearLayout {
         for (int day = 0; day < textViews.size() ; day++) {
             //init date
             DayViewHeaderCell cell = textViews.get(day);
-            TextView dateView = cell.getContainer(); //new TextView(context);
-            cell.setOnClickListener(new MyOnClickListener());
+            TextView dateView = cell.getDateView(); //new TextView(context);
+            dateView.setTextSize(textSize);
+            cell.getTitleView().setTextSize((int)(textSize * 0.65));
+            cell.setOnClickListener(new cellOnClickListener());
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(cellWidth, cellWidth,1.0f);//viewWidth
             params.topMargin = 0;
             params.leftMargin = 10;
@@ -284,7 +281,6 @@ public class DayViewHeader extends LinearLayout {
             params.bottomMargin = 0;
             params.gravity = Gravity.CENTER_VERTICAL;
             cell.setLayoutParams(params);
-            dateView.setTextSize(textSize);
             dateView.setText(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
 
             dateLayout.addView(cell);
@@ -327,7 +323,7 @@ public class DayViewHeader extends LinearLayout {
         }
     }
     /***************************************************************/
-    class MyOnClickListener implements View.OnClickListener{
+    class cellOnClickListener implements View.OnClickListener{
 
         @Override
         public void onClick(View view) {
@@ -338,9 +334,11 @@ public class DayViewHeader extends LinearLayout {
 
                 //local changing
                 DayViewHeaderCell cell = (DayViewHeaderCell) view;
-                TextView tv = cell.getContainer();
+                TextView tv = cell.getDateView();
                 cell.setPadding(paddingWithBg,paddingWithBg,paddingWithBg,paddingWithBg);
-                tv.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                cell.getTitleView().setText("");
+                cell.getDotView().setImageDrawable(null);
+
                 boolean isToday = textViews.indexOf(cell) == todayPst;
                 setFstDayOfMonthText(tv);
                 setCircleColor(tv,isToday);

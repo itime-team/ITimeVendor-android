@@ -78,7 +78,7 @@ public class FlexibleLenViewBody extends FrameLayout {
     private RelativeLayout globalAnimationLayout;
     private RelativeLayout localAnimationLayout;
 
-    private LinearLayout topAllDayLayout;
+    protected LinearLayout topAllDayLayout;
     protected LinearLayout topAllDayEventLayouts;
 
     private FrameLayout timeLayout;
@@ -104,11 +104,12 @@ public class FlexibleLenViewBody extends FrameLayout {
     //tag: false-> moving, true, done
     protected View tempDragView = null;
 
-    private int leftSideWidth = 50;
+    //dp
+    private int leftSideWidth = 40;
     //dp
     protected int lineHeight = 45;
     private int timeTextSize = 20;
-    private int topAllDayHeight;
+    protected int topAllDayHeight;
 
     protected int layoutWidthPerDay;
     protected int layoutHeightPerDay;
@@ -202,43 +203,42 @@ public class FlexibleLenViewBody extends FrameLayout {
         this.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         int topAllDayEventLayoutsPadding = DensityUtil.dip2px(context, 3);
-        topAllDayHeight = DensityUtil.dip2px(context, 40);
+        this.topAllDayHeight = DensityUtil.dip2px(context, 30);
+
+        scrollContainerView = new ScrollContainerView(context);
+        LinearLayout.LayoutParams scrollParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+//        scrollParams.setMargins(0,0,0,0);
+        scrollContainerView.setLayoutParams(scrollParams);
+        this.addView(scrollContainerView);
 
         topAllDayLayout = new LinearLayout(getContext());
         topAllDayLayout.setOrientation(LinearLayout.HORIZONTAL);
+        topAllDayLayout.setGravity(Gravity.CENTER);
         topAllDayLayout.setBackgroundColor(color_allday_bg);
+        topAllDayLayout.setBackground(getResources().getDrawable(R.drawable.bg_bottom_line));
         topAllDayLayout.setId(View.generateViewId());
         FrameLayout.LayoutParams topAllDayLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         topAllDayLayout.setLayoutParams(topAllDayLayoutParams);
 
         TextView allDayTitleTv = new TextView(context);
         LinearLayout.LayoutParams allDayTitleTvParams = new LinearLayout.LayoutParams(leftSideWidth, ViewGroup.LayoutParams.MATCH_PARENT);
-        int allDayTitleTvPadding = DensityUtil.dip2px(context, 3);
-        allDayTitleTv.setPadding(allDayTitleTvPadding, allDayTitleTvPadding, allDayTitleTvPadding, allDayTitleTvPadding);
         allDayTitleTv.setTextSize(10);
         allDayTitleTv.setText("All Day");
         allDayTitleTv.setTextColor(getResources().getColor(color_allday_title));
-        allDayTitleTv.setGravity(Gravity.CENTER_VERTICAL);
+        allDayTitleTv.setGravity(Gravity.CENTER);
         allDayTitleTv.setLayoutParams(allDayTitleTvParams);
         allDayTitleTv.measure(0,0);
         topAllDayLayout.addView(allDayTitleTv);
 
         topAllDayEventLayouts = new LinearLayout(getContext());
-        topAllDayEventLayouts.setPadding(0,topAllDayEventLayoutsPadding,0,topAllDayEventLayoutsPadding);
-
+        topAllDayEventLayouts.setPadding(0,topAllDayEventLayoutsPadding - DensityUtil.dip2px(context,1),0,topAllDayEventLayoutsPadding);
         topAllDayEventLayouts.setId(View.generateViewId());
-        LinearLayout.LayoutParams topAllDayEventLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, topAllDayHeight - topAllDayEventLayoutsPadding * 2);
+        LinearLayout.LayoutParams topAllDayEventLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, topAllDayHeight);
         topAllDayEventLayouts.setLayoutParams(topAllDayEventLayoutParams);
         this.initInnerHeaderEventLayouts(topAllDayEventLayouts);
         topAllDayLayout.addView(topAllDayEventLayouts);
-
+        topAllDayLayout.setVisibility(View.GONE);
         this.addView(topAllDayLayout);
-
-        scrollContainerView = new ScrollContainerView(context);
-        LinearLayout.LayoutParams scrollParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        scrollParams.setMargins(0,topAllDayHeight,0,0);
-        scrollContainerView.setLayoutParams(scrollParams);
-        this.addView(scrollContainerView);
 
         globalAnimationLayout = new RelativeLayout(context);
         RelativeLayout.LayoutParams animationLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -249,20 +249,18 @@ public class FlexibleLenViewBody extends FrameLayout {
         bodyContainerLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         scrollContainerView.addView(bodyContainerLayout);
 
-        leftSideWidth = allDayTitleTv.getMeasuredWidth();
-
         timeLayout = new FrameLayout(getContext());
         timeLayout.setId(View.generateViewId());
         timeLayout.setBackgroundColor(getResources().getColor(color_bg_day_odd));
         FrameLayout.LayoutParams leftSideRLayoutParams = new FrameLayout.LayoutParams(leftSideWidth, ViewGroup.LayoutParams.MATCH_PARENT);
         timeLayout.setLayoutParams(leftSideRLayoutParams);
-        leftSideRLayoutParams.topMargin = topAllDayHeight;
+//        leftSideRLayoutParams.topMargin = topAllDayHeight;
         bodyContainerLayout.addView(timeLayout);
 
         dividerBgRLayout = new FrameLayout(getContext());
         dividerBgRLayout.setId(View.generateViewId());
         FrameLayout.LayoutParams dividerBgRLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        dividerBgRLayoutParams.topMargin = topAllDayHeight;
+//        dividerBgRLayoutParams.topMargin = topAllDayHeight;
         dividerBgRLayoutParams.leftMargin = leftSideWidth;
         dividerBgRLayout.setLayoutParams(dividerBgRLayoutParams);
         bodyContainerLayout.addView(dividerBgRLayout);
@@ -272,7 +270,7 @@ public class FlexibleLenViewBody extends FrameLayout {
         eventLayout.setOrientation(LinearLayout.HORIZONTAL);
         FrameLayout.LayoutParams eventLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         this.initInnerBodyEventLayouts(eventLayout);
-        eventLayoutParams.topMargin = topAllDayHeight;
+//        eventLayoutParams.topMargin = topAllDayHeight;
         eventLayoutParams.leftMargin = leftSideWidth;
         eventLayout.setLayoutParams(eventLayoutParams);
 
@@ -280,7 +278,7 @@ public class FlexibleLenViewBody extends FrameLayout {
 
         localAnimationLayout = new RelativeLayout(context);
         FrameLayout.LayoutParams localAnimationLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        localAnimationLayoutParams.topMargin = topAllDayHeight;
+//        localAnimationLayoutParams.topMargin = topAllDayHeight;
         localAnimationLayout.setLayoutParams(localAnimationLayoutParams);
         bodyContainerLayout.addView(localAnimationLayout);
     }
@@ -413,17 +411,6 @@ public class FlexibleLenViewBody extends FrameLayout {
        timeSlotController.timeSlotAnimationChecker();
     }
 
-    private ImageView getDivider() {
-        ImageView dividerImgV;
-        //divider
-        dividerImgV = new ImageView(context);
-        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        dividerImgV.setLayoutParams(params);
-        dividerImgV.setImageDrawable(getResources().getDrawable(org.unimelb.itime.vendor.R.drawable.itime_header_divider_line));
-
-        return dividerImgV;
-    }
-
     public int getDisplayLen() {
         return displayLen;
     }
@@ -454,7 +441,7 @@ public class FlexibleLenViewBody extends FrameLayout {
     }
 
     private void initTimeSlot() {
-        double startPoint = timeTextSize * 0.5;
+        double startPoint = DensityUtil.dip2px(context,10);
         double timeSlotHeight = lineHeight / 4;
         String[] hours = getHours();
         for (int slot = 0; slot < hours.length; slot++) {
@@ -478,7 +465,7 @@ public class FlexibleLenViewBody extends FrameLayout {
         msgWindow.setTextColor(context.getResources().getColor(color_msg_window_text));
         msgWindow.setText("SUN 00:00");
         msgWindow.setTextSize(20);
-        msgWindow.setGravity(Gravity.CENTER);
+        msgWindow.setGravity(Gravity.LEFT);
         msgWindow.setVisibility(View.INVISIBLE);
         msgWindow.measure(0, 0);
         int height = msgWindow.getMeasuredHeight(); //get height
@@ -499,7 +486,6 @@ public class FlexibleLenViewBody extends FrameLayout {
             timeView.setText(HOURS[time]);
             timeView.setTextSize(11);
             timeView.setGravity(Gravity.CENTER);
-            timeView.measure(0, 0);
             int timeTextY = nearestTimeSlotValue(time);
             params.setMargins(0, timeTextY - height/2, 0, 0);
 
@@ -515,7 +501,6 @@ public class FlexibleLenViewBody extends FrameLayout {
             ImageView dividerImageView = new ImageView(context);
             dividerImageView.setImageResource(rs_divider_line);
             dividerImageView.setY(this.nearestTimeSlotValue(numOfDottedLine));
-            Log.i(TAG, "timeline: T: " + numOfDottedLine + " P: "+ this.nearestTimeSlotValue(numOfDottedLine));
             dividerImageView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
             dividerImageView.setLayoutParams(params);
             dividerImageView.setPadding(0, 0, 0, 0);
@@ -546,9 +531,17 @@ public class FlexibleLenViewBody extends FrameLayout {
      * reset all the layouts and views in body
      */
     public void resetViews() {
+        resetAllDayLayout();
         clearAllEvents();
         resetNowTimeViews();
         startUIUpdateThread();
+    }
+
+    private void resetAllDayLayout(){
+        if (this.topAllDayLayout.getVisibility() != GONE){
+            this.topAllDayLayout.setVisibility(GONE);
+            ((FrameLayout.LayoutParams)this.scrollContainerView.getLayoutParams()).setMargins(0,0,0,0);
+        }
     }
 
     private void resetNowTimeViews(){
@@ -787,11 +780,11 @@ public class FlexibleLenViewBody extends FrameLayout {
                 @Override
                 public void onGlobalLayout() {
                     scrollContainerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    scrollContainerView.scrollTo(scrollContainerView.getScrollX(),(getStartY) + topAllDayHeight);
+                    scrollContainerView.scrollTo(scrollContainerView.getScrollX(),(getStartY));
                 }
             });
         }else{
-            scrollContainerView.scrollTo(scrollContainerView.getScrollX(), (getStartY) + topAllDayHeight);
+            scrollContainerView.scrollTo(scrollContainerView.getScrollX(), (getStartY));
         }
     }
 
@@ -836,7 +829,7 @@ public class FlexibleLenViewBody extends FrameLayout {
 
     public Calendar getCurrentTime(){
         if (this.scrollContainerView != null && this.myCalendar != null){
-            int nowY = this.scrollContainerView.getScrollY() - topAllDayHeight;
+            int nowY = this.scrollContainerView.getScrollY();
             //update the event time
             String new_time = positionToTimeTreeMap.get(nearestTimeSlotKey(nowY));
             if (new_time == null){

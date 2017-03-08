@@ -7,8 +7,6 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.ClipData;
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
 import android.util.Pair;
 import android.view.DragEvent;
@@ -16,13 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
-import com.daimajia.androidanimations.library.attention.RubberBandAnimator;
 
-import org.unimelb.itime.vendor.R;
 import org.unimelb.itime.vendor.helper.CalendarEventOverlapHelper;
 import org.unimelb.itime.vendor.helper.DensityUtil;
 import org.unimelb.itime.vendor.helper.MyCalendar;
@@ -114,6 +111,10 @@ public class EventController {
 //    }
 
     private void addAllDayEvent(ITimeEventInterface event, int index) {
+        if (container.topAllDayLayout.getVisibility() != View.VISIBLE){
+            container.topAllDayLayout.setVisibility(View.VISIBLE);
+            ((FrameLayout.LayoutParams)container.getScrollView().getLayoutParams()).setMargins(0,container.topAllDayHeight,0,0);
+        }
         int offset = index;
         Log.i(TAG, "offset: " + offset);
         if (offset > -1 && offset < container.displayLen) {
@@ -296,7 +297,7 @@ public class EventController {
                         .duration(1000)
                         .playOn(view);
 
-                ValueAnimator alpha = ValueAnimator.ofObject(new ArgbEvaluator(), 128, 255);
+                ValueAnimator alpha = ValueAnimator.ofObject(new ArgbEvaluator(), DraggableEventView.OPACITY_INT, 255);
                 alpha.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
                     @Override
@@ -375,9 +376,9 @@ public class EventController {
                     break;
                 case DragEvent.ACTION_DROP:
                     //handler ended things in here, because ended some time is not triggered
-                    dgView.getBackground().setAlpha(128);
+                    dgView.getBackground().setAlpha(DraggableEventView.OPACITY_INT);
                     View finalView = (View) event.getLocalState();
-                    finalView.getBackground().setAlpha(128);
+                    finalView.getBackground().setAlpha(DraggableEventView.OPACITY_INT);
                     finalView.setVisibility(View.VISIBLE);
                     container.msgWindow.setVisibility(View.INVISIBLE);
 
@@ -422,7 +423,7 @@ public class EventController {
                     break;
                 case DragEvent.ACTION_DRAG_ENDED:
                     if (dgView != null){
-                        dgView.getBackground().setAlpha(128);
+                        dgView.getBackground().setAlpha(DraggableEventView.OPACITY_INT);
                     }
                     break;
             }

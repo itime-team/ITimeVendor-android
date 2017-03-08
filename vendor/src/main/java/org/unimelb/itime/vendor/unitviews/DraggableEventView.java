@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -35,6 +34,8 @@ public class DraggableEventView extends ViewGroup {
 
     public static int TYPE_NORMAL = 0;
     public static int TYPE_TEMP = 1;
+    // 30% alpha
+    public static int OPACITY_INT = 77;
 
     private int width;
     private int height;
@@ -152,7 +153,7 @@ public class DraggableEventView extends ViewGroup {
 
         if (!event.isHighlighted()){
             ((GradientDrawable)bg.getBackground()).setColor(color);
-            bg.getBackground().setAlpha(128);
+            bg.getBackground().setAlpha(OPACITY_INT);
         }else {
             color = getResources().getColor(R.color.private_et);
             ((GradientDrawable)bg.getBackground()).setColor(color);
@@ -166,7 +167,7 @@ public class DraggableEventView extends ViewGroup {
         bg.setBackground(drawable);
         ((GradientDrawable)bg.getBackground()).setColor(color);
         if (!event.isHighlighted()){
-            bg.getBackground().setAlpha(128);
+            bg.getBackground().setAlpha(OPACITY_INT);
         }
     }
 

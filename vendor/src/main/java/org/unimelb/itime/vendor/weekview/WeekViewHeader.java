@@ -92,6 +92,4 @@ public class WeekViewHeader extends LinearLayout {
             cal.setOffsetByDate(1);
         }
     }
-
-
 }

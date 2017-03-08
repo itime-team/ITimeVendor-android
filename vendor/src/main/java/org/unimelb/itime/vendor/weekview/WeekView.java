@@ -109,7 +109,7 @@ public class WeekView extends LinearLayout {
 
     private void initHeader(){
         int size = 4;
-        int padding = DensityUtil.dip2px(context,5);
+        int padding = DensityUtil.dip2px(context,0);
         //must be consistent with width of left bar in body part.
         int leftBarPadding = DensityUtil.dip2px(context,40);
         for (int i = 0; i < size; i++) {
