@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
-group "com.lzy.imagepicker"
+group "org.unimelb.itime.vendor"
 
 android {
     compileSdkVersion 24
