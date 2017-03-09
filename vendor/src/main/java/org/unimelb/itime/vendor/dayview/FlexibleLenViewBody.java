@@ -50,8 +50,9 @@ public class FlexibleLenViewBody extends FrameLayout {
     //FOR event inner type
     public static final int UNDEFINED = -1;
     public static final int REGULAR = 0;
-    public static final int DAY_CROSS_FST = 1;
-    public static final int DAY_CROSS_SND = 2;
+    public static final int DAY_CROSS_BEGIN = 1;
+    public static final int DAY_CROSS_ALL_DAY = 2;
+    public static final int DAY_CROSS_END = 3;
     /**
      * Color category
      */
@@ -652,40 +653,31 @@ public class FlexibleLenViewBody extends FrameLayout {
         return nearestPst;
     }
 
-    protected int getEventContainerIndex(long startTime, long endTime){
+    protected int getEventContainerIndex(long startTime, long endTime, long fromDayBegin){
         long dayLong = (24 * 60 * 60 * 1000);
         long todayBegin = this.myCalendar.getBeginOfDayMilliseconds();
+        int regularIndex;
 
-        int regularIndex = (int)(Math.floor((float)(startTime - todayBegin)/ dayLong));
-
-        switch (getRegularEventType(startTime,endTime)){
+        switch (getRegularEventType(startTime,endTime,fromDayBegin)){
             case REGULAR:
+                regularIndex = (int)(Math.floor((float)(startTime - todayBegin)/ dayLong));
                 return regularIndex;
-            case DAY_CROSS_FST:
+            case DAY_CROSS_BEGIN:
+                regularIndex = (int)(Math.floor((float)(startTime - todayBegin)/ dayLong));
                 return regularIndex;
-            case DAY_CROSS_SND:
-                return regularIndex + 1;
+            case DAY_CROSS_ALL_DAY:
+                regularIndex = (int)(Math.floor((float)(fromDayBegin - todayBegin)/ dayLong));
+                return regularIndex;
+            case DAY_CROSS_END:
+                regularIndex = (int)(Math.floor((float)(endTime - todayBegin)/ dayLong));
+                return regularIndex;
             default:
+                regularIndex = (int)(Math.floor((float)(startTime - todayBegin)/ dayLong));
                 return regularIndex;
         }
-//        //regular
-//        if (startTime >= todayBegin && endTime <= todayEnd){
-//            return regularIndex;
-//        }
-//
-//        //first part
-//        if (startTime > todayBegin &&  endTime > todayEnd){
-//            return regularIndex;
-//        }
-//        //second part
-//        if (startTime < todayBegin && endTime > todayBegin){
-//            return regularIndex+1;
-//        }
-//
-//        return regularIndex;
     }
 
-    protected int getRegularEventType(long startTime, long endTime){
+    protected int getRegularEventType(long startTime, long endTime, long fromDayBegin){
         long todayBegin = this.myCalendar.getBeginOfDayMilliseconds();
         long todayEnd = this.myCalendar.getEndOfDayMilliseconds();
 
@@ -693,13 +685,17 @@ public class FlexibleLenViewBody extends FrameLayout {
         if (startTime >= todayBegin && endTime <= todayEnd){
             return REGULAR;
         }
-        //first part
+        //Begin part
         if (startTime > todayBegin &&  endTime > todayEnd){
-            return DAY_CROSS_FST;
+            return DAY_CROSS_BEGIN;
         }
-        //second part
+        //All day part
+        if (fromDayBegin >= todayBegin &&  endTime > todayEnd){
+            return DAY_CROSS_ALL_DAY;
+        }
+        //End part
         if (startTime < todayBegin && endTime > todayBegin){
-            return DAY_CROSS_SND;
+            return DAY_CROSS_END;
         }
 
         return UNDEFINED;

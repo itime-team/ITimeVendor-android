@@ -26,6 +26,7 @@ import org.unimelb.itime.vendor.helper.MyCalendar;
 import org.unimelb.itime.vendor.listener.ITimeEventInterface;
 import org.unimelb.itime.vendor.listener.ITimeEventPackageInterface;
 import org.unimelb.itime.vendor.unitviews.DraggableEventView;
+import org.unimelb.itime.vendor.wrapper.WrapperEvent;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -128,8 +129,8 @@ public class EventController {
         }
     }
 
-    private void addRegularEvent(ITimeEventInterface event) {
-        int offset = container.getEventContainerIndex(event.getStartTime(),event.getEndTime());
+    private void addRegularEvent(WrapperEvent event) {
+        int offset = container.getEventContainerIndex(event.getStartTime(),event.getEndTime(),fromDayBegin);
         if (offset < container.displayLen && offset > -1){
             final DayInnerBodyEventLayout eventLayout = container.eventLayouts.get(offset);
             final DraggableEventView newDragEventView = this.createDayDraggableEventView(event, false);
@@ -277,10 +278,10 @@ public class EventController {
             case FlexibleLenViewBody.REGULAR:
                 date = new Date(event.getStartTime());
                 break;
-            case FlexibleLenViewBody.DAY_CROSS_FST:
+            case FlexibleLenViewBody.DAY_CROSS_BEGIN:
                 date = new Date(event.getStartTime());
                 break;
-            case FlexibleLenViewBody.DAY_CROSS_SND:
+            case FlexibleLenViewBody.DAY_CROSS_END:
                 // use end time as start point then minus self height
                 long duration = event.getEndTime() - event.getStartTime();
                 int eventHeight =(int) (duration * container.heightPerMillisd);
@@ -331,28 +332,6 @@ public class EventController {
 
                 });
                 alpha.setDuration(500);
-//                ObjectAnimator scaleX = ObjectAnimator.ofFloat(view, "scaleX", 1f,0.8f);
-//                ObjectAnimator scaleY = ObjectAnimator.ofFloat(view, "scaleY", 1f,0.8f);
-//
-//                scaleX.setRepeatCount(1);
-//                scaleX.setRepeatMode(ValueAnimator.REVERSE);
-//                scaleX.setDuration(120);
-//                scaleY.setDuration(120);
-//                scaleY.setRepeatCount(1);
-//                scaleY.setRepeatMode(ValueAnimator.REVERSE);
-//
-//                AnimatorSet scaleDown = new AnimatorSet();
-//                scaleDown.play(alpha).with(scaleY).with(scaleX);
-//                scaleX.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//                    @Override
-//                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
-//                        View p= (View) view.getParent();
-//                        if (p != null){
-//                            p.invalidate();
-//                        }
-//                    }
-//                });
-//                scaleDown.start();
                 alpha.start();
                 view.startDrag(data, shadowBuilder, view, 0);
             }

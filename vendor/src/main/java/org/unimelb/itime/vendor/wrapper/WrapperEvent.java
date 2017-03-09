@@ -8,6 +8,7 @@ import org.unimelb.itime.vendor.listener.ITimeEventInterface;
 
 public class WrapperEvent {
     private ITimeEventInterface event;
+    private long fromDayBegin;
     private String vendorEventUid;
     private boolean isAnimated;
 
@@ -38,5 +39,13 @@ public class WrapperEvent {
 
     public void setAnimated(boolean animated) {
         isAnimated = animated;
+    }
+
+    public long getFromDayBegin() {
+        return fromDayBegin;
+    }
+
+    public void setFromDayBegin(long fromDayBegin) {
+        this.fromDayBegin = fromDayBegin;
     }
 }
