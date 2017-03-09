@@ -197,12 +197,12 @@ public class YinActivity extends AppCompatActivity {
         int[] type = {0,1,2};
         int[] status = {0,1};
         long interval = 3600 * 1000;
-        calendar.set(Calendar.HOUR_OF_DAY,0);
-        calendar.set(Calendar.MINUTE,0);
+//        calendar.set(Calendar.HOUR_OF_DAY,0);
+//        calendar.set(Calendar.MINUTE,0);
         long startTime = calendar.getTimeInMillis();
         long endTime;
         for (int i = 1; i < 2; i++) {
-            endTime = startTime + 24 * (3600*1000);
+            endTime = startTime + 48 * (3600*1000);
 //            long duration = (endTime - startTime);
 
             Event event = new Event();

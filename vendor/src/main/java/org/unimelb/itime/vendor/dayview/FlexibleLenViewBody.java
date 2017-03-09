@@ -30,6 +30,7 @@ import org.unimelb.itime.vendor.listener.ITimeTimeSlotInterface;
 import org.unimelb.itime.vendor.unitviews.DraggableEventView;
 import org.unimelb.itime.vendor.unitviews.DraggableTimeSlotView;
 import org.unimelb.itime.vendor.weekview.WeekView;
+import org.unimelb.itime.vendor.wrapper.WrapperEvent;
 import org.unimelb.itime.vendor.wrapper.WrapperTimeSlot;
 
 import java.text.DateFormat;
@@ -653,12 +654,15 @@ public class FlexibleLenViewBody extends FrameLayout {
         return nearestPst;
     }
 
-    protected int getEventContainerIndex(long startTime, long endTime, long fromDayBegin){
+    protected int getEventContainerIndex(WrapperEvent wrapper){
         long dayLong = (24 * 60 * 60 * 1000);
         long todayBegin = this.myCalendar.getBeginOfDayMilliseconds();
+        long startTime = wrapper.getEvent().getStartTime();
+        long endTime = wrapper.getEvent().getEndTime();
+        long fromDayBegin = wrapper.getFromDayBegin();
         int regularIndex;
 
-        switch (getRegularEventType(startTime,endTime,fromDayBegin)){
+        switch (getRegularEventType(wrapper)){
             case REGULAR:
                 regularIndex = (int)(Math.floor((float)(startTime - todayBegin)/ dayLong));
                 return regularIndex;
@@ -677,7 +681,10 @@ public class FlexibleLenViewBody extends FrameLayout {
         }
     }
 
-    protected int getRegularEventType(long startTime, long endTime, long fromDayBegin){
+    protected int getRegularEventType(WrapperEvent wrapper){
+        long startTime = wrapper.getEvent().getStartTime();
+        long endTime = wrapper.getEvent().getEndTime();
+        long fromDayBegin = wrapper.getFromDayBegin();
         long todayBegin = this.myCalendar.getBeginOfDayMilliseconds();
         long todayEnd = this.myCalendar.getEndOfDayMilliseconds();
 

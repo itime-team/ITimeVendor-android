@@ -67,10 +67,10 @@ public class EventManager {
     }
 
     public void addEvent(Event event){
-        if (isAllDayEvent(event)){
-            allDayEventList.add(event);
-            return;
-        }
+//        if (isAllDayEvent(event)){
+//            allDayEventList.add(event);
+//            return;
+//        }
         //if not repeated
         if (event.getRecurrence().length == 0){
             Long startTime = event.getStartTime();
