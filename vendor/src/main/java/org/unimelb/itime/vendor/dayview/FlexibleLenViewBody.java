@@ -47,7 +47,11 @@ import java.util.TreeMap;
  */
 public class FlexibleLenViewBody extends FrameLayout {
     public final String TAG = "MyAPP";
-
+    //FOR event inner type
+    public static final int UNDEFINED = -1;
+    public static final int REGULAR = 0;
+    public static final int DAY_CROSS_FST = 1;
+    public static final int DAY_CROSS_SND = 2;
     /**
      * Color category
      */
@@ -431,9 +435,9 @@ public class FlexibleLenViewBody extends FrameLayout {
 
     public void initBackgroundView() {
         initTimeSlot();
-        initMsgWindow();
         initTimeText(getHours());
         initDividerLine(getHours());
+        initMsgWindow();
     }
 
     public ScrollView getScrollView(){
@@ -442,15 +446,18 @@ public class FlexibleLenViewBody extends FrameLayout {
 
     private void initTimeSlot() {
         double startPoint = DensityUtil.dip2px(context,10);
-        double timeSlotHeight = lineHeight / 4;
+        double timeSlotHeight = lineHeight / 60;
         String[] hours = getHours();
         for (int slot = 0; slot < hours.length; slot++) {
             //add full clock
             positionToTimeTreeMap.put((int) startPoint + lineHeight * slot, hours[slot] + ":00");
             String hourPart = hours[slot].substring(0, 2); // XX
             timeToPositionTreeMap.put((float) Integer.valueOf(hourPart), (int) startPoint + lineHeight * slot);
-            for (int miniSlot = 0; miniSlot < 3; miniSlot++) {
-                String minutes = String.valueOf((miniSlot + 1) * 15);
+            for (int miniSlot = 0; miniSlot < 59; miniSlot++) {
+//                String minutes = String.valueOf((miniSlot + 1) * 15);
+                String minutes = String.format("%02d", miniSlot + 1);
+//                minutes = String.format("%02d", minutes);
+//                Log.i(TAG, "minutes: " + minutes);
                 String time = hourPart + ":" + minutes;
                 int positionY = (int) (startPoint + lineHeight * slot + timeSlotHeight * (miniSlot + 1));
                 positionToTimeTreeMap.put(positionY, time);
@@ -464,7 +471,7 @@ public class FlexibleLenViewBody extends FrameLayout {
 
         msgWindow.setTextColor(context.getResources().getColor(color_msg_window_text));
         msgWindow.setText("SUN 00:00");
-        msgWindow.setTextSize(20);
+        msgWindow.setTextSize(17);
         msgWindow.setGravity(Gravity.LEFT);
         msgWindow.setVisibility(View.INVISIBLE);
         msgWindow.measure(0, 0);
@@ -640,9 +647,62 @@ public class FlexibleLenViewBody extends FrameLayout {
         String[] converted = localTime.split(":");
         int hour = Integer.valueOf(converted[0]);
         int minutes = Integer.valueOf(converted[1]);
-        int nearestPst = nearestTimeSlotValue(hour + (float) minutes / 100); //
-        int correctPst = (minutes % 15) * ((lineHeight / 4) / 15);
-        return nearestPst + correctPst;
+        int nearestPst = nearestTimeSlotValue(hour + (float) minutes / 100);
+//        int correctPst = (minutes % 15) * ((lineHeight / 4) / 15);
+        return nearestPst;
+    }
+
+    protected int getEventContainerIndex(long startTime, long endTime){
+        long dayLong = (24 * 60 * 60 * 1000);
+        long todayBegin = this.myCalendar.getBeginOfDayMilliseconds();
+
+        int regularIndex = (int)(Math.floor((float)(startTime - todayBegin)/ dayLong));
+
+        switch (getRegularEventType(startTime,endTime)){
+            case REGULAR:
+                return regularIndex;
+            case DAY_CROSS_FST:
+                return regularIndex;
+            case DAY_CROSS_SND:
+                return regularIndex + 1;
+            default:
+                return regularIndex;
+        }
+//        //regular
+//        if (startTime >= todayBegin && endTime <= todayEnd){
+//            return regularIndex;
+//        }
+//
+//        //first part
+//        if (startTime > todayBegin &&  endTime > todayEnd){
+//            return regularIndex;
+//        }
+//        //second part
+//        if (startTime < todayBegin && endTime > todayBegin){
+//            return regularIndex+1;
+//        }
+//
+//        return regularIndex;
+    }
+
+    protected int getRegularEventType(long startTime, long endTime){
+        long todayBegin = this.myCalendar.getBeginOfDayMilliseconds();
+        long todayEnd = this.myCalendar.getEndOfDayMilliseconds();
+
+        //regular
+        if (startTime >= todayBegin && endTime <= todayEnd){
+            return REGULAR;
+        }
+        //first part
+        if (startTime > todayBegin &&  endTime > todayEnd){
+            return DAY_CROSS_FST;
+        }
+        //second part
+        if (startTime < todayBegin && endTime > todayBegin){
+            return DAY_CROSS_SND;
+        }
+
+        return UNDEFINED;
     }
 
     protected int getContainerIndex(long startTime){

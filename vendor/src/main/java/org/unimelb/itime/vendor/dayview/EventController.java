@@ -129,8 +129,8 @@ public class EventController {
     }
 
     private void addRegularEvent(ITimeEventInterface event) {
-        int offset = container.getContainerIndex(event.getStartTime());
-        if (offset < container.displayLen){
+        int offset = container.getEventContainerIndex(event.getStartTime(),event.getEndTime());
+        if (offset < container.displayLen && offset > -1){
             final DayInnerBodyEventLayout eventLayout = container.eventLayouts.get(offset);
             final DraggableEventView newDragEventView = this.createDayDraggableEventView(event, false);
             final DraggableEventView.LayoutParams params = (DraggableEventView.LayoutParams) newDragEventView.getLayoutParams();
@@ -268,10 +268,34 @@ public class EventController {
     }
 
     private int getEventY(ITimeEventInterface event) {
-        String hourWithMinutes = container.sdf.format(new Date(event.getStartTime()));
+        int type = container.getRegularEventType(event.getStartTime(),event.getEndTime());
+        int offset = 0;
+
+        Date date;
+
+        switch (type){
+            case FlexibleLenViewBody.REGULAR:
+                date = new Date(event.getStartTime());
+                break;
+            case FlexibleLenViewBody.DAY_CROSS_FST:
+                date = new Date(event.getStartTime());
+                break;
+            case FlexibleLenViewBody.DAY_CROSS_SND:
+                // use end time as start point then minus self height
+                long duration = event.getEndTime() - event.getStartTime();
+                int eventHeight =(int) (duration * container.heightPerMillisd);
+                offset = - (eventHeight);
+                date = new Date(event.getEndTime());
+                break;
+            default:
+                date = new Date(event.getStartTime());
+                break;
+        }
+
+        String hourWithMinutes = container.sdf.format(date);
         String[] components = hourWithMinutes.split(":");
         float trickTime = Integer.valueOf(components[0]) + Integer.valueOf(components[1]) / (float) 100;
-        int getStartY = container.nearestTimeSlotValue(trickTime);
+        int getStartY = container.nearestTimeSlotValue(trickTime) + offset;
 
         return getStartY;
     }
