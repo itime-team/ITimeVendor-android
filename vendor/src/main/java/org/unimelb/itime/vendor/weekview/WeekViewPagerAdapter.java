@@ -79,6 +79,7 @@ class WeekViewPagerAdapter extends PagerAdapter {
                 ) {
             FlexibleLenViewBody bodyView = (FlexibleLenViewBody)weekView.getChildAt(2);
             if (this.eventPackage != null){
+                bodyView.resetViews();
                 bodyView.setEventList(this.eventPackage);
             }
         }

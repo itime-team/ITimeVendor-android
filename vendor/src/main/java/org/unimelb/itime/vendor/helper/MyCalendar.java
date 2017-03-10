@@ -131,6 +131,16 @@ public class MyCalendar {
         return  calendar.getTimeInMillis();
     }
 
+    public long getEndOfDayMilliseconds(){
+        Calendar calendar = this.getCalendar();
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 50);
+        calendar.set(Calendar.MILLISECOND, 59);
+
+        return  calendar.getTimeInMillis();
+    }
+
     public void setToSameBeginOfDay(MyCalendar target){
         this.hour = target.getHour();
         this.minute = target.getMinute();

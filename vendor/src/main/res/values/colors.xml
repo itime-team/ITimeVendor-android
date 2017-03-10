@@ -304,7 +304,7 @@
     <color name="color_75white">#73FFFFFF</color>
     <!--for dayView-->
     <color name="private_et">#05447e</color>
-    <color name="group_et">#63adf2</color>
+    <color name="group_et">#63ADF2</color>
     <color name="public_et">#ffc428</color>
     <color name="text_in_circle_color">#ffffff</color>
     <color name="text_today_color">#FF3333</color>

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import org.unimelb.itime.vendor.unitviews.DraggableEventView;
 import org.unimelb.itime.vendor.listener.ITimeEventInterface;
 import org.unimelb.itime.vendor.unitviews.DraggableTimeSlotView;
+import org.unimelb.itime.vendor.wrapper.WrapperEvent;
 
 import java.util.ArrayList;
 
@@ -16,14 +17,14 @@ import java.util.ArrayList;
  */
 public class DayInnerBodyEventLayout extends ViewGroup {
     private static final String TAG = "MyAPP";
-    ArrayList<ITimeEventInterface> events = new ArrayList<>();
+    ArrayList<WrapperEvent> events = new ArrayList<>();
     ArrayList<DraggableEventView> dgEvents = new ArrayList<>();
 
-    public ArrayList<ITimeEventInterface> getEvents() {
+    public ArrayList<WrapperEvent> getEvents() {
         return events;
     }
 
-    public void setEvents(ArrayList<ITimeEventInterface> events) {
+    public void setEvents(ArrayList<WrapperEvent> events) {
         this.events = events;
     }
 

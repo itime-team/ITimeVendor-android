@@ -67,7 +67,8 @@ public class FlexibleLenBodyViewPagerAdapter extends PagerAdapter {
     public void reloadEvents(){
         for (FlexibleLenViewBody bodyView : vLists
              ) {
-                bodyView.setEventList(this.eventPackage);
+            bodyView.resetViews();
+            bodyView.setEventList(this.eventPackage);
         }
     }
 

@@ -7,8 +7,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.ClipData;
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.drawable.GradientDrawable;
+import android.util.EventLog;
 import android.util.Log;
 import android.util.Pair;
 import android.view.DragEvent;
@@ -16,19 +15,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
-import com.daimajia.androidanimations.library.attention.RubberBandAnimator;
 
-import org.unimelb.itime.vendor.R;
 import org.unimelb.itime.vendor.helper.CalendarEventOverlapHelper;
 import org.unimelb.itime.vendor.helper.DensityUtil;
 import org.unimelb.itime.vendor.helper.MyCalendar;
 import org.unimelb.itime.vendor.listener.ITimeEventInterface;
 import org.unimelb.itime.vendor.listener.ITimeEventPackageInterface;
 import org.unimelb.itime.vendor.unitviews.DraggableEventView;
+import org.unimelb.itime.vendor.wrapper.WrapperEvent;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -75,7 +74,9 @@ public class EventController {
                 for (ITimeEventInterface allDayEvent: allDayEventList
                      ) {
                     if (this.isWithin(allDayEvent, i)) {
-                        this.addAllDayEvent(allDayEvent, i);
+                        WrapperEvent wrapperEvent = new WrapperEvent(allDayEvent);
+                        wrapperEvent.setFromDayBegin(startTime);
+                        this.addAllDayEvent(wrapperEvent, i);
                     }
                 }
             }
@@ -83,14 +84,18 @@ public class EventController {
             if (regularDayEventMap != null && regularDayEventMap.containsKey(startTime)){
                 List<ITimeEventInterface> currentDayEvents = regularDayEventMap.get(startTime);
                 for (ITimeEventInterface event : currentDayEvents) {
-                        this.addRegularEvent(event);
+                    WrapperEvent wrapperEvent = new WrapperEvent(event);
+                    wrapperEvent.setFromDayBegin(startTime);
+                    this.addRegularEvent(wrapperEvent);
                 }
             }
 
             if (repeatedDayEventMap != null && repeatedDayEventMap.containsKey(startTime)){
                 List<ITimeEventInterface> currentDayEvents = repeatedDayEventMap.get(startTime);
                 for (ITimeEventInterface event : currentDayEvents) {
-                    this.addRegularEvent(event);
+                    WrapperEvent wrapperEvent = new WrapperEvent(event);
+                    wrapperEvent.setFromDayBegin(startTime);
+                    this.addRegularEvent(wrapperEvent);
                 }
             }
 
@@ -113,32 +118,35 @@ public class EventController {
 //        }
 //    }
 
-    private void addAllDayEvent(ITimeEventInterface event, int index) {
+    private void addAllDayEvent(WrapperEvent wrapper, int index) {
+        if (container.topAllDayLayout.getVisibility() != View.VISIBLE){
+            container.topAllDayLayout.setVisibility(View.VISIBLE);
+            ((FrameLayout.LayoutParams)container.getScrollView().getLayoutParams()).setMargins(0,container.topAllDayHeight,0,0);
+        }
         int offset = index;
-        Log.i(TAG, "offset: " + offset);
         if (offset > -1 && offset < container.displayLen) {
-            DraggableEventView new_dgEvent = this.createDayDraggableEventView(event, true);
+            DraggableEventView new_dgEvent = this.createDayDraggableEventView(wrapper, true);
             DayInnerHeaderEventLayout allDayEventLayout = container.allDayEventLayouts.get(offset);
             allDayEventLayout.addView(new_dgEvent);
             allDayEventLayout.getDgEvents().add(new_dgEvent);
-            allDayEventLayout.getEvents().add(event);
+            allDayEventLayout.getEvents().add(wrapper.getEvent());
         }else {
             Log.i(TAG, "event in header offset error: " + offset);
         }
     }
 
-    private void addRegularEvent(ITimeEventInterface event) {
-        int offset = container.getContainerIndex(event.getStartTime());
-        if (offset < container.displayLen){
+    private void addRegularEvent(WrapperEvent wrapper) {
+        int offset = container.getEventContainerIndex(wrapper);
+        if (offset < container.displayLen && offset > -1){
             final DayInnerBodyEventLayout eventLayout = container.eventLayouts.get(offset);
-            final DraggableEventView newDragEventView = this.createDayDraggableEventView(event, false);
+            final DraggableEventView newDragEventView = this.createDayDraggableEventView(wrapper, false);
             final DraggableEventView.LayoutParams params = (DraggableEventView.LayoutParams) newDragEventView.getLayoutParams();
 
             newDragEventView.setId(View.generateViewId());
-            this.regularEventViewMap.put(event, newDragEventView.getId());
+            this.regularEventViewMap.put(wrapper.getEvent(), newDragEventView.getId());
 
             eventLayout.addView(newDragEventView, params);
-            eventLayout.getEvents().add(event);
+            eventLayout.getEvents().add(wrapper);
             eventLayout.getDgEvents().add(newDragEventView);
         }else {
             Log.i(TAG, "event in body offset error: " + offset);
@@ -185,7 +193,8 @@ public class EventController {
         this.uidDragViewMap.clear();
     }
 
-    private DraggableEventView createDayDraggableEventView(ITimeEventInterface event, boolean isAllDayEvent) {
+    private DraggableEventView createDayDraggableEventView(WrapperEvent wrapper, boolean isAllDayEvent) {
+        ITimeEventInterface event = wrapper.getEvent();
         DraggableEventView event_view = new DraggableEventView(context, event, isAllDayEvent);
         event_view.setType(DraggableEventView.TYPE_NORMAL);
         int padding = DensityUtil.dip2px(context,1);
@@ -208,8 +217,8 @@ public class EventController {
         } else {
             long duration = event.getEndTime() - event.getStartTime();
             int eventHeight =(int) (duration * container.heightPerMillisd);
-
-            DraggableEventView.LayoutParams params = new DraggableEventView.LayoutParams(eventHeight, eventHeight);
+            int height = getDayCrossHeight(wrapper);
+            DraggableEventView.LayoutParams params = new DraggableEventView.LayoutParams(eventHeight, height);
             if (!container.isTimeSlotEnable){
                 event_view.setOnLongClickListener(new EventLongClickListener());
             }
@@ -221,6 +230,38 @@ public class EventController {
         uidDragViewMap.put(event, event_view);
 
         return event_view;
+    }
+
+    private int getDayCrossHeight(WrapperEvent wrapper){
+        int type = container.getRegularEventType(wrapper);
+        ITimeEventInterface event = wrapper.getEvent();
+
+        int height;
+        long duration;
+
+        switch (type){
+            case FlexibleLenViewBody.REGULAR:
+                duration = event.getEndTime() - event.getStartTime();
+                height =(int) (duration * container.heightPerMillisd);
+                break;
+            case FlexibleLenViewBody.DAY_CROSS_BEGIN:
+                duration = container.getCalendar().getEndOfDayMilliseconds() - event.getStartTime();
+                height =(int) (duration * container.heightPerMillisd);
+                break;
+            case FlexibleLenViewBody.DAY_CROSS_ALL_DAY:
+                duration = container.allDayMilliseconds;
+                height =(int) (duration * container.heightPerMillisd);
+                break;
+            case FlexibleLenViewBody.DAY_CROSS_END:
+                duration = event.getEndTime() - wrapper.getFromDayBegin();
+                height =(int) (duration * container.heightPerMillisd);
+                break;
+            default:
+                duration = event.getEndTime() - event.getStartTime();
+                height =(int) (duration * container.heightPerMillisd);
+                break;
+        }
+        return height;
     }
 
     private DraggableEventView createTempDayDraggableEventView(float tapX, float tapY) {
@@ -248,9 +289,9 @@ public class EventController {
      * it needs to be called when setting event or event position changed
      */
     private void calculateEventLayout(DayInnerBodyEventLayout eventLayout) {
-        List<ArrayList<Pair<Pair<Integer, Integer>, ITimeEventInterface>>> overlapGroups
+        List<ArrayList<Pair<Pair<Integer, Integer>, WrapperEvent>>> overlapGroups
                 = xHelper.computeOverlapXForEvents(eventLayout.getEvents());
-        for (ArrayList<Pair<Pair<Integer, Integer>, ITimeEventInterface>> overlapGroup : overlapGroups
+        for (ArrayList<Pair<Pair<Integer, Integer>, WrapperEvent>> overlapGroup : overlapGroups
                 ) {
             for (int i = 0; i < overlapGroup.size(); i++) {
 
@@ -258,7 +299,7 @@ public class EventController {
                 int widthFactor = overlapGroup.get(i).first.first;
                 int startX = overlapGroup.get(i).first.second;
                 int topMargin = startY;
-                DraggableEventView eventView = (DraggableEventView) eventLayout.findViewById(regularEventViewMap.get(overlapGroup.get(i).second));
+                DraggableEventView eventView = (DraggableEventView) eventLayout.findViewById(regularEventViewMap.get(overlapGroup.get(i).second.getEvent()));
                 eventView.setPosParam(new DraggableEventView.PosParam(startY, startX, widthFactor, topMargin));
                 Calendar cal = Calendar.getInstance();
                 cal.setTimeInMillis(eventView.getEvent().getStartTime());
@@ -266,11 +307,36 @@ public class EventController {
         }
     }
 
-    private int getEventY(ITimeEventInterface event) {
-        String hourWithMinutes = container.sdf.format(new Date(event.getStartTime()));
+    private int getEventY(WrapperEvent wrapper) {
+        ITimeEventInterface event = wrapper.getEvent();
+        int type = container.getRegularEventType(wrapper);
+
+        int offset = 0;
+
+        Date date;
+
+        switch (type){
+            case FlexibleLenViewBody.REGULAR:
+                date = new Date(event.getStartTime());
+                break;
+            case FlexibleLenViewBody.DAY_CROSS_BEGIN:
+                date = new Date(event.getStartTime());
+                break;
+            case FlexibleLenViewBody.DAY_CROSS_ALL_DAY:
+                date = new Date(wrapper.getFromDayBegin());
+                break;
+            case FlexibleLenViewBody.DAY_CROSS_END:
+                date = new Date(wrapper.getFromDayBegin());
+                break;
+            default:
+                date = new Date(event.getStartTime());
+                break;
+        }
+
+        String hourWithMinutes = container.sdf.format(date);
         String[] components = hourWithMinutes.split(":");
         float trickTime = Integer.valueOf(components[0]) + Integer.valueOf(components[1]) / (float) 100;
-        int getStartY = container.nearestTimeSlotValue(trickTime);
+        int getStartY = container.nearestTimeSlotValue(trickTime) + offset;
 
         return getStartY;
     }
@@ -296,7 +362,7 @@ public class EventController {
                         .duration(1000)
                         .playOn(view);
 
-                ValueAnimator alpha = ValueAnimator.ofObject(new ArgbEvaluator(), 128, 255);
+                ValueAnimator alpha = ValueAnimator.ofObject(new ArgbEvaluator(), DraggableEventView.OPACITY_INT, 255);
                 alpha.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
                     @Override
@@ -306,28 +372,6 @@ public class EventController {
 
                 });
                 alpha.setDuration(500);
-//                ObjectAnimator scaleX = ObjectAnimator.ofFloat(view, "scaleX", 1f,0.8f);
-//                ObjectAnimator scaleY = ObjectAnimator.ofFloat(view, "scaleY", 1f,0.8f);
-//
-//                scaleX.setRepeatCount(1);
-//                scaleX.setRepeatMode(ValueAnimator.REVERSE);
-//                scaleX.setDuration(120);
-//                scaleY.setDuration(120);
-//                scaleY.setRepeatCount(1);
-//                scaleY.setRepeatMode(ValueAnimator.REVERSE);
-//
-//                AnimatorSet scaleDown = new AnimatorSet();
-//                scaleDown.play(alpha).with(scaleY).with(scaleX);
-//                scaleX.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//                    @Override
-//                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
-//                        View p= (View) view.getParent();
-//                        if (p != null){
-//                            p.invalidate();
-//                        }
-//                    }
-//                });
-//                scaleDown.start();
                 alpha.start();
                 view.startDrag(data, shadowBuilder, view, 0);
             }
@@ -375,9 +419,9 @@ public class EventController {
                     break;
                 case DragEvent.ACTION_DROP:
                     //handler ended things in here, because ended some time is not triggered
-                    dgView.getBackground().setAlpha(128);
+                    dgView.getBackground().setAlpha(DraggableEventView.OPACITY_INT);
                     View finalView = (View) event.getLocalState();
-                    finalView.getBackground().setAlpha(128);
+                    finalView.getBackground().setAlpha(DraggableEventView.OPACITY_INT);
                     finalView.setVisibility(View.VISIBLE);
                     container.msgWindow.setVisibility(View.INVISIBLE);
 
@@ -422,7 +466,7 @@ public class EventController {
                     break;
                 case DragEvent.ACTION_DRAG_ENDED:
                     if (dgView != null){
-                        dgView.getBackground().setAlpha(128);
+                        dgView.getBackground().setAlpha(DraggableEventView.OPACITY_INT);
                     }
                     break;
             }

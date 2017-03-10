@@ -6,8 +6,9 @@ import org.unimelb.itime.vendor.listener.ITimeEventInterface;
  * Created by yuhaoliu on 4/01/2017.
  */
 
-public class WrapperEvent {
+public class WrapperEvent implements Comparable<WrapperEvent> {
     private ITimeEventInterface event;
+    private long fromDayBegin;
     private String vendorEventUid;
     private boolean isAnimated;
 
@@ -38,5 +39,18 @@ public class WrapperEvent {
 
     public void setAnimated(boolean animated) {
         isAnimated = animated;
+    }
+
+    public long getFromDayBegin() {
+        return fromDayBegin;
+    }
+
+    public void setFromDayBegin(long fromDayBegin) {
+        this.fromDayBegin = fromDayBegin;
+    }
+
+    @Override
+    public int compareTo(WrapperEvent o) {
+        return event.compareTo(o.getEvent());
     }
 }
