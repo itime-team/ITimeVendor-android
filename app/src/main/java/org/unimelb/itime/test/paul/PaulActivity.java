@@ -10,7 +10,9 @@ import android.widget.Button;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.unimelb.itime.test.R;
+import org.unimelb.itime.test.bean.Contact;
 import org.unimelb.itime.test.bean.Event;
+import org.unimelb.itime.test.bean.Invitee;
 import org.unimelb.itime.test.bean.TimeSlot;
 import org.unimelb.itime.test.david.DBManager;
 import org.unimelb.itime.test.david.EventManager;
@@ -31,6 +33,8 @@ public class PaulActivity extends AppCompatActivity {
     private static final int PICK_PHOTO = 1;
     private static final String TAG = "MyAPP";
     private List<String> mResults;
+    private DBManager dbManager;
+    private EventManager eventManager;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -46,7 +50,7 @@ public class PaulActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_paul);
 //        loadData();
-
+        dothings();
         Button back = (Button) findViewById(R.id.back);
         final WeekView weekView = (WeekView) findViewById(R.id.week_view);
         back.setOnClickListener(new View.OnClickListener() {
@@ -91,96 +95,7 @@ public class PaulActivity extends AppCompatActivity {
             }
 
         });
-        weekView.enableTimeSlot();
-//        weekView.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                weekView.showTimeslotAnim(slots);
-//            }
-//        },5000);
         weekView.setDayEventMap(EventManager.getInstance().getEventsMap());
-
-        weekView.setOnTimeSlotOuterListener(new TimeSlotController.OnTimeSlotListener() {
-            @Override
-            public void onTimeSlotCreate(final DraggableTimeSlotView draggableTimeSlotView) {
-                // popup timeslot create page
-//                TimeSlot timeSlot = new TimeSlot();
-//                timeSlot.setTimeSlotUid(UUID.randomUUID().toString());
-//                timeSlot.setStartTime(draggableTimeSlotView.getNewStartTime());
-//                timeSlot.setEndTime(draggableTimeSlotView.getNewEndTime());
-//                weekView.addTimeSlot(timeSlot);
-//                weekView.reloadTimeSlots(false);
-//                slots.add(timeSlot);
-            }
-
-            @Override
-            public void onTimeSlotClick(DraggableTimeSlotView draggableTimeSlotView) {
-            }
-
-            @Override
-            public void onTimeSlotDragStart(DraggableTimeSlotView draggableTimeSlotView) {
-
-            }
-
-            @Override
-            public void onTimeSlotDragging(DraggableTimeSlotView draggableTimeSlotView, int i, int i1) {
-
-            }
-
-            @Override
-            public void onTimeSlotDragDrop(DraggableTimeSlotView draggableTimeSlotView, long startTime, long endTime) {
-                if (draggableTimeSlotView.getTimeslot() != null){
-                    draggableTimeSlotView.getTimeslot().setStartTime(startTime);
-                    draggableTimeSlotView.getTimeslot().setEndTime(endTime);
-//                    weekView.reloadTimeSlots(false);
-                }
-
-//                for (TimeSlot slot : slots
-//                     ) {
-//                    weekView.showTimeslotAnim(slot);
-//                }
-
-            }
-
-        });
-
-        for (int i = 0; i < 1; i++) {
-            long interval = i * 24 * 3600 * 1000;
-            TimeSlot slot = new TimeSlot();
-            Calendar calendar = Calendar.getInstance();
-            slot.setStartTime(interval + calendar.getTimeInMillis());
-            slot.setEndTime(interval + calendar.getTimeInMillis()+ 3600*1000);
-            slot.setTimeSlotUid(UUID.randomUUID().toString());
-            this.slots.add(slot);
-            WrapperTimeSlot slotwrapper = new WrapperTimeSlot(slot);
-            slotwrapper.setAnimated(true);
-            weekView.addTimeSlot(slotwrapper);
-//            weekView.showTimeslotAnim(slot);
-        }
-
-//        weekView.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                weekView.resetTimeSlots();
-//
-//                for (TimeSlot slot : slots
-//                        ) {
-//
-//                    weekView.addTimeSlot(slot);
-//                }
-//
-//                weekView.reloadTimeSlots(true);
-//            }
-//        },3000);
-
-        weekView.reloadTimeSlots(false);
-
-        weekView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                weekView.updateTimeSlotsDuration(2*3600*1000,true);
-            }
-        },5000);
 
     }
 
@@ -209,6 +124,18 @@ public class PaulActivity extends AppCompatActivity {
             EventManager.getInstance().addEvent(event);
         }
 
+    }
+
+    private void initData(){
+        this.dbManager.clearDB();
+        this.initDB();
+    }
+
+    public void dothings(){
+        dbManager = DBManager.getInstance(this);
+        eventManager = EventManager.getInstance();
+        initData();
+        loadData();
     }
 
     @Override
@@ -249,5 +176,105 @@ public class PaulActivity extends AppCompatActivity {
 //        );
 //        AppIndex.AppIndexApi.end(client, viewAction);
 //        client.disconnect();
+    }
+
+    private void initDB(){
+        Calendar calendar = Calendar.getInstance();
+        List<Event> events = new ArrayList<>();
+        List<Contact> contacts = initContact();
+        int[] type = {0,1,2};
+        int[] status = {0,1};
+        long interval = 3600 * 1000;
+//        calendar.set(Calendar.HOUR_OF_DAY,0);
+//        calendar.set(Calendar.MINUTE,0);
+        long startTime = calendar.getTimeInMillis();
+        long endTime;
+        for (int i = 1; i < 10; i++) {
+            endTime = startTime + (3600*1000);
+//            long duration = (endTime - startTime);
+
+            Event event = new Event();
+            event.setEventUid("" + i);
+            event.setTitle("adawdwadwadaw" + i);
+            event.setDisplayEventType(0);
+            event.setDisplayStatus("#63ADF2|slash|icon_normal");
+            event.setLocation("here");
+            event.setStartTime(startTime);
+
+            List<Invitee> inviteeList = new ArrayList<>();
+
+            Invitee invitee1 = new Invitee();
+            invitee1.setEventUid("" + i);
+            invitee1.setContact(contacts.get(0));
+            invitee1.setInviteeUid(contacts.get(0).getContactUid());
+            inviteeList.add(invitee1);
+
+            Invitee invitee2 = new Invitee();
+            invitee2.setEventUid("" + i);
+            invitee2.setContact(contacts.get(1));
+            invitee2.setInviteeUid(contacts.get(1).getContactUid());
+            inviteeList.add(invitee2);
+
+            dbManager.insertInviteeList(inviteeList);
+            event.setInvitee(inviteeList);
+
+            event.setEndTime(endTime);
+            events.add(event);
+
+//            startTime= i==2?startTime:endTime;
+            startTime = startTime + 24*3600*1000;
+//            calendar.setTimeInMillis(startTime + 24*3600*1000);
+        }
+
+        //cross day
+        for (int i = 1; i < 2; i++) {
+            endTime = startTime + 48 * (3600*1000);
+//            long duration = (endTime - startTime);
+
+            Event event = new Event();
+            event.setEventUid("" + 10001);
+            event.setTitle("adawdwadwadaw" + i);
+            event.setDisplayEventType(0);
+            event.setDisplayStatus("#63ADF2|slash|icon_normal");
+            event.setLocation("here");
+            event.setStartTime(startTime);
+
+            List<Invitee> inviteeList = new ArrayList<>();
+
+            Invitee invitee1 = new Invitee();
+            invitee1.setEventUid("" + i);
+            invitee1.setContact(contacts.get(0));
+            invitee1.setInviteeUid(contacts.get(0).getContactUid());
+            inviteeList.add(invitee1);
+
+            Invitee invitee2 = new Invitee();
+            invitee2.setEventUid("" + i);
+            invitee2.setContact(contacts.get(1));
+            invitee2.setInviteeUid(contacts.get(1).getContactUid());
+            inviteeList.add(invitee2);
+
+            dbManager.insertInviteeList(inviteeList);
+            event.setInvitee(inviteeList);
+
+            event.setEndTime(endTime);
+            events.add(event);
+
+//            startTime= i==2?startTime:endTime;
+            startTime = startTime + 24*3600*1000;
+//            calendar.setTimeInMillis(startTime + 24*3600*1000);
+        }
+
+        dbManager.insertEventList(events);
+    }
+
+    private List<Contact> initContact(){
+        List<Contact> contacts = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            Contact contact = new Contact(""+i, "http://img.zybus.com/uploads/allimg/131213/1-131213111353.jpg", "name " + i);
+            contacts.add(contact);
+            dbManager.insertContact(contact);
+        }
+
+        return contacts;
     }
 }

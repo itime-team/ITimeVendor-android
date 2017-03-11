@@ -685,19 +685,23 @@ public class FlexibleLenViewBody extends FrameLayout {
         long startTime = wrapper.getEvent().getStartTime();
         long endTime = wrapper.getEvent().getEndTime();
         long fromDayBegin = wrapper.getFromDayBegin();
-        long todayBegin = this.myCalendar.getBeginOfDayMilliseconds();
-        long todayEnd = this.myCalendar.getEndOfDayMilliseconds();
+//        long todayBegin = this.myCalendar.getBeginOfDayMilliseconds();
+//        long todayEnd = this.myCalendar.getEndOfDayMilliseconds();
+        long todayBegin = fromDayBegin;
+        long todayEnd = fromDayBegin + allDayMilliseconds;
 
         //regular
         if (startTime >= todayBegin && endTime <= todayEnd){
             return REGULAR;
         }
+
         //Begin part
-        if (startTime > todayBegin &&  endTime > todayEnd){
+        if (startTime > todayBegin && endTime > todayEnd){
             return DAY_CROSS_BEGIN;
         }
+
         //All day part
-        if (fromDayBegin >= todayBegin &&  endTime > todayEnd){
+        if (fromDayBegin == todayBegin && endTime > todayEnd){
             return DAY_CROSS_ALL_DAY;
         }
         //End part

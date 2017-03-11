@@ -47,7 +47,7 @@ public class EventController {
     private Context context;
     private OnEventListener onEventListener;
 
-    private Map<ITimeEventInterface, Integer> regularEventViewMap = new HashMap<>();
+    private Map<WrapperEvent, Integer> regularEventViewMap = new HashMap<>();
     private Map<ITimeEventInterface, DraggableEventView> uidDragViewMap = new HashMap<>();
     private ArrayList<DraggableEventView> allDayDgEventViews = new ArrayList<>();
 
@@ -143,7 +143,7 @@ public class EventController {
             final DraggableEventView.LayoutParams params = (DraggableEventView.LayoutParams) newDragEventView.getLayoutParams();
 
             newDragEventView.setId(View.generateViewId());
-            this.regularEventViewMap.put(wrapper.getEvent(), newDragEventView.getId());
+            this.regularEventViewMap.put(wrapper, newDragEventView.getId());
 
             eventLayout.addView(newDragEventView, params);
             eventLayout.getEvents().add(wrapper);
@@ -219,7 +219,7 @@ public class EventController {
             int eventHeight =(int) (duration * container.heightPerMillisd);
             int height = getDayCrossHeight(wrapper);
             DraggableEventView.LayoutParams params = new DraggableEventView.LayoutParams(eventHeight, height);
-            if (!container.isTimeSlotEnable){
+            if (!container.isTimeSlotEnable && container.getRegularEventType(wrapper) != FlexibleLenViewBody.DAY_CROSS_ALL_DAY){
                 event_view.setOnLongClickListener(new EventLongClickListener());
             }
             event_view.setTag(event);
@@ -245,7 +245,7 @@ public class EventController {
                 height =(int) (duration * container.heightPerMillisd);
                 break;
             case FlexibleLenViewBody.DAY_CROSS_BEGIN:
-                duration = container.getCalendar().getEndOfDayMilliseconds() - event.getStartTime();
+                duration = (wrapper.getFromDayBegin() + container.allDayMilliseconds) - event.getStartTime();
                 height =(int) (duration * container.heightPerMillisd);
                 break;
             case FlexibleLenViewBody.DAY_CROSS_ALL_DAY:
@@ -299,7 +299,7 @@ public class EventController {
                 int widthFactor = overlapGroup.get(i).first.first;
                 int startX = overlapGroup.get(i).first.second;
                 int topMargin = startY;
-                DraggableEventView eventView = (DraggableEventView) eventLayout.findViewById(regularEventViewMap.get(overlapGroup.get(i).second.getEvent()));
+                DraggableEventView eventView = (DraggableEventView) eventLayout.findViewById(regularEventViewMap.get(overlapGroup.get(i).second));
                 eventView.setPosParam(new DraggableEventView.PosParam(startY, startX, widthFactor, topMargin));
                 Calendar cal = Calendar.getInstance();
                 cal.setTimeInMillis(eventView.getEvent().getStartTime());
