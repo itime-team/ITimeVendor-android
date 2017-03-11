@@ -219,7 +219,7 @@ public class EventController {
             int eventHeight =(int) (duration * container.heightPerMillisd);
             int height = getDayCrossHeight(wrapper);
             DraggableEventView.LayoutParams params = new DraggableEventView.LayoutParams(eventHeight, height);
-            if (!container.isTimeSlotEnable){
+            if (!container.isTimeSlotEnable && container.getRegularEventType(wrapper) != FlexibleLenViewBody.DAY_CROSS_ALL_DAY){
                 event_view.setOnLongClickListener(new EventLongClickListener());
             }
             event_view.setTag(event);
