@@ -201,8 +201,8 @@ public class YinActivity extends AppCompatActivity {
 //        calendar.set(Calendar.MINUTE,0);
         long startTime = calendar.getTimeInMillis();
         long endTime;
-        for (int i = 1; i < 2; i++) {
-            endTime = startTime + 48 * (3600*1000);
+        for (int i = 1; i < 10; i++) {
+            endTime = startTime + (3600*1000);
 //            long duration = (endTime - startTime);
 
             Event event = new Event();
@@ -234,7 +234,7 @@ public class YinActivity extends AppCompatActivity {
             events.add(event);
 
 //            startTime= i==2?startTime:endTime;
-            startTime = endTime;
+            startTime = startTime + 24*3600*1000;
 //            calendar.setTimeInMillis(startTime + 24*3600*1000);
         }
 
