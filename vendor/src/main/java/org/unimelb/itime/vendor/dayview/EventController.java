@@ -34,6 +34,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -432,8 +433,20 @@ public class EventController {
                     int newY = (int) actionStopY - dgView.getHeight() / 2;
                     int[] reComputeResult = container.reComputePositionToSet(newX, newY, dgView, v);
 
+//                    int nearestProperPosition = nearestQuarterTimeSlotKey(tapY - followView.getHeight() / 2);
+//                    if (nearestProperPosition != -1) {
+//                        if (this.displayLen == 1){
+//                            msgWindow.setText(positionToTimeQuarterTreeMap.get(nearestProperPosition));
+//                        }else{
+//                            MyCalendar myCal = new MyCalendar(this.myCalendar);
+//                            myCal.setOffsetByDate(index);
+//                            String dayInfo = (myCal.getCalendar().getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault()));
+//                            msgWindow.setText(dayInfo + " " + positionToTimeQuarterTreeMap.get(nearestProperPosition));
+//                        }
+
+
                     //update the event time
-                    String new_time = container.positionToTimeTreeMap.get(reComputeResult[1]);
+                    String new_time = container.positionToTimeQuarterTreeMap.get(reComputeResult[1]);
                     //important! update event time after drag
                     String[] time_parts = new_time.split(":");
                     currentEventNewHour = Integer.valueOf(time_parts[0]);
