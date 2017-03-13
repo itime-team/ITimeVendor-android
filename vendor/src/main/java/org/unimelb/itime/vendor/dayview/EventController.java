@@ -7,6 +7,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.ClipData;
 import android.content.Context;
+import android.graphics.Point;
 import android.util.EventLog;
 import android.util.Log;
 import android.util.Pair;
@@ -351,7 +352,19 @@ public class EventController {
             if (container.tempDragView != null || onEventListener !=null && onEventListener.isDraggable((DraggableEventView) view)){
                 ClipData data = ClipData.newPlainText("", "");
                 View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(
-                        view);
+                        view){
+                    @Override
+                    public void onProvideShadowMetrics(Point outShadowSize, Point outShadowTouchPoint) {
+//                        super.onProvideShadowMetrics(outShadowSize, outShadowTouchPoint);
+                        final View view = getView();
+                        if (view != null) {
+                            outShadowSize.set(view.getWidth(), view.getHeight());
+                            outShadowTouchPoint.set(outShadowSize.x / 2, 0);
+                        } else {
+//                            Log.e(View.VIEW_LOG_TAG, "Asked for drag thumb metrics but no view");
+                        }
+                    }
+                };
                 if (container.tempDragView != null) {
                     view.setVisibility(View.INVISIBLE);
                 } else {
@@ -430,20 +443,8 @@ public class EventController {
                     float actionStopY = event.getY();
                     // Dropped, reassign View to ViewGroup
                     int newX = (int) actionStopX - dgView.getWidth() / 2;
-                    int newY = (int) actionStopY - dgView.getHeight() / 2;
+                    int newY = (int) actionStopY;
                     int[] reComputeResult = container.reComputePositionToSet(newX, newY, dgView, v);
-
-//                    int nearestProperPosition = nearestQuarterTimeSlotKey(tapY - followView.getHeight() / 2);
-//                    if (nearestProperPosition != -1) {
-//                        if (this.displayLen == 1){
-//                            msgWindow.setText(positionToTimeQuarterTreeMap.get(nearestProperPosition));
-//                        }else{
-//                            MyCalendar myCal = new MyCalendar(this.myCalendar);
-//                            myCal.setOffsetByDate(index);
-//                            String dayInfo = (myCal.getCalendar().getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault()));
-//                            msgWindow.setText(dayInfo + " " + positionToTimeQuarterTreeMap.get(nearestProperPosition));
-//                        }
-
 
                     //update the event time
                     String new_time = container.positionToTimeQuarterTreeMap.get(reComputeResult[1]);

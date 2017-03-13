@@ -455,18 +455,20 @@ public class FlexibleLenViewBody extends FrameLayout {
             positionToTimeTreeMap.put((int) startPoint + lineHeight * slot, hours[slot] + ":00");
             //for quarter map
             positionToTimeQuarterTreeMap.put((int) startPoint + lineHeight * slot, hours[slot] + ":00");
-
             String hourPart = hours[slot].substring(0, 2); // XX
             timeToPositionTreeMap.put((float) Integer.valueOf(hourPart), (int) startPoint + lineHeight * slot);
-            for (int miniSlot = 0; miniSlot < 59; miniSlot++) {
-                String minutes = String.format("%02d", miniSlot + 1);
-                String time = hourPart + ":" + minutes;
-                int positionY = (int) (startPoint + lineHeight * slot + timeSlotHeight * (miniSlot + 1));
-                positionToTimeTreeMap.put(positionY, time);
-                timeToPositionTreeMap.put(Integer.valueOf(hourPart) + (float) Integer.valueOf(minutes) / 100, positionY);
-                //for quarter map
-                if ((miniSlot + 1) % 15 == 0){
-                    positionToTimeQuarterTreeMap.put(positionY, time);
+            //if not 24, add minutes
+            if (slot != hours.length - 1){
+                for (int miniSlot = 0; miniSlot < 59; miniSlot++) {
+                    String minutes = String.format("%02d", miniSlot + 1);
+                    String time = hourPart + ":" + minutes;
+                    int positionY = (int) (startPoint + lineHeight * slot + timeSlotHeight * (miniSlot + 1));
+                    positionToTimeTreeMap.put(positionY, time);
+                    timeToPositionTreeMap.put(Integer.valueOf(hourPart) + (float) Integer.valueOf(minutes) / 100, positionY);
+                    //for quarter map
+                    if ((miniSlot + 1) % 15 == 0){
+                        positionToTimeQuarterTreeMap.put(positionY, time);
+                    }
                 }
             }
         }
@@ -779,8 +781,8 @@ public class FlexibleLenViewBody extends FrameLayout {
 
         if (actualY < 0) {
             finalY = 0;
-        } else if (actualY + objHeight > containerHeight) {
-            finalY = containerHeight - objHeight;
+        } else if (actualY > containerHeight) {
+            finalY = containerHeight;
         }
 //        int findNearestPosition = nearestTimeSlotKey(finalY);
         int findNearestPosition = nearestQuarterTimeSlotKey(finalY);
@@ -893,9 +895,11 @@ public class FlexibleLenViewBody extends FrameLayout {
         float toX;
         float toY;
 
-        toY = tapY - followView.getHeight() / 2 - msgWindow.getHeight();
+//        toY = tapY - followView.getHeight() / 2 - msgWindow.getHeight();
+        toY = tapY - msgWindow.getHeight();
         if (toY <= 0){
-            toY = tapY + followView.getHeight() / 2;
+//            toY = tapY + followView.getHeight() / 2;
+            toY = 0;
         }
         //for msg window in center
 //        if (tapX + msgWindow.getWidth() / 2 > dividerBgRLayout.getWidth()) {
@@ -910,7 +914,7 @@ public class FlexibleLenViewBody extends FrameLayout {
         if (tapX < msgWindow.getWidth() * 1.5){
             toX = dividerBgRLayout.getWidth() - msgWindow.getWidth();
         }
-        int nearestProperPosition = nearestQuarterTimeSlotKey(tapY - followView.getHeight() / 2);
+        int nearestProperPosition = nearestQuarterTimeSlotKey(tapY);
         if (nearestProperPosition != -1) {
             if (this.displayLen == 1){
                 msgWindow.setText(positionToTimeQuarterTreeMap.get(nearestProperPosition));
