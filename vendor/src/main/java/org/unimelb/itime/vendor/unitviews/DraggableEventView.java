@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -43,6 +44,8 @@ public class DraggableEventView extends ViewGroup {
     private int type = 0;
     private int indexInView = 0;
     private int color;
+    private float slashOpacity = 0.30f;
+
     private boolean isAllDayEvent = false;
 
     private String status;
@@ -156,8 +159,19 @@ public class DraggableEventView extends ViewGroup {
             bg.getBackground().setAlpha(OPACITY_INT);
         }else {
             color = getResources().getColor(R.color.private_et);
+        }
+
+        //if event is grouped && not confirmed
+        if(event != null
+                && this.event.getDisplayEventType() == 1
+                && status != null
+                && !status.equals("")
+                && status.equals("slash")){
+            ((GradientDrawable)bg.getBackground()).setColor(Color.WHITE);
+        }else {
             ((GradientDrawable)bg.getBackground()).setColor(color);
         }
+
         //set leftBar color base on type
         updateLeftBar(getResources().getDrawable(R.drawable.itime_draggable_event_bg), color);
     }
@@ -165,7 +179,15 @@ public class DraggableEventView extends ViewGroup {
     @Override
     public void setBackground(Drawable drawable){
         bg.setBackground(drawable);
-        ((GradientDrawable)bg.getBackground()).setColor(color);
+        int actualColor = color;
+        if(event != null
+                && this.event.getDisplayEventType() == 1
+                && status != null
+                && !status.equals("")
+                && status.equals("slash")){
+            actualColor = Color.WHITE;
+        }
+        ((GradientDrawable)bg.getBackground()).setColor(actualColor);
         if (!event.isHighlighted()){
             bg.getBackground().setAlpha(OPACITY_INT);
         }
@@ -244,8 +266,10 @@ public class DraggableEventView extends ViewGroup {
     }
 
     private void drawSlash(Canvas canvas){
+        int slashColor = getContext().getResources().getColor(R.color.group_et);
         p.setAntiAlias(true);
-        p.setColor(Color.WHITE);
+        p.setColor(slashColor);
+        p.setAlpha((int)(255 * slashOpacity));
         p.setStrokeWidth(DensityUtil.dip2px(getContext(),1));
 
         int nowAtPxX = 0 - height;

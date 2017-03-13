@@ -145,7 +145,7 @@ public class YinActivity extends AppCompatActivity {
 //            String[] rec = {"RRULE:FREQ=WEEKLY;INTERVAL=1"};
 //            event.setRecurrence(rec);
             this.event = event;
-            event.setHighLighted(true);
+//            event.setHighLighted(true);
             EventManager.getInstance().addEvent(event);
 //            testE = event;
         }
@@ -208,7 +208,7 @@ public class YinActivity extends AppCompatActivity {
             Event event = new Event();
             event.setEventUid("" + i);
             event.setTitle("adawdwadwadaw" + i);
-            event.setDisplayEventType(0);
+            event.setDisplayEventType(1);
             event.setDisplayStatus("#63ADF2|slash|icon_normal");
             event.setLocation("here");
             event.setStartTime(startTime);
