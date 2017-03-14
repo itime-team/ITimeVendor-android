@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PorterDuff;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -20,9 +19,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.unimelb.itime.vendor.R;
-import org.unimelb.itime.vendor.helper.DensityUtil;
-import org.unimelb.itime.vendor.helper.MyCalendar;
-import org.unimelb.itime.vendor.helper.VendorAnimation;
+import org.unimelb.itime.vendor.util.DensityUtil;
+import org.unimelb.itime.vendor.util.MyCalendar;
+import org.unimelb.itime.vendor.util.VendorAnimation;
 import org.unimelb.itime.vendor.listener.ITimeEventInterface;
 
 import java.util.Calendar;

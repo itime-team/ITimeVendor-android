@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.unimelb.itime.vendor.helper.DensityUtil;
+import org.unimelb.itime.vendor.util.DensityUtil;
 
 
 /**

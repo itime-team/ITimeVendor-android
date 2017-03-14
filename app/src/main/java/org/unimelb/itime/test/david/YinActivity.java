@@ -14,7 +14,7 @@ import org.unimelb.itime.vendor.agendaview.MonthAgendaView;
 import org.unimelb.itime.vendor.dayview.EventController;
 import org.unimelb.itime.vendor.dayview.MonthDayView;
 import org.unimelb.itime.vendor.unitviews.DraggableEventView;
-import org.unimelb.itime.vendor.helper.MyCalendar;
+import org.unimelb.itime.vendor.util.MyCalendar;
 
 import java.util.ArrayList;
 import java.util.Calendar;

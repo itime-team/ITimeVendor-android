@@ -1,16 +1,14 @@
 package org.unimelb.itime.vendor.dayview;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import org.unimelb.itime.vendor.helper.DensityUtil;
+import org.unimelb.itime.vendor.util.DensityUtil;
 
 /**
  * Created by yuhaoliu on 18/02/2017.

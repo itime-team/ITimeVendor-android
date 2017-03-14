@@ -1,4 +1,4 @@
-package org.unimelb.itime.vendor.helper;
+package org.unimelb.itime.vendor.util;
 
 import java.util.Calendar;
 
@@ -135,8 +135,8 @@ public class MyCalendar {
         Calendar calendar = this.getCalendar();
         calendar.set(Calendar.HOUR_OF_DAY, 23);
         calendar.set(Calendar.MINUTE, 59);
-        calendar.set(Calendar.SECOND, 50);
-        calendar.set(Calendar.MILLISECOND, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND,999);
 
         return  calendar.getTimeInMillis();
     }

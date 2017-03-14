@@ -5,8 +5,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
-import org.unimelb.itime.vendor.helper.MyCalendar;
-
 /**
  * Created by yuhaoliu on 1/09/16.
  */

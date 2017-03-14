@@ -1,4 +1,4 @@
-package org.unimelb.itime.vendor.helper;
+package org.unimelb.itime.vendor.util;
 
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;

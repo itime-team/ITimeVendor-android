@@ -5,12 +5,10 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import org.unimelb.itime.vendor.R;
-import org.unimelb.itime.vendor.helper.MyCalendar;
+import org.unimelb.itime.vendor.util.MyCalendar;
 
 import java.util.ArrayList;
 import java.util.Calendar;

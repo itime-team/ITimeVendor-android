@@ -22,8 +22,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.unimelb.itime.vendor.R;
-import org.unimelb.itime.vendor.helper.DensityUtil;
-import org.unimelb.itime.vendor.helper.MyCalendar;
+import org.unimelb.itime.vendor.util.BaseUtil;
+import org.unimelb.itime.vendor.util.DensityUtil;
+import org.unimelb.itime.vendor.util.MyCalendar;
 import org.unimelb.itime.vendor.listener.ITimeEventInterface;
 import org.unimelb.itime.vendor.listener.ITimeEventPackageInterface;
 import org.unimelb.itime.vendor.listener.ITimeTimeSlotInterface;
@@ -73,7 +74,7 @@ public class FlexibleLenViewBody extends FrameLayout {
     private int rs_nowtime_line = R.drawable.itime_now_time_full_line;
     /*************************** End of Resources Setting ****************************/
 
-    protected final long allDayMilliseconds = 24 * 60 * 60 * 1000;
+//    protected final long allDayMilliseconds = 24 * 60 * 60 * 1000;
 
     protected boolean isTimeSlotEnable = false;
     protected boolean isRemoveOptListener = false;
@@ -661,8 +662,8 @@ public class FlexibleLenViewBody extends FrameLayout {
     }
 
     protected int getEventContainerIndex(WrapperEvent wrapper){
-        long dayLong = (24 * 60 * 60 * 1000);
         long todayBegin = this.myCalendar.getBeginOfDayMilliseconds();
+        long dayLong =  this.myCalendar.getEndOfDayMilliseconds() - todayBegin;
         long startTime = wrapper.getEvent().getStartTime();
         long endTime = wrapper.getEvent().getEndTime();
         long fromDayBegin = wrapper.getFromDayBegin();
@@ -691,10 +692,8 @@ public class FlexibleLenViewBody extends FrameLayout {
         long startTime = wrapper.getEvent().getStartTime();
         long endTime = wrapper.getEvent().getEndTime();
         long fromDayBegin = wrapper.getFromDayBegin();
-//        long todayBegin = this.myCalendar.getBeginOfDayMilliseconds();
-//        long todayEnd = this.myCalendar.getEndOfDayMilliseconds();
         long todayBegin = fromDayBegin;
-        long todayEnd = fromDayBegin + allDayMilliseconds;
+        long todayEnd = todayBegin + BaseUtil.getAllDayLong(todayBegin);
 
         //regular
         if (startTime >= todayBegin && endTime <= todayEnd){
@@ -720,7 +719,7 @@ public class FlexibleLenViewBody extends FrameLayout {
 
     protected int getContainerIndex(long startTime){
         long today = this.myCalendar.getBeginOfDayMilliseconds();
-        long dayLong = (24 * 60 * 60 * 1000);
+        long dayLong = BaseUtil.getAllDayLong(today);
 
         return (int)(Math.floor((float)(startTime - today)/ dayLong));
     }

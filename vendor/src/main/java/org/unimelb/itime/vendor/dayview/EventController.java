@@ -8,7 +8,6 @@ import android.animation.ValueAnimator;
 import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Point;
-import android.util.EventLog;
 import android.util.Log;
 import android.util.Pair;
 import android.view.DragEvent;
@@ -22,9 +21,10 @@ import android.widget.LinearLayout;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 
-import org.unimelb.itime.vendor.helper.CalendarEventOverlapHelper;
-import org.unimelb.itime.vendor.helper.DensityUtil;
-import org.unimelb.itime.vendor.helper.MyCalendar;
+import org.unimelb.itime.vendor.util.BaseUtil;
+import org.unimelb.itime.vendor.util.CalendarEventOverlapHelper;
+import org.unimelb.itime.vendor.util.DensityUtil;
+import org.unimelb.itime.vendor.util.MyCalendar;
 import org.unimelb.itime.vendor.listener.ITimeEventInterface;
 import org.unimelb.itime.vendor.listener.ITimeEventPackageInterface;
 import org.unimelb.itime.vendor.unitviews.DraggableEventView;
@@ -35,7 +35,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -72,23 +71,27 @@ public class EventController {
         for (int i = 0; i < container.displayLen; i++) {
             long startTime = tempCal.getBeginOfDayMilliseconds();
 
-            if (allDayEventList != null){
-                for (ITimeEventInterface allDayEvent: allDayEventList
-                     ) {
-                    if (this.isWithin(allDayEvent, i)) {
-                        WrapperEvent wrapperEvent = new WrapperEvent(allDayEvent);
-                        wrapperEvent.setFromDayBegin(startTime);
-                        this.addAllDayEvent(wrapperEvent, i);
-                    }
-                }
-            }
+//            if (allDayEventList != null){
+//                for (ITimeEventInterface allDayEvent: allDayEventList
+//                     ) {
+//                    if (this.isWithin(allDayEvent, i)) {
+//                        WrapperEvent wrapperEvent = new WrapperEvent(allDayEvent);
+//                        wrapperEvent.setFromDayBegin(startTime);
+//                        this.addAllDayEvent(wrapperEvent, i);
+//                    }
+//                }
+//            }
 
             if (regularDayEventMap != null && regularDayEventMap.containsKey(startTime)){
                 List<ITimeEventInterface> currentDayEvents = regularDayEventMap.get(startTime);
                 for (ITimeEventInterface event : currentDayEvents) {
                     WrapperEvent wrapperEvent = new WrapperEvent(event);
                     wrapperEvent.setFromDayBegin(startTime);
-                    this.addRegularEvent(wrapperEvent);
+                    if (BaseUtil.isAllDayEvent(event)){
+                        this.addAllDayEvent(wrapperEvent, i);
+                    }else {
+                        this.addRegularEvent(wrapperEvent);
+                    }
                 }
             }
 
@@ -97,7 +100,11 @@ public class EventController {
                 for (ITimeEventInterface event : currentDayEvents) {
                     WrapperEvent wrapperEvent = new WrapperEvent(event);
                     wrapperEvent.setFromDayBegin(startTime);
-                    this.addRegularEvent(wrapperEvent);
+                    if (BaseUtil.isAllDayEvent(event)){
+                        this.addAllDayEvent(wrapperEvent, i);
+                    }else {
+                        this.addRegularEvent(wrapperEvent);
+                    }
                 }
             }
 
@@ -109,16 +116,6 @@ public class EventController {
             calculateEventLayout(eventLayout);
         }
     }
-
-//    private void addEvent(ITimeEventInterface event) {
-//        boolean isTodayAllDayEvent = isWithin(event) && isAllDayEvent(event);
-//
-//        if (isTodayAllDayEvent) {
-//            addAllDayEvent(event);
-//        } else {
-//            addRegularEvent(event);
-//        }
-//    }
 
     private void addAllDayEvent(WrapperEvent wrapper, int index) {
         if (container.topAllDayLayout.getVisibility() != View.VISIBLE){
@@ -235,6 +232,8 @@ public class EventController {
     }
 
     private int getDayCrossHeight(WrapperEvent wrapper){
+
+        long allDayMilliseconds = BaseUtil.getAllDayLong(wrapper.getFromDayBegin());
         int type = container.getRegularEventType(wrapper);
         ITimeEventInterface event = wrapper.getEvent();
 
@@ -247,11 +246,11 @@ public class EventController {
                 height =(int) (duration * container.heightPerMillisd);
                 break;
             case FlexibleLenViewBody.DAY_CROSS_BEGIN:
-                duration = (wrapper.getFromDayBegin() + container.allDayMilliseconds) - event.getStartTime();
+                duration = (wrapper.getFromDayBegin() + allDayMilliseconds) - event.getStartTime();
                 height =(int) (duration * container.heightPerMillisd);
                 break;
             case FlexibleLenViewBody.DAY_CROSS_ALL_DAY:
-                duration = container.allDayMilliseconds;
+                duration = allDayMilliseconds;
                 height =(int) (duration * container.heightPerMillisd);
                 break;
             case FlexibleLenViewBody.DAY_CROSS_END:
