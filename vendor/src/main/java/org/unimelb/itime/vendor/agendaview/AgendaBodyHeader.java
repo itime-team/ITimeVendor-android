@@ -1,9 +1,7 @@
 package org.unimelb.itime.vendor.agendaview;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -12,8 +10,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.unimelb.itime.vendor.R;
-import org.unimelb.itime.vendor.helper.DensityUtil;
-import org.unimelb.itime.vendor.helper.MyCalendar;
+import org.unimelb.itime.vendor.util.DensityUtil;
+import org.unimelb.itime.vendor.util.MyCalendar;
 
 import java.util.Calendar;
 import java.util.Locale;

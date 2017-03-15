@@ -14,7 +14,7 @@ import org.unimelb.itime.vendor.agendaview.MonthAgendaView;
 import org.unimelb.itime.vendor.dayview.EventController;
 import org.unimelb.itime.vendor.dayview.MonthDayView;
 import org.unimelb.itime.vendor.unitviews.DraggableEventView;
-import org.unimelb.itime.vendor.helper.MyCalendar;
+import org.unimelb.itime.vendor.util.MyCalendar;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -145,7 +145,7 @@ public class YinActivity extends AppCompatActivity {
 //            String[] rec = {"RRULE:FREQ=WEEKLY;INTERVAL=1"};
 //            event.setRecurrence(rec);
             this.event = event;
-            event.setHighLighted(true);
+//            event.setHighLighted(true);
             EventManager.getInstance().addEvent(event);
 //            testE = event;
         }
@@ -208,7 +208,7 @@ public class YinActivity extends AppCompatActivity {
             Event event = new Event();
             event.setEventUid("" + i);
             event.setTitle("adawdwadwadaw" + i);
-            event.setDisplayEventType(0);
+            event.setDisplayEventType(1);
             event.setDisplayStatus("#63ADF2|slash|icon_normal");
             event.setLocation("here");
             event.setStartTime(startTime);

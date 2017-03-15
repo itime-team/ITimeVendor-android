@@ -1,7 +1,6 @@
 package org.unimelb.itime.vendor.agendaview;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
@@ -17,8 +16,8 @@ import android.widget.TextView;
 import com.squareup.picasso.Transformation;
 
 import org.unimelb.itime.vendor.R;
-import org.unimelb.itime.vendor.helper.DensityUtil;
-import org.unimelb.itime.vendor.helper.LoadImgHelper;
+import org.unimelb.itime.vendor.util.DensityUtil;
+import org.unimelb.itime.vendor.util.LoadImgHelper;
 import org.unimelb.itime.vendor.listener.ITimeEventInterface;
 import org.unimelb.itime.vendor.listener.ITimeInviteeInterface;
 

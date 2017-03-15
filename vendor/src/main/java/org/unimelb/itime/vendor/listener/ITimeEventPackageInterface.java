@@ -9,6 +9,5 @@ import java.util.Map;
 public interface ITimeEventPackageInterface {
     Map<Long, List<ITimeEventInterface>> getRegularEventDayMap();
     Map<Long, List<ITimeEventInterface>> getRepeatedEventDayMap();
-    List<ITimeEventInterface> getAllDayEvents();
     void clearPackage();
 }

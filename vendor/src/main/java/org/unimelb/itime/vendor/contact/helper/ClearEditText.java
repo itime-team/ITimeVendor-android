@@ -15,7 +15,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.EditText;
 
 import org.unimelb.itime.vendor.R;
-import org.unimelb.itime.vendor.helper.DensityUtil;
+import org.unimelb.itime.vendor.util.DensityUtil;
 
 /**
  * @Description:带删除按钮的EditText

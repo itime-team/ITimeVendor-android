@@ -1,7 +1,6 @@
-package org.unimelb.itime.vendor.helper;
+package org.unimelb.itime.vendor.util;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;

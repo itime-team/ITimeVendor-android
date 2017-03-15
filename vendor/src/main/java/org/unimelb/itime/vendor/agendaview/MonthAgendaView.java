@@ -9,7 +9,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,13 +19,12 @@ import android.widget.RelativeLayout;
 import org.unimelb.itime.vendor.R;
 import org.unimelb.itime.vendor.dayview.DayViewHeader;
 import org.unimelb.itime.vendor.dayview.DayViewHeaderRecyclerDivider;
-import org.unimelb.itime.vendor.helper.MyCalendar;
+import org.unimelb.itime.vendor.util.MyCalendar;
 import org.unimelb.itime.vendor.listener.ITimeEventInterface;
 import org.unimelb.itime.vendor.listener.ITimeEventPackageInterface;
 
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by yuhaoliu on 31/08/16.
@@ -125,13 +123,13 @@ public class MonthAgendaView extends RelativeLayout{
 
             @Override
             public boolean todayHasEvent(long startOfDay) {
-                List<ITimeEventInterface> allDayEvents = eventPackage.getAllDayEvents();
-                for (ITimeEventInterface allDayEvent:allDayEvents
-                        ) {
-                    if (isWithin(allDayEvent,startOfDay,0)){
-                        return true;
-                    }
-                }
+//                List<ITimeEventInterface> allDayEvents = eventPackage.getAllDayEvents();
+//                for (ITimeEventInterface allDayEvent:allDayEvents
+//                        ) {
+//                    if (isWithin(allDayEvent,startOfDay,0)){
+//                        return true;
+//                    }
+//                }
 
                 boolean hasRegular = eventPackage.getRegularEventDayMap().containsKey(startOfDay) && (eventPackage.getRegularEventDayMap().get(startOfDay).size() != 0);
                 boolean hasRepeated = eventPackage.getRepeatedEventDayMap().containsKey(startOfDay) && (eventPackage.getRepeatedEventDayMap().get(startOfDay).size() != 0);

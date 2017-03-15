@@ -2,7 +2,6 @@ package org.unimelb.itime.test.david;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -11,10 +10,7 @@ import org.unimelb.itime.test.bean.Contact;
 import org.unimelb.itime.test.bean.Event;
 import org.unimelb.itime.test.bean.Invitee;
 import org.unimelb.itime.vendor.agendaview.MonthAgendaView;
-import org.unimelb.itime.vendor.dayview.EventController;
 import org.unimelb.itime.vendor.dayview.MonthDayView;
-import org.unimelb.itime.vendor.unitviews.DraggableEventView;
-import org.unimelb.itime.vendor.helper.MyCalendar;
 
 import java.util.ArrayList;
 import java.util.Calendar;

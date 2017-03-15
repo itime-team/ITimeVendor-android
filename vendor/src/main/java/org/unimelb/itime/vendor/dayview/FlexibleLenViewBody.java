@@ -22,8 +22,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.unimelb.itime.vendor.R;
-import org.unimelb.itime.vendor.helper.DensityUtil;
-import org.unimelb.itime.vendor.helper.MyCalendar;
+import org.unimelb.itime.vendor.util.BaseUtil;
+import org.unimelb.itime.vendor.util.DensityUtil;
+import org.unimelb.itime.vendor.util.MyCalendar;
 import org.unimelb.itime.vendor.listener.ITimeEventInterface;
 import org.unimelb.itime.vendor.listener.ITimeEventPackageInterface;
 import org.unimelb.itime.vendor.listener.ITimeTimeSlotInterface;
@@ -73,7 +74,7 @@ public class FlexibleLenViewBody extends FrameLayout {
     private int rs_nowtime_line = R.drawable.itime_now_time_full_line;
     /*************************** End of Resources Setting ****************************/
 
-    protected final long allDayMilliseconds = 24 * 60 * 60 * 1000;
+//    protected final long allDayMilliseconds = 24 * 60 * 60 * 1000;
 
     protected boolean isTimeSlotEnable = false;
     protected boolean isRemoveOptListener = false;
@@ -94,12 +95,11 @@ public class FlexibleLenViewBody extends FrameLayout {
     public MyCalendar myCalendar;
     protected Context context;
 
-    private ArrayList<DraggableEventView> allDayDgEventViews = new ArrayList<>();
-
     protected ArrayList<DayInnerHeaderEventLayout> allDayEventLayouts = new ArrayList<>();
     protected ArrayList<DayInnerBodyEventLayout> eventLayouts = new ArrayList<>();
 
     protected TreeMap<Integer, String> positionToTimeTreeMap = new TreeMap<>();
+    protected TreeMap<Integer, String> positionToTimeQuarterTreeMap = new TreeMap<>();
     protected TreeMap<Float, Integer> timeToPositionTreeMap = new TreeMap<>();
 
     protected SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
@@ -452,18 +452,25 @@ public class FlexibleLenViewBody extends FrameLayout {
         String[] hours = getHours();
         for (int slot = 0; slot < hours.length; slot++) {
             //add full clock
+            //for single minute map
             positionToTimeTreeMap.put((int) startPoint + lineHeight * slot, hours[slot] + ":00");
+            //for quarter map
+            positionToTimeQuarterTreeMap.put((int) startPoint + lineHeight * slot, hours[slot] + ":00");
             String hourPart = hours[slot].substring(0, 2); // XX
             timeToPositionTreeMap.put((float) Integer.valueOf(hourPart), (int) startPoint + lineHeight * slot);
-            for (int miniSlot = 0; miniSlot < 59; miniSlot++) {
-//                String minutes = String.valueOf((miniSlot + 1) * 15);
-                String minutes = String.format("%02d", miniSlot + 1);
-//                minutes = String.format("%02d", minutes);
-//                Log.i(TAG, "minutes: " + minutes);
-                String time = hourPart + ":" + minutes;
-                int positionY = (int) (startPoint + lineHeight * slot + timeSlotHeight * (miniSlot + 1));
-                positionToTimeTreeMap.put(positionY, time);
-                timeToPositionTreeMap.put(Integer.valueOf(hourPart) + (float) Integer.valueOf(minutes) / 100, positionY);
+            //if not 24, add minutes
+            if (slot != hours.length - 1){
+                for (int miniSlot = 0; miniSlot < 59; miniSlot++) {
+                    String minutes = String.format("%02d", miniSlot + 1);
+                    String time = hourPart + ":" + minutes;
+                    int positionY = (int) (startPoint + lineHeight * slot + timeSlotHeight * (miniSlot + 1));
+                    positionToTimeTreeMap.put(positionY, time);
+                    timeToPositionTreeMap.put(Integer.valueOf(hourPart) + (float) Integer.valueOf(minutes) / 100, positionY);
+                    //for quarter map
+                    if ((miniSlot + 1) % 15 == 0){
+                        positionToTimeQuarterTreeMap.put(positionY, time);
+                    }
+                }
             }
         }
     }
@@ -655,8 +662,8 @@ public class FlexibleLenViewBody extends FrameLayout {
     }
 
     protected int getEventContainerIndex(WrapperEvent wrapper){
-        long dayLong = (24 * 60 * 60 * 1000);
         long todayBegin = this.myCalendar.getBeginOfDayMilliseconds();
+        long dayLong =  this.myCalendar.getEndOfDayMilliseconds() - todayBegin;
         long startTime = wrapper.getEvent().getStartTime();
         long endTime = wrapper.getEvent().getEndTime();
         long fromDayBegin = wrapper.getFromDayBegin();
@@ -685,10 +692,8 @@ public class FlexibleLenViewBody extends FrameLayout {
         long startTime = wrapper.getEvent().getStartTime();
         long endTime = wrapper.getEvent().getEndTime();
         long fromDayBegin = wrapper.getFromDayBegin();
-//        long todayBegin = this.myCalendar.getBeginOfDayMilliseconds();
-//        long todayEnd = this.myCalendar.getEndOfDayMilliseconds();
         long todayBegin = fromDayBegin;
-        long todayEnd = fromDayBegin + allDayMilliseconds;
+        long todayEnd = todayBegin + BaseUtil.getAllDayLong(todayBegin);
 
         //regular
         if (startTime >= todayBegin && endTime <= todayEnd){
@@ -714,7 +719,7 @@ public class FlexibleLenViewBody extends FrameLayout {
 
     protected int getContainerIndex(long startTime){
         long today = this.myCalendar.getBeginOfDayMilliseconds();
-        long dayLong = (24 * 60 * 60 * 1000);
+        long dayLong = BaseUtil.getAllDayLong(today);
 
         return (int)(Math.floor((float)(startTime - today)/ dayLong));
     }
@@ -767,7 +772,6 @@ public class FlexibleLenViewBody extends FrameLayout {
     protected int[] reComputePositionToSet(int actualX, int actualY, View draggableObj, View container) {
         int containerWidth = container.getWidth();
         int containerHeight = container.getHeight();
-
         int objWidth = draggableObj.getWidth();
         int objHeight = draggableObj.getHeight();
 
@@ -776,10 +780,11 @@ public class FlexibleLenViewBody extends FrameLayout {
 
         if (actualY < 0) {
             finalY = 0;
-        } else if (actualY + objHeight > containerHeight) {
-            finalY = containerHeight - objHeight;
+        } else if (actualY > containerHeight) {
+            finalY = containerHeight;
         }
-        int findNearestPosition = nearestTimeSlotKey(finalY);
+//        int findNearestPosition = nearestTimeSlotKey(finalY);
+        int findNearestPosition = nearestQuarterTimeSlotKey(finalY);
         if (findNearestPosition != -1) {
             finalY = findNearestPosition;
         } else {
@@ -789,8 +794,13 @@ public class FlexibleLenViewBody extends FrameLayout {
         return new int[]{finalX, finalY};
     }
 
-    private int nearestTimeSlotKey(int tapY) {
-        int key = tapY;
+    /**
+     *
+     * @param positionY
+     * @return
+     */
+    private int nearestTimeSlotKey(int positionY) {
+        int key = positionY;
         Map.Entry<Integer, String> low = positionToTimeTreeMap.floorEntry(key);
         Map.Entry<Integer, String> high = positionToTimeTreeMap.ceilingEntry(key);
         if (low != null && high != null) {
@@ -804,6 +814,31 @@ public class FlexibleLenViewBody extends FrameLayout {
         return -1;
     }
 
+    /**
+     *
+     * @param positionY
+     * @return
+     */
+    private int nearestQuarterTimeSlotKey(int positionY) {
+        int key = positionY;
+        Map.Entry<Integer, String> low = positionToTimeQuarterTreeMap.floorEntry(key);
+        Map.Entry<Integer, String> high = positionToTimeQuarterTreeMap.ceilingEntry(key);
+        if (low != null && high != null) {
+            return Math.abs(key - low.getKey()) < Math.abs(key - high.getKey())
+                    ? low.getKey()
+                    : high.getKey();
+        } else if (low != null || high != null) {
+            return low != null ? low.getKey() : high.getKey();
+        }
+
+        return -1;
+    }
+
+    /**
+     *
+     * @param time
+     * @return nearest position
+     */
     protected int nearestTimeSlotValue(float time) {
         float key = time;
         Map.Entry<Float, Integer> low = timeToPositionTreeMap.floorEntry(key);
@@ -859,9 +894,11 @@ public class FlexibleLenViewBody extends FrameLayout {
         float toX;
         float toY;
 
-        toY = tapY - followView.getHeight() / 2 - msgWindow.getHeight();
+//        toY = tapY - followView.getHeight() / 2 - msgWindow.getHeight();
+        toY = tapY - msgWindow.getHeight();
         if (toY <= 0){
-            toY = tapY + followView.getHeight() / 2;
+//            toY = tapY + followView.getHeight() / 2;
+            toY = 0;
         }
         //for msg window in center
 //        if (tapX + msgWindow.getWidth() / 2 > dividerBgRLayout.getWidth()) {
@@ -876,15 +913,15 @@ public class FlexibleLenViewBody extends FrameLayout {
         if (tapX < msgWindow.getWidth() * 1.5){
             toX = dividerBgRLayout.getWidth() - msgWindow.getWidth();
         }
-        int nearestProperPosition = nearestTimeSlotKey(tapY - followView.getHeight() / 2);
+        int nearestProperPosition = nearestQuarterTimeSlotKey(tapY);
         if (nearestProperPosition != -1) {
             if (this.displayLen == 1){
-                msgWindow.setText(positionToTimeTreeMap.get(nearestProperPosition));
+                msgWindow.setText(positionToTimeQuarterTreeMap.get(nearestProperPosition));
             }else{
                 MyCalendar myCal = new MyCalendar(this.myCalendar);
                 myCal.setOffsetByDate(index);
                 String dayInfo = (myCal.getCalendar().getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault()));
-                msgWindow.setText(dayInfo + " " + positionToTimeTreeMap.get(nearestProperPosition));
+                msgWindow.setText(dayInfo + " " + positionToTimeQuarterTreeMap.get(nearestProperPosition));
             }
         } else {
             Log.i(TAG, "msgWindowFollow: " + "Error, text not found in Map");

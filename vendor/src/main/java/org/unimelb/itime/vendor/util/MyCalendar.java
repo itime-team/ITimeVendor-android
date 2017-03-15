@@ -1,4 +1,4 @@
-package org.unimelb.itime.vendor.helper;
+package org.unimelb.itime.vendor.util;
 
 import java.util.Calendar;
 
@@ -132,13 +132,11 @@ public class MyCalendar {
     }
 
     public long getEndOfDayMilliseconds(){
-        Calendar calendar = this.getCalendar();
-        calendar.set(Calendar.HOUR_OF_DAY, 23);
-        calendar.set(Calendar.MINUTE, 59);
-        calendar.set(Calendar.SECOND, 50);
-        calendar.set(Calendar.MILLISECOND, 59);
+        Calendar endCal = Calendar.getInstance();
+        endCal.setTimeInMillis(getBeginOfDayMilliseconds());
+        endCal.set(Calendar.DATE, endCal.get(Calendar.DATE) + 1);
 
-        return  calendar.getTimeInMillis();
+        return  endCal.getTimeInMillis();
     }
 
     public void setToSameBeginOfDay(MyCalendar target){
