@@ -59,7 +59,6 @@ public class EventManager {
 
         eventsPackage.setRepeatedEventMap(repeatedEventMap);
         eventsPackage.setRegularEventMap(regularEventMap);
-        eventsPackage.setAllDayEventList(allDayEventList);
     }
 
     public ITimeEventPackageInterface getEventsMap(){
@@ -197,13 +196,8 @@ public class EventManager {
 
     private class EventsPackage implements ITimeEventPackageInterface{
 
-        private List<ITimeEventInterface> allDayEventList;
         private Map<Long, List<ITimeEventInterface>> regularEventMap;
         private Map<Long, List<ITimeEventInterface>> repeatedEventMap;
-
-        void setAllDayEventList(List<ITimeEventInterface> allDayEventList) {
-            this.allDayEventList = allDayEventList;
-        }
 
         void setRegularEventMap(Map<Long, List<ITimeEventInterface>> regularEventMap) {
             this.regularEventMap = regularEventMap;
@@ -229,10 +223,6 @@ public class EventManager {
             return repeatedEventMap;
         }
 
-        @Override
-        public List<ITimeEventInterface> getAllDayEvents() {
-            return allDayEventList;
-        }
     }
 
     private class EventTracer{

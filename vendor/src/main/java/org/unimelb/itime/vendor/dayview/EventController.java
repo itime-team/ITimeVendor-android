@@ -63,7 +63,7 @@ public class EventController {
 
     void setEventList(ITimeEventPackageInterface eventPackage) {
         this.clearAllEvents();
-        List<ITimeEventInterface> allDayEventList = eventPackage.getAllDayEvents();
+//        List<ITimeEventInterface> allDayEventList = eventPackage.getAllDayEvents();
         Map<Long, List<ITimeEventInterface>> regularDayEventMap = eventPackage.getRegularEventDayMap();
         Map<Long, List<ITimeEventInterface>> repeatedDayEventMap = eventPackage.getRepeatedEventDayMap();
 

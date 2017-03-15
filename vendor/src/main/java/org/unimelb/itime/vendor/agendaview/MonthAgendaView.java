@@ -123,13 +123,13 @@ public class MonthAgendaView extends RelativeLayout{
 
             @Override
             public boolean todayHasEvent(long startOfDay) {
-                List<ITimeEventInterface> allDayEvents = eventPackage.getAllDayEvents();
-                for (ITimeEventInterface allDayEvent:allDayEvents
-                        ) {
-                    if (isWithin(allDayEvent,startOfDay,0)){
-                        return true;
-                    }
-                }
+//                List<ITimeEventInterface> allDayEvents = eventPackage.getAllDayEvents();
+//                for (ITimeEventInterface allDayEvent:allDayEvents
+//                        ) {
+//                    if (isWithin(allDayEvent,startOfDay,0)){
+//                        return true;
+//                    }
+//                }
 
                 boolean hasRegular = eventPackage.getRegularEventDayMap().containsKey(startOfDay) && (eventPackage.getRegularEventDayMap().get(startOfDay).size() != 0);
                 boolean hasRepeated = eventPackage.getRepeatedEventDayMap().containsKey(startOfDay) && (eventPackage.getRepeatedEventDayMap().get(startOfDay).size() != 0);
