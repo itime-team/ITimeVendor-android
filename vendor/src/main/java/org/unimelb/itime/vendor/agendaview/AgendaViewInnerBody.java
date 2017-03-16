@@ -2,11 +2,11 @@ package org.unimelb.itime.vendor.agendaview;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -16,10 +16,12 @@ import android.widget.TextView;
 import com.squareup.picasso.Transformation;
 
 import org.unimelb.itime.vendor.R;
+import org.unimelb.itime.vendor.util.BaseUtil;
 import org.unimelb.itime.vendor.util.DensityUtil;
 import org.unimelb.itime.vendor.util.LoadImgHelper;
 import org.unimelb.itime.vendor.listener.ITimeEventInterface;
 import org.unimelb.itime.vendor.listener.ITimeInviteeInterface;
+import org.unimelb.itime.vendor.util.RoundedImageView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -28,13 +30,18 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
+import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 /**
  * Created by yuhaoliu on 31/08/16.
  */
 public class AgendaViewInnerBody extends RelativeLayout {
     private final String TAG = "MyAPP";
+
+    public final static int TP_PRIVATE = 0;
+    public final static int TP_GROUP_NEED_ACTION = 1;
+    public final static int TP_GROUP_CONFIRM = 2;
+
 
     /*************************** Start of Color Setting **********************************/
     private int color_title = R.color.title_text_color;
@@ -44,7 +51,10 @@ public class AgendaViewInnerBody extends RelativeLayout {
     /*************************** End of Color Setting **********************************/
 
     /*************************** Start of Resources Setting ****************************/
-    private int rs_left_bar = R.drawable.itime_draggable_event_bg;
+    private int rs_icon_private = R.drawable.icon_agenda_test;
+    private int rs_icon_group_comfirmed = R.drawable.icon_agenda_test;
+    private int rs_icon_group_needAction = R.drawable.icon_agenda_test;
+    private int rs_icon_location = R.drawable.icon_agenda_test;
     /*************************** End of Resources Setting ****************************/
 
 
@@ -56,8 +66,9 @@ public class AgendaViewInnerBody extends RelativeLayout {
     private ImageView eventTypeView;
     private ImageView eventStatusView;
 
-    private TextView leftTimeTv;
-    private TextView durationTv;
+//    private TextView leftTimeTv;
+    private TextView leftTime1;
+    private TextView leftTime2;
     private TextView eventNameTv;
     private TextView locationTv;
     private TextView timeLeftTv;
@@ -75,7 +86,8 @@ public class AgendaViewInnerBody extends RelativeLayout {
 
     private ITimeEventInterface event;
 
-    private String startTime;
+    private String timeStr1;
+    private String timeStr2;
     private String duration;
     private String eventName;
     private String location;
@@ -120,42 +132,51 @@ public class AgendaViewInnerBody extends RelativeLayout {
         //left info
         leftInfo = new LinearLayout(context);
         leftInfo.setOrientation(LinearLayout.VERTICAL);
-        RelativeLayout.LayoutParams leftInfoParams = new RelativeLayout.LayoutParams((int) (screenWidth * 0.2), ViewGroup.LayoutParams.WRAP_CONTENT);
+        LayoutParams leftInfoParams = new LayoutParams((int) (screenWidth * 0.2), ViewGroup.LayoutParams.WRAP_CONTENT);
         leftInfoParams.addRule(ALIGN_PARENT_LEFT);
-        leftInfoParams.addRule(CENTER_VERTICAL);
+//        int paddingTop = DensityUtil.dip2px(context,8);
+//        leftInfo.setPadding(0,paddingTop,0,0);
         leftInfo.setGravity(Gravity.CENTER_VERTICAL);
         leftInfo.setId(generateViewId());
         this.addView(leftInfo, leftInfoParams);
 
-        leftTimeTv = new TextView(context);
+        leftTime1 = new TextView(context);
         if (duration.equals("All Day")) {
 
         } else {
-            leftTimeTv.setPadding(0, paddingUpDown, 0, 0);
-            leftTimeTv.setText(duration.equals("All Day") ? "" : startTime);
-            leftTimeTv.setTextSize(textSmallSize);
-            leftTimeTv.setTextColor(getResources().getColor(color_title));
-            leftTimeTv.setGravity(Gravity.CENTER);
-            leftInfo.addView(leftTimeTv);
+            leftTime1.setPadding(0, paddingUpDown, 0, 0);
+            leftTime1.setText(duration.equals("All Day") ? "" : timeStr1);
+            leftTime1.setGravity(Gravity.RIGHT);
+            leftTime1.setTextSize(textSmallSize);
+            leftTime1.setTextColor(getResources().getColor(color_title));
+            leftTime1.setId(View.generateViewId());
+            leftInfo.addView(leftTime1);
         }
 
-        durationTv = new TextView(context);
-        durationTv.setText(duration);
-        durationTv.setPadding(0, paddingUpDown, 0, 0);
-        durationTv.setTextSize(textSmallSize);
-        durationTv.setTextColor(getResources().getColor(color_title));
-        durationTv.setGravity(Gravity.CENTER);
-        leftInfo.addView(durationTv);
+        leftTime2 = new TextView(context);
+        if (duration.equals("All Day")) {
+
+        } else {
+            leftTime2.setPadding(0, paddingUpDown, 0, 0);
+            leftTime2.setText(duration.equals("All Day") ? "" : timeStr2);
+            leftTime2.setGravity(Gravity.RIGHT);
+            leftTime2.setTextSize(textSmallSize);
+            leftTime2.setTextColor(getResources().getColor(color_title));
+            RelativeLayout.LayoutParams params2 = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params2.addRule(BELOW,leftTime1.getId());
+            leftTime2.setLayoutParams(params2);
+            leftInfo.addView(leftTime2);
+        }
 
         //type bar && right info, relation bet 2
         eventTypeView = new ImageView(context);
         eventTypeView.setId(generateViewId());
-        RelativeLayout.LayoutParams eventTypeViewParams = new RelativeLayout.LayoutParams(DensityUtil.dip2px(context, 3), ViewGroup.LayoutParams.WRAP_CONTENT);
-        updateLeftBar(getResources().getDrawable(rs_left_bar), getEventColor(type));
+        LayoutParams eventTypeViewParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        updateIcon(getEventIcon(type));
 
         rightInfo = new LinearLayout(context);
         rightInfo.setOrientation(LinearLayout.VERTICAL);
-        RelativeLayout.LayoutParams rightInfoParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LayoutParams rightInfoParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         rightInfoParams.addRule(RIGHT_OF, eventTypeView.getId());
         rightInfo.setPadding(DensityUtil.dip2px(context, 3), 0, 0, 0);
         rightInfo.setId(generateViewId());
@@ -163,7 +184,10 @@ public class AgendaViewInnerBody extends RelativeLayout {
 
         eventTypeViewParams.addRule(RIGHT_OF, leftInfo.getId());
         eventTypeViewParams.addRule(ALIGN_TOP, rightInfo.getId());
-        eventTypeViewParams.addRule(ALIGN_BOTTOM, rightInfo.getId());
+//        eventTypeViewParams.addRule(ALIGN_BOTTOM, rightInfo.getId());
+//        eventTypeViewParams.topMargin = DensityUtil.dip2px(context,8);
+//        eventTypeViewParams.leftMargin = DensityUtil.dip2px(context,10);
+//        eventTypeViewParams.rightMargin = DensityUtil.dip2px(context,10);
         self.addView(eventTypeView, eventTypeViewParams);
 
         eventNameTv = new TextView(context);
@@ -188,6 +212,9 @@ public class AgendaViewInnerBody extends RelativeLayout {
         locationTv.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
         locationTv.setTextSize(textSmallSize);
         locationTv.setTextColor(getResources().getColor(color_subtitle));
+        Drawable orgDb = getResources().getDrawable(rs_icon_location);
+        Drawable scaleDb = BaseUtil.scaleDrawable(orgDb,10,10);
+        locationTv.setCompoundDrawablesWithIntrinsicBounds(scaleDb, null, null, null);
         rightInfo.addView(locationTv);
 
         //status icon
@@ -197,7 +224,7 @@ public class AgendaViewInnerBody extends RelativeLayout {
         eventStatusView.setImageDrawable(getResources().getDrawable(R.drawable.itime_question_mark));
         eventStatusView.setVisibility(iconName.equals("icon_question") ? VISIBLE : GONE);
 
-        RelativeLayout.LayoutParams eventStatusViewParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LayoutParams eventStatusViewParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         eventStatusViewParams.addRule(ALIGN_TOP, rightInfo.getId());
         eventStatusViewParams.addRule(ALIGN_PARENT_RIGHT);
         this.addView(eventStatusView, eventStatusViewParams);
@@ -208,7 +235,7 @@ public class AgendaViewInnerBody extends RelativeLayout {
         timeLeftTv.setGravity(Gravity.CENTER);
         timeLeftTv.setTextSize(textRegularSize);
         timeLeftTv.setPadding(0, 0, DensityUtil.dip2px(context, 10), DensityUtil.dip2px(context, 5));
-        RelativeLayout.LayoutParams timeLeftTvParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LayoutParams timeLeftTvParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         timeLeftTvParams.addRule(ALIGN_BOTTOM, rightInfo.getId());
         timeLeftTvParams.addRule(ALIGN_PARENT_RIGHT);
         this.addView(timeLeftTv, timeLeftTvParams);
@@ -265,7 +292,7 @@ public class AgendaViewInnerBody extends RelativeLayout {
             if (urls.size() <= 4 || (urls.size() > 4 && i < 3)){
                 container.addView(addImage(urls.get(i)));
             }else{
-                container.addView(addDotted());
+                container.addView(addNumberPhoto(urls.size() - 3));
                 break;
             }
         }
@@ -278,16 +305,18 @@ public class AgendaViewInnerBody extends RelativeLayout {
         img.setPadding(padding, padding, padding, padding);
         img.setLayoutParams(params);
         int size = DensityUtil.dip2px(getContext(),20);
-        Transformation transformation = new RoundedCornersTransformation(size/10,0);
+        Transformation transformation = new CropCircleTransformation();
         LoadImgHelper.getInstance().bindUrlWithImageView(context,transformation, url, img, size);
 
         return img;
     }
 
-    private ImageView addDotted(){
-        ImageView img = new ImageView(context);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    private ImageView addNumberPhoto(int number){
+        RoundedImageView img = new RoundedImageView(context);
+        img.setNumber(number);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(pic_height_width, pic_height_width);
         int padding = DensityUtil.dip2px(getContext(),5);
+
         img.setPadding(padding, padding, padding, padding);
         img.setLayoutParams(params);
         img.setImageDrawable(getResources().getDrawable(R.drawable.icon_three_dot));
@@ -299,8 +328,13 @@ public class AgendaViewInnerBody extends RelativeLayout {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(event.getStartTime());
-        Date dateTime = calendar.getTime();
-        startTime = date.format(dateTime);
+        Date startDateTime = calendar.getTime();
+        calendar.setTimeInMillis(event.getEndTime());
+        Date endDateTime = calendar.getTime();
+        String startTimeStr = date.format(startDateTime);
+        String endTimeStr = date.format(endDateTime);
+        timeStr1 = startTimeStr;
+        timeStr2 = endTimeStr;
         long duration_m = event.getEndTime() - event.getStartTime();
         int hours = (int) duration_m / (3600 * 1000);
         int minutes = (int) ((duration_m / (60 * 1000)) % 60);
@@ -323,28 +357,28 @@ public class AgendaViewInnerBody extends RelativeLayout {
         this.urls.addAll(allUrls);
     }
 
-    private void updateLeftBar(Drawable db, int color) {
+    private void updateIcon(Drawable db) {
         eventTypeView.setImageDrawable(db);
-        ((GradientDrawable) eventTypeView.getDrawable()).setColor(color);
+//        ((GradientDrawable) eventTypeView.getDrawable()).setColor(color);
     }
 
-    private int getEventColor(int type) {
-        int color;
+    private Drawable getEventIcon(int type) {
+        Drawable rs;
 
         switch (type) {
-            case 0:
-                color = getContext().getResources().getColor(org.unimelb.itime.vendor.R.color.private_et);
+            case TP_PRIVATE:
+                rs = getContext().getResources().getDrawable(rs_icon_private);
                 break;
-            case 1:
-                color = getContext().getResources().getColor(org.unimelb.itime.vendor.R.color.group_et);
+            case TP_GROUP_NEED_ACTION:
+                rs = getContext().getResources().getDrawable(rs_icon_group_needAction);
                 break;
-            case 2:
-                color = getContext().getResources().getColor(org.unimelb.itime.vendor.R.color.public_et);
+            case TP_GROUP_CONFIRM:
+                rs = getContext().getResources().getDrawable(rs_icon_group_comfirmed);
                 break;
             default:
-                color = getContext().getResources().getColor(org.unimelb.itime.vendor.R.color.public_et);
+                rs = getContext().getResources().getDrawable(rs_icon_private);
         }
 
-        return color;
+        return rs;
     }
 }

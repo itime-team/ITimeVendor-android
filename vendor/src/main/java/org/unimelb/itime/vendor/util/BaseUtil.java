@@ -1,5 +1,8 @@
 package org.unimelb.itime.vendor.util;
 
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+
 import org.unimelb.itime.vendor.listener.ITimeEventInterface;
 
 import java.util.Calendar;
@@ -28,5 +31,17 @@ public class BaseUtil {
                 && duration >= (getAllDayLong(event.getStartTime()) * 0.9);
 
         return isAllDay;
+    }
+
+    public static Drawable scaleDrawable(Drawable drawable, int width, int height){
+        int wi = drawable.getIntrinsicWidth();
+        int hi = drawable.getIntrinsicHeight();
+        int dimDiff = Math.abs(wi - width) - Math.abs(hi - height);
+        float scale = (dimDiff > 0) ? width / (float)wi : height /
+                (float)hi;
+        Rect bounds = new Rect(0, 0, (int)(scale * wi), (int)(scale * hi));
+        drawable.setBounds(bounds);
+
+        return drawable;
     }
 }
