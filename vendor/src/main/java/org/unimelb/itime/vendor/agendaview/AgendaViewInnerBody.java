@@ -1,6 +1,7 @@
 package org.unimelb.itime.vendor.agendaview;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -319,7 +320,8 @@ public class AgendaViewInnerBody extends RelativeLayout {
 
         img.setPadding(padding, padding, padding, padding);
         img.setLayoutParams(params);
-        img.setImageDrawable(getResources().getDrawable(R.drawable.icon_three_dot));
+        img.setImageDrawable(getResources().getDrawable(R.drawable.invitee_selected_default_picture));
+//        img.setBackgroundColor(getResources().getColor(R.color.red));
         return img;
     }
 

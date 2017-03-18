@@ -27,7 +27,9 @@ public class RoundedImageView extends ImageView{
     private Rect bounds = new Rect();
     private String str;
     private final Paint numberPaint = new Paint();
-
+    private final Paint borderPaint = new Paint();
+    private int borderColor = Color.BLACK;
+    private int borderWidth = 5;
 
     public RoundedImageView(Context ctx) {
         super(ctx);
@@ -46,13 +48,18 @@ public class RoundedImageView extends ImageView{
         numberPaint.setTextSize(DensityUtil.px2sp(getContext(),numberSize));
         str = "+ " + String.valueOf(number);
         numberPaint.getTextBounds(str, 0, str.length(), bounds);
+
+        borderPaint.setStyle(Paint.Style.STROKE);
+        borderPaint.setAntiAlias(true);
+        borderPaint.setFilterBitmap(true);
+        borderPaint.setDither(true);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-
         Drawable drawable = getDrawable();
-
+        int pdLeft = getPaddingLeft();
+        int pdTop = getPaddingTop();
         if (drawable == null) {
             return;
         }
@@ -63,16 +70,23 @@ public class RoundedImageView extends ImageView{
         Bitmap b = ((BitmapDrawable) drawable).getBitmap();
         Bitmap bitmap = b.copy(Bitmap.Config.ARGB_8888, true);
 
-        int w = getWidth(), h = getHeight();
+        int w = getWidth() - pdLeft*2, h = getHeight() - pdTop*2;
 
-        Bitmap roundBitmap = getRoundedCroppedBitmap(bitmap, w);
+        Bitmap roundBitmap = getRoundedCroppedBitmap(bitmap,w);
 
-        canvas.drawBitmap(roundBitmap, 0, 0, null);
+        canvas.drawBitmap(roundBitmap, pdLeft, pdTop, null);
 
-        int xPos = (canvas.getWidth() / 2);
-        int yPos = (int) ((canvas.getHeight() / 2) - ((numberPaint.descent() + numberPaint.ascent()) / 2));
+        int canvasRealW = canvas.getWidth() - pdLeft*2;
+        int canvasRealH = canvas.getHeight() - pdTop*2;
 
-        canvas.drawText(str,xPos - bounds.width() / 2,yPos,numberPaint);
+        int xPos = (canvasRealW / 2);
+        int yPos = (int) ((canvasRealH / 2) - ((numberPaint.descent() + numberPaint.ascent()) / 2));
+
+        canvas.drawText(str,pdLeft + xPos - bounds.width() / 2, pdTop + yPos,numberPaint);
+
+        borderPaint.setColor(borderColor);
+        borderPaint.setStrokeWidth(borderWidth);
+        canvas.drawCircle(canvas.getWidth() / 2, canvas.getHeight() / 2, canvasRealW/2 - borderWidth/2, borderPaint);
 
     }
 
@@ -96,9 +110,9 @@ public class RoundedImageView extends ImageView{
         paint.setDither(true);
         canvas.drawARGB(0, 0, 0, 0);
         paint.setColor(Color.parseColor("#BAB399"));
-        canvas.drawCircle(finalBitmap.getWidth() / 2 + 0.7f,
-                finalBitmap.getHeight() / 2 + 0.7f,
-                finalBitmap.getWidth() / 2 + 0.1f, paint);
+        canvas.drawCircle(finalBitmap.getWidth() / 2,
+                finalBitmap.getHeight() / 2,
+                finalBitmap.getWidth() / 2, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(finalBitmap, rect, rect, paint);
 
@@ -113,5 +127,13 @@ public class RoundedImageView extends ImageView{
         this.number = number;
         str = "+" + String.valueOf(this.number);
         numberPaint.getTextBounds(str, 0, str.length(), bounds);
+    }
+
+    public int getBorderColor() {
+        return borderColor;
+    }
+
+    public void setBorderColor(int borderColor) {
+        this.borderColor = borderColor;
     }
 }
