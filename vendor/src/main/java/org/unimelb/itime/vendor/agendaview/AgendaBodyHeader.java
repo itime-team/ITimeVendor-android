@@ -75,7 +75,7 @@ public class AgendaBodyHeader extends LinearLayout {
         this.initHeaderTvs();
 
         this.addView(contentLayout,contentLayoutParams);
-        this.addView(getDivider());
+//        this.addView(getDivider());
     }
 
     public void setMyCalendar(MyCalendar myCalendar){
@@ -88,7 +88,7 @@ public class AgendaBodyHeader extends LinearLayout {
 
         this.setBackgroundColor(titleBgColor);
 
-        mentionTv.setText(mention);
+        mentionTv.setText(mention.toUpperCase());
         mentionTv.setTextColor(titleColor);
         mentionTv.setTextSize(titleSize);
         nthTv.setText(nth);
@@ -111,12 +111,16 @@ public class AgendaBodyHeader extends LinearLayout {
 //    }
 
     private void initHeaderTvs(){
-        textPadding = DensityUtil.dip2px(context, 10);
+        textPadding = DensityUtil.dip2px(context, 5);
 
         mentionTv = new TextView(context);
         mentionTv.setTypeface(null, Typeface.BOLD);
         mentionTv.setPadding(0,0,textPadding,0);
         contentLayout.addView(mentionTv);
+
+        dayOfWeekTv = new TextView(context);
+        dayOfWeekTv.setPadding(0,0,textPadding,0);
+        contentLayout.addView(dayOfWeekTv);
 
         nthTv = new TextView(context);
         nthTv.setPadding(0,0,textPadding,0);
@@ -126,18 +130,16 @@ public class AgendaBodyHeader extends LinearLayout {
         monthTv.setPadding(0,0,textPadding,0);
         contentLayout.addView(monthTv);
 
-        dayOfWeekTv = new TextView(context);
-        dayOfWeekTv.setPadding(0,0,textPadding,0);
-        contentLayout.addView(dayOfWeekTv);
+
     }
 
     private void initHeaderShowAttrs(){
         Calendar calendar = this.myCalendar.getCalendar();
 //        Log.i(TAG, "initHeaderShowAttrs: " + this.myCalendar.toString());
         int day_of_month = calendar.get(Calendar.DAY_OF_MONTH);
-        nth =  day_of_month + "th";
+        nth =  day_of_month + "";
         month = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
-        dayOfWeek = calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault());
+        dayOfWeek = calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault()) + ",";
 
         mentionTv.setPadding(0,0,textPadding,0);
         titleColor = getResources().getColor(color_title);

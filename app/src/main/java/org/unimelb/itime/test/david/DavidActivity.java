@@ -196,31 +196,34 @@ public class DavidActivity extends AppCompatActivity {
         long interval = 3600 * 1000;
         long startTime = calendar.getTimeInMillis();
         long endTime;
-        for (int i = 1; i < 2; i++) {
+        for (int i = 1; i < 3; i++) {
             endTime = startTime + (3600*1000);
-//            long duration = (endTime - startTime);
 
             Event event = new Event();
             event.setEventUid("" + i);
             event.setTitle("adawdwadwadaw" + i);
             event.setDisplayEventType(0);
             event.setDisplayStatus("#63ADF2|slash|icon_normal");
-            event.setLocation("here");
+            event.setLocation("adawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadaw");
             event.setStartTime(startTime);
 
             List<Invitee> inviteeList = new ArrayList<>();
 
-            for (Contact contact:contacts
-                 ) {
-                Invitee invitee1 = new Invitee();
-                invitee1.setEventUid("" + i);
-                invitee1.setContact(contact);
-                invitee1.setInviteeUid(contact.getContactUid());
-                inviteeList.add(invitee1);
+            if (i != 2){
+                for (Contact contact:contacts
+                        ) {
+                    Invitee invitee1 = new Invitee();
+                    invitee1.setEventUid("" + i);
+                    invitee1.setContact(contact);
+                    invitee1.setInviteeUid(contact.getContactUid());
+                    inviteeList.add(invitee1);
+                }
             }
 
+
             dbManager.insertInviteeList(inviteeList);
-            event.setInvitee(inviteeList);
+
+
 
             event.setEndTime(endTime);
             events.add(event);
