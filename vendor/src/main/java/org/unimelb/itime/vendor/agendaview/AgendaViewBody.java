@@ -28,7 +28,7 @@ public class AgendaViewBody extends LinearLayout{
     /*************************** Start of Color Setting **********************************/
     private int color_no_event = R.color.text_enable;
     /*************************** End of Color Setting **********************************/
-    private int rs_divider = R.drawable.itime_header_divider_line;
+    private int rs_divider = R.drawable.itime_light_divider_line;
 
     private MyCalendar myCalendar;
     private AgendaBodyHeader rowHeader;
@@ -113,6 +113,8 @@ public class AgendaViewBody extends LinearLayout{
                     }
                 });
                 LinearLayout.LayoutParams rowBodyParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+                int padding = DensityUtil.dip2px(context,14);
+                rowBody.setPadding(padding,padding,padding,padding);
                 this.rowBody.addView(rowBody, rowBodyParams);
                 if (i != events.size() -1){
                     this.rowBody.addView(getDivider());
@@ -122,7 +124,7 @@ public class AgendaViewBody extends LinearLayout{
         }else{
             noEvent = new TextView(context);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.dip2px(context,50));
-            noEvent.setText("No Event");
+            noEvent.setText("(No Event)");
             noEvent.setPadding(DensityUtil.dip2px(context,10),0,0,0);
             noEvent.setGravity(Gravity.CENTER_VERTICAL);
             noEvent.setTextSize(titleSize);

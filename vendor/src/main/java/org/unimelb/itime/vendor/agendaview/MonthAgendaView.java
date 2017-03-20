@@ -170,7 +170,7 @@ public class MonthAgendaView extends RelativeLayout{
         headerRecyclerAdapter.setBodyRecyclerView(bodyRecyclerView);
         headerRecyclerAdapter.setBodyLayoutManager(bodyLinearLayoutManager);
         bodyRecyclerView.setLayoutManager(bodyLinearLayoutManager);
-        bodyRecyclerView.addItemDecoration(new AgendaBodyViewRecyclerDivider(context));
+//        bodyRecyclerView.addItemDecoration(new AgendaBodyViewRecyclerDivider(context));
         bodyRecyclerView.addOnScrollListener(new BodyOnScrollListener());
 
         ViewGroup.LayoutParams recycler_layoutParams = bodyRecyclerView.getLayoutParams();

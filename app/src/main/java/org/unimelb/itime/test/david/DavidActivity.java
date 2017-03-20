@@ -204,7 +204,7 @@ public class DavidActivity extends AppCompatActivity {
             event.setTitle("adawdwadwadaw" + i);
             event.setDisplayEventType(0);
             event.setDisplayStatus("#63ADF2|slash|icon_normal");
-            event.setLocation("here");
+            event.setLocation("adawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadawadawdwadwadaw");
             event.setStartTime(startTime);
 
             List<Invitee> inviteeList = new ArrayList<>();

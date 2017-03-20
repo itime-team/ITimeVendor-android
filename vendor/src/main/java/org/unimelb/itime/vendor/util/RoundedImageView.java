@@ -8,9 +8,9 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.ImageView;
 
 import org.unimelb.itime.vendor.R;
@@ -22,14 +22,15 @@ import org.unimelb.itime.vendor.R;
 public class RoundedImageView extends ImageView{
 
     //px
-    public final int numberSize = 120;
+    public final int numberSize = 100;
     private int number;
     private Rect bounds = new Rect();
     private String str;
     private final Paint numberPaint = new Paint();
     private final Paint borderPaint = new Paint();
     private int borderColor = Color.BLACK;
-    private int borderWidth = 5;
+    private int borderWidth = 2;
+    private int bgColor = Color.TRANSPARENT;
 
     public RoundedImageView(Context ctx) {
         super(ctx);
@@ -44,7 +45,7 @@ public class RoundedImageView extends ImageView{
     private void init(){
         numberPaint.setColor(Color.WHITE);
         numberPaint.setStyle(Paint.Style.FILL);
-        numberPaint.setColor(getResources().getColor(R.color.private_et));
+        numberPaint.setColor(getResources().getColor(R.color.image_number_grey));
         numberPaint.setTextSize(DensityUtil.px2sp(getContext(),numberSize));
         str = "+ " + String.valueOf(number);
         numberPaint.getTextBounds(str, 0, str.length(), bounds);
@@ -60,20 +61,22 @@ public class RoundedImageView extends ImageView{
         Drawable drawable = getDrawable();
         int pdLeft = getPaddingLeft();
         int pdTop = getPaddingTop();
-        if (drawable == null) {
-            return;
-        }
-
+//        if (drawable == null) {
+//            return;
+//        }
+//
         if (getWidth() == 0 || getHeight() == 0) {
             return;
         }
-        Bitmap b = ((BitmapDrawable) drawable).getBitmap();
-        Bitmap bitmap = b.copy(Bitmap.Config.ARGB_8888, true);
-
         int w = getWidth() - pdLeft*2, h = getHeight() - pdTop*2;
 
-        Bitmap roundBitmap = getRoundedCroppedBitmap(bitmap,w);
+//        Bitmap b;
+//        Bitmap bitmap;
+////
+//        b = ((BitmapDrawable) drawable).getBitmap();
+//        bitmap = b.copy(Bitmap.Config.ARGB_8888, true);
 
+        Bitmap roundBitmap = getRoundedCroppedBitmap(getBitmap(),w);
         canvas.drawBitmap(roundBitmap, pdLeft, pdTop, null);
 
         int canvasRealW = canvas.getWidth() - pdLeft*2;
@@ -87,7 +90,6 @@ public class RoundedImageView extends ImageView{
         borderPaint.setColor(borderColor);
         borderPaint.setStrokeWidth(borderWidth);
         canvas.drawCircle(canvas.getWidth() / 2, canvas.getHeight() / 2, canvasRealW/2 - borderWidth/2, borderPaint);
-
     }
 
     public static Bitmap getRoundedCroppedBitmap(Bitmap bitmap, int radius) {
@@ -109,7 +111,7 @@ public class RoundedImageView extends ImageView{
         paint.setFilterBitmap(true);
         paint.setDither(true);
         canvas.drawARGB(0, 0, 0, 0);
-        paint.setColor(Color.parseColor("#BAB399"));
+        paint.setColor(Color.RED);
         canvas.drawCircle(finalBitmap.getWidth() / 2,
                 finalBitmap.getHeight() / 2,
                 finalBitmap.getWidth() / 2, paint);
@@ -135,5 +137,20 @@ public class RoundedImageView extends ImageView{
 
     public void setBorderColor(int borderColor) {
         this.borderColor = borderColor;
+    }
+
+    private Bitmap getBitmap() {
+        Bitmap bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+        bitmap.eraseColor(bgColor);
+
+        return bitmap;
+    }
+
+    public int getBgColor() {
+        return bgColor;
+    }
+
+    public void setBgColor(int bgColor) {
+        this.bgColor = bgColor;
     }
 }
