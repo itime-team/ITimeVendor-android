@@ -72,7 +72,7 @@ public class AgendaViewInnerBody extends RelativeLayout {
     private LinearLayout rightInfo;
     private LinearLayout inviteeLayout;
     private ImageView eventTypeView;
-    private ImageView eventStatusView;
+//    private ImageView eventStatusView;
 
 //    private TextView leftTimeTv;
     private TextView leftTime1;
@@ -120,7 +120,7 @@ public class AgendaViewInnerBody extends RelativeLayout {
         this.event = event;
         this.pic_height_width = DensityUtil.dip2px(context, 50);
         this.paddingUpDown = DensityUtil.dip2px(context, 2);
-
+        setWillNotDraw(false);
         initAttrs();
         initEventShowAttrs(event);
         initAllViews();
@@ -133,7 +133,7 @@ public class AgendaViewInnerBody extends RelativeLayout {
         this.event = event;
         this.pic_height_width = DensityUtil.dip2px(context, 50);
         this.paddingUpDown = DensityUtil.dip2px(context, 2);
-
+        setWillNotDraw(false);
         initAttrs();
         initEventShowAttrs(event);
         initAllViews();
@@ -237,16 +237,16 @@ public class AgendaViewInnerBody extends RelativeLayout {
         rightInfo.addView(locationTv);
 
         //status icon
-        eventStatusView = new ImageView(context);
-        eventStatusView.setId(generateViewId());
-        eventStatusView.setPadding(0, DensityUtil.dip2px(context, 10), DensityUtil.dip2px(context, 10), 0);
-        eventStatusView.setImageDrawable(getResources().getDrawable(R.drawable.itime_question_mark));
-        eventStatusView.setVisibility(iconName.equals("icon_question") ? VISIBLE : GONE);
+//        eventStatusView = new ImageView(context);
+//        eventStatusView.setId(generateViewId());
+//        eventStatusView.setPadding(0, DensityUtil.dip2px(context, 10), DensityUtil.dip2px(context, 10), 0);
+//        eventStatusView.setImageDrawable(getResources().getDrawable(R.drawable.itime_question_mark));
+//        eventStatusView.setVisibility(iconName.equals("icon_question") ? VISIBLE : GONE);
 
-        LayoutParams eventStatusViewParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        eventStatusViewParams.addRule(ALIGN_TOP, rightInfo.getId());
-        eventStatusViewParams.addRule(ALIGN_PARENT_RIGHT);
-        this.addView(eventStatusView, eventStatusViewParams);
+//        LayoutParams eventStatusViewParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//        eventStatusViewParams.addRule(ALIGN_TOP, rightInfo.getId());
+//        eventStatusViewParams.addRule(ALIGN_PARENT_RIGHT);
+//        this.addView(eventStatusView, eventStatusViewParams);
 
 //        //right bottom time remains
 //        timeLeftTv = new TextView(context);
@@ -260,13 +260,13 @@ public class AgendaViewInnerBody extends RelativeLayout {
 //        this.addView(timeLeftTv, timeLeftTvParams);
     }
 
-    private void setTimeLeftTv(TextView timeLeftTv) {
-        if (this.currentDayType == 0) {
-            String str = getEventMentionStr(this.event);
-            timeLeftTv.setText(str);
-            timeLeftTv.setTextColor(getResources().getColor(str.equals("Now") ? color_now : color_normal));
-        }
-    }
+//    private void setTimeLeftTv(TextView timeLeftTv) {
+//        if (this.currentDayType == 0) {
+//            String str = getEventMentionStr(this.event);
+//            timeLeftTv.setText(str);
+//            timeLeftTv.setTextColor(getResources().getColor(str.equals("Now") ? color_now : color_normal));
+//        }
+//    }
 
     private String getEventMentionStr(ITimeEventInterface event) {
         Calendar cal = Calendar.getInstance();
@@ -352,6 +352,13 @@ public class AgendaViewInnerBody extends RelativeLayout {
 
     private void initEventShowAttrs(ITimeEventInterface event) {
         type = event.getDisplayEventType();
+        if ((type == 1 || type == 2)){
+            if (iconName.equals("icon_question"))
+                type = 1;
+            else
+                type = 2;
+        }
+
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(event.getStartTime());
@@ -425,14 +432,15 @@ public class AgendaViewInnerBody extends RelativeLayout {
         int height = getHeight();
         int width = getWidth();
 
-        int slashColor = getContext().getResources().getColor(R.color.group_et);
+        int slashColor = getContext().getResources().getColor(R.color.image_number_white);
+//        int bgColor = getContext().getResources().getColor(R.color.gray_color);
         p.setAntiAlias(true);
         p.setColor(slashColor);
 //        p.setAlpha((int)(255 * slashOpacity));
         p.setStrokeWidth(DensityUtil.dip2px(getContext(),1));
 
         int nowAtPxX = 0 - height;
-        int nowAtPxY = getPaddingTop();
+        int nowAtPxY = 0;
 
         int xGap = DensityUtil.dip2px(getContext(),10);
 

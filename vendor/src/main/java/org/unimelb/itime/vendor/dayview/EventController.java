@@ -63,24 +63,12 @@ public class EventController {
 
     void setEventList(ITimeEventPackageInterface eventPackage) {
         this.clearAllEvents();
-//        List<ITimeEventInterface> allDayEventList = eventPackage.getAllDayEvents();
         Map<Long, List<ITimeEventInterface>> regularDayEventMap = eventPackage.getRegularEventDayMap();
         Map<Long, List<ITimeEventInterface>> repeatedDayEventMap = eventPackage.getRepeatedEventDayMap();
 
         MyCalendar tempCal = new MyCalendar(container.myCalendar);
         for (int i = 0; i < container.displayLen; i++) {
             long startTime = tempCal.getBeginOfDayMilliseconds();
-
-//            if (allDayEventList != null){
-//                for (ITimeEventInterface allDayEvent: allDayEventList
-//                     ) {
-//                    if (this.isWithin(allDayEvent, i)) {
-//                        WrapperEvent wrapperEvent = new WrapperEvent(allDayEvent);
-//                        wrapperEvent.setFromDayBegin(startTime);
-//                        this.addAllDayEvent(wrapperEvent, i);
-//                    }
-//                }
-//            }
 
             if (regularDayEventMap != null && regularDayEventMap.containsKey(startTime)){
                 List<ITimeEventInterface> currentDayEvents = regularDayEventMap.get(startTime);
