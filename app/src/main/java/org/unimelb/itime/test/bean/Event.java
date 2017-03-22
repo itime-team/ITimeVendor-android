@@ -162,6 +162,11 @@ public class Event implements ITimeEventInterface<Event>, Serializable, Cloneabl
         return this.highlighted;
     }
 
+    @Override
+    public int isShownInCalendar() {
+        return 0;
+    }
+
     public void setEventId(String id){ this.eventUid = id;}
 
     public void setStartTime(long startTime){ this.startTime = startTime; }

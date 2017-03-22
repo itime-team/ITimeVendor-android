@@ -19,16 +19,7 @@ public interface ITimeEventInterface<T> extends Comparable<T> {
     long getEndTime();
 
     int getDisplayEventType();
-
     String getDisplayStatus();
-
-    /**
-     * Note: Display status:
-     *  int[0] = color, Color.parse("#xxxxx")
-     *  int[1] = status
-     * @return int[] size=2
-     */
-//    int[] getDisplayStatus();
 
     void setLocation(String location);
     String getLocation();
@@ -37,4 +28,10 @@ public interface ITimeEventInterface<T> extends Comparable<T> {
 
     void setHighLighted(boolean highlighted);
     boolean isHighlighted();
+
+    /**
+     *
+     * @return View.VISIBILITY
+     */
+    int isShownInCalendar();
 }

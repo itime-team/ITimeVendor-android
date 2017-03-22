@@ -73,12 +73,15 @@ public class EventController {
             if (regularDayEventMap != null && regularDayEventMap.containsKey(startTime)){
                 List<ITimeEventInterface> currentDayEvents = regularDayEventMap.get(startTime);
                 for (ITimeEventInterface event : currentDayEvents) {
-                    WrapperEvent wrapperEvent = new WrapperEvent(event);
-                    wrapperEvent.setFromDayBegin(startTime);
-                    if (BaseUtil.isAllDayEvent(event)){
-                        this.addAllDayEvent(wrapperEvent, i);
-                    }else {
-                        this.addRegularEvent(wrapperEvent);
+                    // is shown in calendar
+                    if (event.isShownInCalendar() == View.VISIBLE){
+                        WrapperEvent wrapperEvent = new WrapperEvent(event);
+                        wrapperEvent.setFromDayBegin(startTime);
+                        if (BaseUtil.isAllDayEvent(event)){
+                            this.addAllDayEvent(wrapperEvent, i);
+                        }else {
+                            this.addRegularEvent(wrapperEvent);
+                        }
                     }
                 }
             }
@@ -86,12 +89,14 @@ public class EventController {
             if (repeatedDayEventMap != null && repeatedDayEventMap.containsKey(startTime)){
                 List<ITimeEventInterface> currentDayEvents = repeatedDayEventMap.get(startTime);
                 for (ITimeEventInterface event : currentDayEvents) {
-                    WrapperEvent wrapperEvent = new WrapperEvent(event);
-                    wrapperEvent.setFromDayBegin(startTime);
-                    if (BaseUtil.isAllDayEvent(event)){
-                        this.addAllDayEvent(wrapperEvent, i);
-                    }else {
-                        this.addRegularEvent(wrapperEvent);
+                    if (event.isShownInCalendar() == View.VISIBLE){
+                        WrapperEvent wrapperEvent = new WrapperEvent(event);
+                        wrapperEvent.setFromDayBegin(startTime);
+                        if (BaseUtil.isAllDayEvent(event)){
+                            this.addAllDayEvent(wrapperEvent, i);
+                        }else {
+                            this.addRegularEvent(wrapperEvent);
+                        }
                     }
                 }
             }
@@ -160,7 +165,6 @@ public class EventController {
     }
 
     void clearAllEvents() {
-
         if (container.topAllDayEventLayouts != null) {
             for (DayInnerHeaderEventLayout allDayEventLayout:container.allDayEventLayouts
                     ) {
