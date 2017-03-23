@@ -276,7 +276,6 @@ public class EventController {
         return event_view;
     }
 
-
     /**
      * calculate the position of event
      * it needs to be called when setting event or event position changed

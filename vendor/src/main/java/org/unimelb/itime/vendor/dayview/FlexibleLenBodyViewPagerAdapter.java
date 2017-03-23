@@ -14,10 +14,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
-public class FlexibleLenBodyViewPagerAdapter extends PagerAdapter {
+class FlexibleLenBodyViewPagerAdapter extends PagerAdapter {
     public String TAG = "MyAPP";
-
-    private FlexibleLenViewBody.OnBodyTouchListener onBodyTouchListener;
 
     private Calendar calendar = Calendar.getInstance();
 
@@ -27,12 +25,12 @@ public class FlexibleLenBodyViewPagerAdapter extends PagerAdapter {
     int upperBounds;
     int currentDayPos;
 
-    public FlexibleLenBodyViewPagerAdapter(ArrayList<FlexibleLenViewBody> vLists, int upperBounds) {
+    FlexibleLenBodyViewPagerAdapter(ArrayList<FlexibleLenViewBody> vLists, int upperBounds) {
         this.vLists = vLists;
         this.upperBounds = upperBounds;
     }
 
-    public FlexibleLenViewBody getViewByPosition(int position){
+    FlexibleLenViewBody getViewByPosition(int position){
         FlexibleLenViewBody viewAtPosition = vLists.get(position % vLists.size());
         return viewAtPosition;
     }
@@ -64,7 +62,7 @@ public class FlexibleLenBodyViewPagerAdapter extends PagerAdapter {
         return currentBodyView;
     }
 
-    public void reloadEvents(){
+    void reloadEvents(){
         for (FlexibleLenViewBody bodyView : vLists
              ) {
             bodyView.resetViews();
@@ -77,16 +75,14 @@ public class FlexibleLenBodyViewPagerAdapter extends PagerAdapter {
 //        container.removeView(vLists.get(position % vLists.size()));
     }
 
-    public void setEventPackage(ITimeEventPackageInterface eventPackage){
+    void setEventPackage(ITimeEventPackageInterface eventPackage){
         this.eventPackage = eventPackage;
     }
 
-    public void removeAllOptListener(){
+    void removeAllOptListener(){
         for (FlexibleLenViewBody bodyView : vLists
                 ) {
             bodyView.removeOptListener();
         }
     }
-
-
 }

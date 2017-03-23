@@ -11,7 +11,10 @@
     </declare-styleable>
 
     <declare-styleable name="MonthDayView">
-        <attr name="MonthDayViewBackToday" format="string"/>
+        <attr name="BackToday" format="string"/>
+        <attr name="onHeaderListener" format="string"/>
+        <attr name="onBodyListener" format="string"/>
+        <attr name="onFlexibleBodyScroll" format="string"/>
     </declare-styleable>
 
     <declare-styleable name="MonthAgendaView">

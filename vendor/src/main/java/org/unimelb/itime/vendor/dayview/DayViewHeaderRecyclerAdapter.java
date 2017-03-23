@@ -14,7 +14,7 @@ import org.unimelb.itime.vendor.util.MyCalendar;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class DayViewHeaderRecyclerAdapter extends RecyclerView.Adapter<DayViewHeaderRecyclerAdapter.MyViewHolder> {
+class DayViewHeaderRecyclerAdapter extends RecyclerView.Adapter<DayViewHeaderRecyclerAdapter.MyViewHolder> {
     public String TAG = "MyAPP";
     private LayoutInflater inflater;
     private int upperBoundsOffset;
@@ -22,12 +22,12 @@ public class DayViewHeaderRecyclerAdapter extends RecyclerView.Adapter<DayViewHe
     private ArrayList<MyViewHolder> holds = new ArrayList<>();
     private DayViewHeader.OnCheckIfHasEvent onCheckIfHasEvent;
 
-    public int rowPst;
-    public int todayOfWeek;
-    public int indexInRow = 0;
-    public ViewPager bodyPager;
+    int rowPst;
+    int todayOfWeek;
+    int indexInRow = 0;
+    ViewPager bodyPager;
 
-    public DayViewHeaderRecyclerAdapter(Context context, int upperBoundsOffset) {
+    DayViewHeaderRecyclerAdapter(Context context, int upperBoundsOffset) {
         inflater = LayoutInflater.from(context);
         this.upperBoundsOffset = upperBoundsOffset;
         startPosition = upperBoundsOffset;
@@ -36,15 +36,15 @@ public class DayViewHeaderRecyclerAdapter extends RecyclerView.Adapter<DayViewHe
         indexInRow = todayOfWeek;
     }
 
-    public void setBodyPager(ViewPager bodyPager){
+    void setBodyPager(ViewPager bodyPager){
         this.bodyPager = bodyPager;
     }
 
-    public int getCurrentSelectPst(){
+    int getCurrentSelectPst(){
         return this.rowPst;
     }
 
-    public void setOnCheckIfHasEvent(DayViewHeader.OnCheckIfHasEvent onCheckIfHasEvent){
+    void setOnCheckIfHasEvent(DayViewHeader.OnCheckIfHasEvent onCheckIfHasEvent){
         this.onCheckIfHasEvent = onCheckIfHasEvent;
     }
 
@@ -65,7 +65,6 @@ public class DayViewHeaderRecyclerAdapter extends RecyclerView.Adapter<DayViewHe
         if (position == rowPst){
             holder.headerRow.performNthDayClick(indexInRow);
         }
-        Log.i(TAG, "onBindViewHolder: " + position);
     }
 
     @Override
@@ -75,7 +74,7 @@ public class DayViewHeaderRecyclerAdapter extends RecyclerView.Adapter<DayViewHe
 
     class MyViewHolder extends RecyclerView.ViewHolder{
         DayViewHeader headerRow;
-        public MyViewHolder(View itemView) {
+        MyViewHolder(View itemView) {
             super(itemView);
             headerRow = (DayViewHeader) itemView.findViewById(R.id.calendarDayViewHeader);
             headerRow.setCalendar(new MyCalendar(Calendar.getInstance()));
@@ -120,7 +119,6 @@ public class DayViewHeaderRecyclerAdapter extends RecyclerView.Adapter<DayViewHe
                                         ((FlexibleLenBodyViewPagerAdapter) bodyPager.getAdapter()).currentDayPos
                                         != scrollTo;
                                 if (needUpdate){
-                                    Log.i(TAG, "needUpdate: ");
                                     bodyPager.setCurrentItem(scrollTo, false);
                                     ((FlexibleLenBodyViewPagerAdapter) bodyPager.getAdapter()).currentDayPos = scrollTo;
                                 }
@@ -137,10 +135,11 @@ public class DayViewHeaderRecyclerAdapter extends RecyclerView.Adapter<DayViewHe
 
     private OnHeaderListener onHeaderListener;
 
-    public void setOnHeaderListener(OnHeaderListener onHeaderListener){
+    void setOnHeaderListener(OnHeaderListener onHeaderListener){
         this.onHeaderListener = onHeaderListener;
     }
-    public interface OnHeaderListener{
+
+    interface OnHeaderListener{
         void onClick(MyCalendar myCalendar);
     }
 }

@@ -16,7 +16,6 @@ import java.util.ArrayList;
  * Created by yuhaoliu on 21/09/16.
  */
 public class DayInnerBodyEventLayout extends ViewGroup {
-    private static final String TAG = "MyAPP";
     ArrayList<WrapperEvent> events = new ArrayList<>();
     ArrayList<DraggableEventView> dgEvents = new ArrayList<>();
 

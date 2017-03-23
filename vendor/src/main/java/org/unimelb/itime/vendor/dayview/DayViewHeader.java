@@ -29,7 +29,7 @@ import java.util.Locale;
  */
 
 public class DayViewHeader extends LinearLayout {
-    public String TAG = "MyAPP";
+    public String TAG = "DayViewHeader";
     public int rowPst = -1;
 
     private int paddingWithBg;

@@ -19,12 +19,12 @@ import android.widget.RelativeLayout;
 import org.unimelb.itime.vendor.R;
 import org.unimelb.itime.vendor.dayview.DayViewHeader;
 import org.unimelb.itime.vendor.dayview.DayViewHeaderRecyclerDivider;
+import org.unimelb.itime.vendor.dayview.MonthDayView;
 import org.unimelb.itime.vendor.util.MyCalendar;
 import org.unimelb.itime.vendor.listener.ITimeEventInterface;
 import org.unimelb.itime.vendor.listener.ITimeEventPackageInterface;
 
 import java.util.Calendar;
-import java.util.List;
 
 /**
  * Created by yuhaoliu on 31/08/16.
@@ -32,37 +32,38 @@ import java.util.List;
 
 @BindingMethods(
         {
-                @BindingMethod(type = MonthAgendaView.class, attribute = "app:MonthAgendaViewBackToday", method = "backToToday"),
+                @BindingMethod(type = MonthAgendaView.class, attribute = "agendaView:BackToday", method = "backToToday"),
+                @BindingMethod(type = MonthAgendaView.class, attribute = "agendaView:onHeaderListener", method = "setOnHeaderListener"),
+                @BindingMethod(type = MonthAgendaView.class, attribute = "agendaView:onEventClickListener", method = "setOnEventClickListener"),
         }
 )
 
 public class MonthAgendaView extends RelativeLayout{
     private final String TAG = "AgendaHeader";
 
-    private LinearLayout parent;
-    private RelativeLayout bodyRl;
-
-    private LinearLayoutManager headerLinearLayoutManager;
-    private LinearLayoutManager bodyLinearLayoutManager;
-
-    private RecyclerView headerRecyclerView;
-    private AgendaBodyHeader bodyHeader;
-    private AgendaBodyRecyclerView bodyRecyclerView;
-
-    private AgendaHeaderViewRecyclerAdapter headerRecyclerAdapter;
-    private AgendaBodyViewRecyclerAdapter bodyRecyclerAdapter;
-
-    private Context context;
-
     private int upperBoundsOffset = 1;
     private int init_height;
     private int scroll_height;
 
+    private LinearLayout container;
+    private RelativeLayout agendaViewBodyContainer;
+
+    private AgendaBodyHeader bodyFloatHeader;
+    private RecyclerView agendaViewHeader;
+    private AgendaBodyRecyclerView agendaViewBody;
+
+    private LinearLayoutManager headerLinearLayoutManager;
+    private LinearLayoutManager bodyLinearLayoutManager;
+
+    private AgendaHeaderViewRecyclerAdapter headerRecyclerAdapter;
+    private AgendaBodyViewRecyclerAdapter bodyRecyclerAdapter;
+
+    private OnHeaderListener onHeaderListener;
     private AgendaViewBody.OnEventClickListener onEventClickListener;
 
     private MyCalendar monthAgendaViewCalendar;
-    private OnHeaderListener onHeaderListener;
     private ITimeEventPackageInterface eventPackage;
+    private Context context;
 
     public MonthAgendaView(Context context) {
         super(context);
@@ -79,28 +80,118 @@ public class MonthAgendaView extends RelativeLayout{
         initView();
     }
 
-    public void hideHeader(){
-        if (this.headerRecyclerView != null){
-            this.headerRecyclerView.setVisibility(View.GONE);
+    /***************************************************************************
+     * Public methods Part, providing the methods of controlling for MonthDayView
+     ***************************************************************************/
+
+    /**
+     * Set the event data package
+     * @param eventPackage
+     */
+    public void setDayEventMap(ITimeEventPackageInterface eventPackage){
+        this.eventPackage = eventPackage;
+        this.bodyRecyclerAdapter.setDayEventMap(eventPackage);
+        this.headerRecyclerAdapter.notifyDataSetChanged();
+        this.bodyRecyclerAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * scroll to date of today.
+     */
+    public void backToToday(){
+        this.agendaViewHeader.stopScroll();
+        this.agendaViewBody.stopScroll();
+        if (agendaViewHeader.getHeight() != init_height){
+            collapseHeader(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    headerScrollToDate(Calendar.getInstance());
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+            });
+        }else{
+            headerScrollToDate(Calendar.getInstance());
+        }
+//        agendaViewHeader.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+//                super.onScrollStateChanged(recyclerView, newState);
+//                if (newState == 0){
+//                    Calendar cal = Calendar.getInstance();
+//                    DayViewHeader headerView =
+//                            (DayViewHeader) headerLinearLayoutManager.findViewByPosition(headerLinearLayoutManager.findFirstVisibleItemPosition());
+//                    headerView.performNthDayClick(cal.get(Calendar.DAY_OF_WEEK) - 1);
+//                    agendaViewHeader.removeOnScrollListener(this);
+//                }
+//            }
+//        });
+//        agendaViewHeader.smoothScrollToPosition(upperBoundsOffset);
+        this.bodyLinearLayoutManager.scrollToPosition(0);
+    }
+
+    /**
+     * scroll to certain date.
+     * @param calendar
+     */
+    public void scrollTo(final Calendar calendar){
+        if (agendaViewHeader.getHeight() == 0){
+            ViewTreeObserver vto = agendaViewHeader.getViewTreeObserver();
+            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    agendaViewHeader.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                    agendaViewHeader.stopScroll();
+                    agendaViewBody.stopScroll();
+                    headerScrollToDate(calendar);
+                }
+            });
+        }else{
+            agendaViewHeader.stopScroll();
+            headerScrollToDate(calendar);
         }
     }
 
+    /**
+     * hide the head part of MonthDayView
+     */
+    public void hideHewader(){
+        if (this.agendaViewHeader != null){
+            this.agendaViewHeader.setVisibility(View.GONE);
+        }
+    }
+
+    /***************************************************************************
+     * Inner private methods block, including function of setting up MonthDayView
+     ***************************************************************************/
+
     private void initView(){
         this.context = getContext();
+        this.container = (LinearLayout) LayoutInflater.from(context).inflate(org.unimelb.itime.vendor.R.layout.itime_month_agenda_view, null);
+        this.addView(container);
 
-        parent = (LinearLayout) LayoutInflater.from(context).inflate(org.unimelb.itime.vendor.R.layout.itime_month_agenda_view, null);
-        this.addView(parent);
-
-        headerRecyclerView = (RecyclerView) parent.findViewById(R.id.headerRowList);
-
-        bodyRl = (RelativeLayout) parent.findViewById(R.id.bodyRL);
-        bodyRecyclerView = (AgendaBodyRecyclerView) parent.findViewById(R.id.bodyRowList);
+        agendaViewHeader = (RecyclerView) container.findViewById(R.id.headerRowList);
+        agendaViewBodyContainer = (RelativeLayout) container.findViewById(R.id.bodyRL);
+        agendaViewBody = (AgendaBodyRecyclerView) container.findViewById(R.id.bodyRowList);
 
         upperBoundsOffset = 10000;
 
         this.setUpHeader();
         this.setUpBody();
-        this.setUpBodyHeader();
+        this.setUpFloatHeader();
     }
 
     private void setUpHeader(){
@@ -123,75 +214,173 @@ public class MonthAgendaView extends RelativeLayout{
 
             @Override
             public boolean todayHasEvent(long startOfDay) {
-//                List<ITimeEventInterface> allDayEvents = eventPackage.getAllDayEvents();
-//                for (ITimeEventInterface allDayEvent:allDayEvents
-//                        ) {
-//                    if (isWithin(allDayEvent,startOfDay,0)){
-//                        return true;
-//                    }
-//                }
-
                 boolean hasRegular = eventPackage.getRegularEventDayMap().containsKey(startOfDay) && (eventPackage.getRegularEventDayMap().get(startOfDay).size() != 0);
                 boolean hasRepeated = eventPackage.getRepeatedEventDayMap().containsKey(startOfDay) && (eventPackage.getRepeatedEventDayMap().get(startOfDay).size() != 0);
                 return hasRegular || hasRepeated;
             }
         });
-        headerRecyclerView.setHasFixedSize(true);
-        headerRecyclerView.setAdapter(headerRecyclerAdapter);
+        agendaViewHeader.setHasFixedSize(true);
+        agendaViewHeader.setAdapter(headerRecyclerAdapter);
         headerLinearLayoutManager = new LinearLayoutManager(context);
-        headerRecyclerView.setLayoutManager(headerLinearLayoutManager);
-        headerRecyclerView.addItemDecoration(new DayViewHeaderRecyclerDivider(context));
+        agendaViewHeader.setLayoutManager(headerLinearLayoutManager);
+        agendaViewHeader.addItemDecoration(new DayViewHeaderRecyclerDivider(context));
         final DisplayMetrics dm = getResources().getDisplayMetrics();
         init_height = (dm.widthPixels / 7 - 20) * 2;
         scroll_height = (dm.widthPixels / 7 - 20) * 4;
 
-        ViewGroup.LayoutParams recycler_layoutParams = headerRecyclerView.getLayoutParams();
+        ViewGroup.LayoutParams recycler_layoutParams = agendaViewHeader.getLayoutParams();
         recycler_layoutParams.height = init_height;
-        headerRecyclerView.setLayoutParams(recycler_layoutParams);
-        headerRecyclerView.addOnScrollListener(new HeaderOnScrollListener());
-        headerRecyclerView.setLayoutParams(recycler_layoutParams);
-        headerRecyclerView.stopScroll();
-        headerRecyclerView.scrollToPosition(upperBoundsOffset);
-    }
-
-    private void setUpBodyHeader(){
-        bodyHeader = new AgendaBodyHeader(context);
-        bodyHeader.updateHeaderView();
-        bodyRl.addView(bodyHeader);
+        agendaViewHeader.setLayoutParams(recycler_layoutParams);
+        agendaViewHeader.addOnScrollListener(new HeaderOnScrollListener());
+        agendaViewHeader.setLayoutParams(recycler_layoutParams);
+        agendaViewHeader.stopScroll();
+        agendaViewHeader.scrollToPosition(upperBoundsOffset);
     }
 
     private void setUpBody(){
         bodyRecyclerAdapter = new AgendaBodyViewRecyclerAdapter(context, upperBoundsOffset);
         setOnEventClickListener(this.onEventClickListener);
-        bodyRecyclerView.setFlingScale(0.6f);
-        bodyRecyclerView.setHasFixedSize(false);
-        bodyRecyclerView.setAdapter(bodyRecyclerAdapter);
+        agendaViewBody.setFlingScale(0.6f);
+        agendaViewBody.setHasFixedSize(false);
+        agendaViewBody.setAdapter(bodyRecyclerAdapter);
         bodyLinearLayoutManager = new LinearLayoutManager(context);
-        headerRecyclerAdapter.setBodyRecyclerView(bodyRecyclerView);
+        headerRecyclerAdapter.setBodyRecyclerView(agendaViewBody);
         headerRecyclerAdapter.setBodyLayoutManager(bodyLinearLayoutManager);
-        bodyRecyclerView.setLayoutManager(bodyLinearLayoutManager);
-//        bodyRecyclerView.addItemDecoration(new AgendaBodyViewRecyclerDivider(context));
-        bodyRecyclerView.addOnScrollListener(new BodyOnScrollListener());
+        agendaViewBody.setLayoutManager(bodyLinearLayoutManager);
+//        agendaViewBody.addItemDecoration(new AgendaBodyViewRecyclerDivider(context));
+        agendaViewBody.addOnScrollListener(new BodyOnScrollListener());
 
-        ViewGroup.LayoutParams recycler_layoutParams = bodyRecyclerView.getLayoutParams();
+        ViewGroup.LayoutParams recycler_layoutParams = agendaViewBody.getLayoutParams();
         recycler_layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
         recycler_layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-        bodyRecyclerView.setLayoutParams(recycler_layoutParams);
-        bodyRecyclerView.stopScroll();
-        bodyRecyclerView.scrollToPosition(upperBoundsOffset);
+        agendaViewBody.setLayoutParams(recycler_layoutParams);
+        agendaViewBody.stopScroll();
+        agendaViewBody.scrollToPosition(upperBoundsOffset);
     }
 
-    public void setOnEventClickListener(AgendaViewBody.OnEventClickListener onEventClickListener){
-        this.onEventClickListener = onEventClickListener;
-        if (bodyRecyclerAdapter != null){
-            bodyRecyclerAdapter.setOnEventClickListener(this.onEventClickListener);
+    private void setUpFloatHeader(){
+        bodyFloatHeader = new AgendaBodyHeader(context);
+        bodyFloatHeader.updateHeaderView();
+        agendaViewBodyContainer.addView(bodyFloatHeader);
+    }
+
+    private void collapseHeader(Animator.AnimatorListener callback){
+        agendaViewHeader.stopScroll();
+        headerLinearLayoutManager.scrollToPositionWithOffset(headerRecyclerAdapter.getCurrentSelectPst(), 0);
+
+        final View view = agendaViewHeader;
+        ValueAnimator va = ValueAnimator.ofInt(scroll_height, init_height);
+        va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            public void onAnimationUpdate(ValueAnimator animation) {
+                Integer value = (Integer) animation.getAnimatedValue();
+                view.getLayoutParams().height = value.intValue();
+                view.requestLayout();
+            }
+        });
+
+        if(callback != null){
+            va.addListener(callback);
+        }
+
+        va.setDuration(200);
+        va.start();
+    }
+
+    private void expandHeader(){
+        final View view = agendaViewHeader;
+        ValueAnimator va = ValueAnimator.ofInt(init_height, scroll_height);
+        va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            public void onAnimationUpdate(ValueAnimator animation) {
+                Integer value = (Integer) animation.getAnimatedValue();
+                view.getLayoutParams().height = value.intValue();
+                view.requestLayout();
+            }
+        });
+        va.setDuration(200);
+        va.start();
+    }
+
+    private boolean isWithin(ITimeEventInterface event, long dayOfBegin, int index){
+        long startTime = event.getStartTime();
+        long endTime = event.getEndTime();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(dayOfBegin);
+
+        MyCalendar calS = new MyCalendar(calendar);
+        calS.setOffsetByDate(index);
+
+        MyCalendar calE = new MyCalendar(calendar);
+        calE.setOffsetByDate(index);
+        calE.setHour(23);
+        calE.setMinute(59);
+
+        long todayStartTime =  calS.getBeginOfDayMilliseconds();
+        long todayEndTime =  calE.getCalendar().getTimeInMillis();
+
+        return
+                todayEndTime >= startTime && todayStartTime <= endTime;
+    }
+
+    private void headerScrollToDate(Calendar body_fst_cal){
+
+        DayViewHeader headerView =
+                (DayViewHeader) headerLinearLayoutManager.findViewByPosition(headerRecyclerAdapter.rowPst);
+
+        if (headerView != null){
+            MyCalendar tempH = new MyCalendar(headerView.getCalendar());
+            tempH.setHour(0);
+            MyCalendar tempB = new MyCalendar(body_fst_cal);
+            tempB.setHour(0);
+            tempH.setOffsetByDate(headerRecyclerAdapter.indexInRow);
+
+            int date_offset =  Math.round((float)(tempB.getCalendar().getTimeInMillis() - tempH.getCalendar().getTimeInMillis()) / (float)(1000*60*60*24));
+            int row_diff = date_offset/7;
+            int day_diff = ((headerRecyclerAdapter.indexInRow+1) + date_offset%7);
+
+            if (date_offset > 0){
+                row_diff = row_diff + (day_diff > 7 ? 1:0);
+                day_diff = day_diff > 7 ? day_diff%7 : day_diff;
+            }else if(date_offset < 0){
+                row_diff = row_diff + (day_diff <= 0 ? -1:0);
+                day_diff = day_diff <= 0 ? (7 + day_diff):day_diff;
+            }
+
+            if ((row_diff != 0 || day_diff != 0)){
+                if (row_diff != 0){
+                    int newRowPst = row_diff + headerRecyclerAdapter.rowPst;
+                    agendaViewHeader.stopScroll();
+                    agendaViewHeader.scrollToPosition(newRowPst);
+                    headerRecyclerAdapter.rowPst = newRowPst;
+                }
+                if (day_diff != 0){
+                    final int new_index = day_diff - 1;
+                    postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            DayViewHeader need_set_index_header =((DayViewHeader) headerLinearLayoutManager.findViewByPosition(headerRecyclerAdapter.rowPst));
+                            if (need_set_index_header != null){
+                                need_set_index_header.performNthDayClick(new_index);
+                            }
+                        }
+                    },100);
+                    headerRecyclerAdapter.indexInRow = new_index;
+                }
+            }
+        }else {
+            agendaViewHeader.stopScroll();
+            agendaViewHeader.scrollToPosition(headerRecyclerAdapter.rowPst);
         }
     }
 
-    class HeaderOnScrollListener extends RecyclerView.OnScrollListener {
+    /***************************************************************************
+     * Listener Part, Including onHeaderListener, OnBodyOuterListener
+     ***************************************************************************/
+
+    private class HeaderOnScrollListener extends RecyclerView.OnScrollListener {
         @Override
         public void onScrollStateChanged(RecyclerView v, int newState) {
-            super.onScrollStateChanged(headerRecyclerView, newState);
+            super.onScrollStateChanged(agendaViewHeader, newState);
             if (newState == 1){
                 if (v.getHeight() == init_height){
                     final View view = v;
@@ -217,174 +406,8 @@ public class MonthAgendaView extends RelativeLayout{
             }
         }
     }
-    public void setOnHeaderListener(OnHeaderListener onHeaderListener){
-        this.onHeaderListener = onHeaderListener;
-    }
 
-    public void setDayEventMap(ITimeEventPackageInterface eventPackage){
-        this.eventPackage = eventPackage;
-        this.bodyRecyclerAdapter.setDayEventMap(eventPackage);
-        this.headerRecyclerAdapter.notifyDataSetChanged();
-        this.bodyRecyclerAdapter.notifyDataSetChanged();
-    }
-
-    public void backToToday(){
-        this.headerRecyclerView.stopScroll();
-        this.bodyRecyclerView.stopScroll();
-        if (headerRecyclerView.getHeight() != init_height){
-            shrinkHeader(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    headerScrollToDate(Calendar.getInstance());
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-
-                }
-            });
-        }else{
-            headerScrollToDate(Calendar.getInstance());
-        }
-//        headerRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//            @Override
-//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-//                super.onScrollStateChanged(recyclerView, newState);
-//                if (newState == 0){
-//                    Calendar cal = Calendar.getInstance();
-//                    DayViewHeader headerView =
-//                            (DayViewHeader) headerLinearLayoutManager.findViewByPosition(headerLinearLayoutManager.findFirstVisibleItemPosition());
-//                    headerView.performNthDayClick(cal.get(Calendar.DAY_OF_WEEK) - 1);
-//                    headerRecyclerView.removeOnScrollListener(this);
-//                }
-//            }
-//        });
-//        headerRecyclerView.smoothScrollToPosition(upperBoundsOffset);
-        this.bodyLinearLayoutManager.scrollToPosition(0);
-    }
-
-    private void shrinkHeader(Animator.AnimatorListener callback){
-        headerRecyclerView.stopScroll();
-        headerLinearLayoutManager.scrollToPositionWithOffset(headerRecyclerAdapter.getCurrentSelectPst(), 0);
-
-        final View view = headerRecyclerView;
-        ValueAnimator va = ValueAnimator.ofInt(scroll_height, init_height);
-        va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            public void onAnimationUpdate(ValueAnimator animation) {
-                Integer value = (Integer) animation.getAnimatedValue();
-                view.getLayoutParams().height = value.intValue();
-                view.requestLayout();
-            }
-        });
-
-        if(callback != null){
-            va.addListener(callback);
-        }
-
-        va.setDuration(200);
-        va.start();
-    }
-
-    private void expandHeader(){
-        final View view = headerRecyclerView;
-        ValueAnimator va = ValueAnimator.ofInt(init_height, scroll_height);
-        va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            public void onAnimationUpdate(ValueAnimator animation) {
-                Integer value = (Integer) animation.getAnimatedValue();
-                view.getLayoutParams().height = value.intValue();
-                view.requestLayout();
-            }
-        });
-        va.setDuration(200);
-        va.start();
-    }
-
-    public void scrollTo(final Calendar calendar){
-        if (headerRecyclerView.getHeight() == 0){
-            ViewTreeObserver vto = headerRecyclerView.getViewTreeObserver();
-            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    headerRecyclerView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                    headerRecyclerView.stopScroll();
-                    bodyRecyclerView.stopScroll();
-                    headerScrollToDate(calendar);
-                }
-            });
-        }else{
-            headerRecyclerView.stopScroll();
-            headerScrollToDate(calendar);
-        }
-    }
-
-    public interface OnHeaderListener{
-        void onMonthChanged(MyCalendar calendar);
-        void backToToday();
-    }
-
-    public void headerScrollToDate(Calendar body_fst_cal){
-
-        DayViewHeader headerView =
-                (DayViewHeader) headerLinearLayoutManager.findViewByPosition(headerRecyclerAdapter.rowPst);
-//        DayViewHeader headerView =(DayViewHeader) headerLinearLayoutManager.findViewByPosition(headerLinearLayoutManager.findFirstVisibleItemPosition());
-
-        if (headerView != null){
-            MyCalendar tempH = new MyCalendar(headerView.getCalendar());
-            tempH.setHour(0);
-            MyCalendar tempB = new MyCalendar(body_fst_cal);
-            tempB.setHour(0);
-            tempH.setOffsetByDate(headerRecyclerAdapter.indexInRow);
-
-            int date_offset =  Math.round((float)(tempB.getCalendar().getTimeInMillis() - tempH.getCalendar().getTimeInMillis()) / (float)(1000*60*60*24));
-            int row_diff = date_offset/7;
-            int day_diff = ((headerRecyclerAdapter.indexInRow+1) + date_offset%7);
-
-            if (date_offset > 0){
-                row_diff = row_diff + (day_diff > 7 ? 1:0);
-                day_diff = day_diff > 7 ? day_diff%7 : day_diff;
-            }else if(date_offset < 0){
-                row_diff = row_diff + (day_diff <= 0 ? -1:0);
-                day_diff = day_diff <= 0 ? (7 + day_diff):day_diff;
-            }
-
-            if ((row_diff != 0 || day_diff != 0)){
-                if (row_diff != 0){
-                    int newRowPst = row_diff + headerRecyclerAdapter.rowPst;
-                    headerRecyclerView.stopScroll();
-                    headerRecyclerView.scrollToPosition(newRowPst);
-                    headerRecyclerAdapter.rowPst = newRowPst;
-                }
-                if (day_diff != 0){
-                    final int new_index = day_diff - 1;
-                    postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            DayViewHeader need_set_index_header =((DayViewHeader) headerLinearLayoutManager.findViewByPosition(headerRecyclerAdapter.rowPst));
-                            if (need_set_index_header != null){
-                                need_set_index_header.performNthDayClick(new_index);
-                            }
-                        }
-                    },100);
-                    headerRecyclerAdapter.indexInRow = new_index;
-                }
-            }
-        }else {
-            headerRecyclerView.stopScroll();
-            headerRecyclerView.scrollToPosition(headerRecyclerAdapter.rowPst);
-        }
-    }
-
-    class BodyOnScrollListener extends RecyclerView.OnScrollListener{
+    private class BodyOnScrollListener extends RecyclerView.OnScrollListener{
         private boolean slideByUser = false;
         private int last_pst = upperBoundsOffset;
 
@@ -396,10 +419,10 @@ public class MonthAgendaView extends RelativeLayout{
                 MyCalendar bodyMyCalendar = ((AgendaViewBody) bodyLinearLayoutManager.findViewByPosition(fst_visible_pst)).getCalendar();
                 Calendar body_fst_cal = bodyMyCalendar.getCalendar();
 
-                //update bodyHeader
-                bodyHeader.setMyCalendar(bodyMyCalendar);
-                bodyHeader.updateHeaderView();
-                bodyHeader.setTranslationY(0);
+                //update bodyFloatHeader
+                bodyFloatHeader.setMyCalendar(bodyMyCalendar);
+                bodyFloatHeader.updateHeaderView();
+                bodyFloatHeader.setTranslationY(0);
 
                 //update header
                 if (slideByUser){
@@ -410,10 +433,10 @@ public class MonthAgendaView extends RelativeLayout{
 
             if (slideByUser && (fst_visible_pst != -1)){
                 AgendaViewBody body = ((AgendaViewBody) bodyLinearLayoutManager.findViewByPosition(fst_visible_pst));
-                if (body.getBottom() <= bodyHeader.getHeight()){
-                    bodyHeader.setTranslationY(body.getBottom() - bodyHeader.getHeight());
+                if (body.getBottom() <= bodyFloatHeader.getHeight()){
+                    bodyFloatHeader.setTranslationY(body.getBottom() - bodyFloatHeader.getHeight());
                 }else {
-                    bodyHeader.setTranslationY(0);
+                    bodyFloatHeader.setTranslationY(0);
                 }
                 last_pst = fst_visible_pst;
             }
@@ -424,9 +447,9 @@ public class MonthAgendaView extends RelativeLayout{
         public void onScrollStateChanged(RecyclerView v, int newState) {
             super.onScrollStateChanged(v, newState);
             //update header height
-            final View needChangeView = headerRecyclerView;
+            final View needChangeView = agendaViewHeader;
             if (needChangeView.getHeight() == scroll_height){
-                headerRecyclerView.stopScroll();
+                agendaViewHeader.stopScroll();
                 headerLinearLayoutManager.scrollToPositionWithOffset(headerRecyclerAdapter.getCurrentSelectPst(), 0);
                 ValueAnimator va = ValueAnimator.ofInt(scroll_height, init_height);
                 va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -461,25 +484,18 @@ public class MonthAgendaView extends RelativeLayout{
         }
     }
 
-    private boolean isWithin(ITimeEventInterface event, long dayOfBegin, int index){
-        long startTime = event.getStartTime();
-        long endTime = event.getEndTime();
+    public void setOnEventClickListener(AgendaViewBody.OnEventClickListener onEventClickListener){
+        this.onEventClickListener = onEventClickListener;
+        if (bodyRecyclerAdapter != null){
+            bodyRecyclerAdapter.setOnEventClickListener(this.onEventClickListener);
+        }
+    }
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(dayOfBegin);
+    public void setOnHeaderListener(OnHeaderListener onHeaderListener){
+        this.onHeaderListener = onHeaderListener;
+    }
 
-        MyCalendar calS = new MyCalendar(calendar);
-        calS.setOffsetByDate(index);
-
-        MyCalendar calE = new MyCalendar(calendar);
-        calE.setOffsetByDate(index);
-        calE.setHour(23);
-        calE.setMinute(59);
-
-        long todayStartTime =  calS.getBeginOfDayMilliseconds();
-        long todayEndTime =  calE.getCalendar().getTimeInMillis();
-
-        return
-                todayEndTime >= startTime && todayStartTime <= endTime;
+    public interface OnHeaderListener{
+        void onMonthChanged(MyCalendar calendar);
     }
 }

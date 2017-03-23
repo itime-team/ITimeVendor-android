@@ -30,7 +30,6 @@ public class ResizeAnimation extends Animation{
         this.toDimension = toDimension;
         // See enum above, the type of animation
         this.type = type;
-
         // Set the duration of the animation
         this.setDuration(duration);
     }
