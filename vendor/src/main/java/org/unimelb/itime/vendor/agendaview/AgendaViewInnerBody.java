@@ -328,7 +328,7 @@ public class AgendaViewInnerBody extends RelativeLayout {
         int padding = DensityUtil.dip2px(getContext(),5);
         img.setPadding(padding, padding, padding, padding);
         img.setLayoutParams(params);
-        int size = DensityUtil.dip2px(getContext(),20);
+        int size = DensityUtil.dip2px(getContext(),50);
         Transformation transformation = new CropCircleTransformation();
         LoadImgHelper.getInstance().bindUrlWithImageView(context,transformation, url, img, size);
 
