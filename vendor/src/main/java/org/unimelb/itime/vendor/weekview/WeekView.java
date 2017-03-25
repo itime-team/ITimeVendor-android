@@ -1,6 +1,7 @@
 package org.unimelb.itime.vendor.weekview;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.databinding.BindingMethod;
 import android.databinding.BindingMethods;
 import android.support.v4.view.ViewPager;
@@ -8,6 +9,7 @@ import android.support.v7.widget.LinearLayoutCompat;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
@@ -15,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import org.unimelb.itime.vendor.R;
 import org.unimelb.itime.vendor.dayview.EventController;
 import org.unimelb.itime.vendor.dayview.FlexibleLenBodyViewPager;
 import org.unimelb.itime.vendor.dayview.FlexibleLenViewBody;
@@ -49,6 +52,9 @@ import static android.support.v4.view.ViewPager.SCROLL_STATE_IDLE;
         }
 )
 public class WeekView extends LinearLayout {
+
+    private int displayLength = 3;
+
     public static final int TIMESLOT_KEEP_SHOW = 1;
     public static final int TIMESLOT_KEEP_HIDE = -1;
     public static final int TIMESLOT_AUTO = 0;
@@ -78,19 +84,33 @@ public class WeekView extends LinearLayout {
 
     private Context context;
 
-    public WeekView(Context context) {
+    public WeekView(Context context, int displayLength) {
         super(context);
+        this.displayLength = displayLength;
         initView();
     }
 
     public WeekView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        loadAttributes(attrs, context);
         initView();
     }
 
     public WeekView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        loadAttributes(attrs, context);
         initView();
+    }
+
+    private void loadAttributes(AttributeSet attrs, Context context) {
+        if (attrs != null && context != null) {
+            TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.dayStyle, 0, 0);
+            try {
+                displayLength = typedArray.getInteger(R.styleable.dayStyle_display_length, displayLength);
+            } finally {
+                typedArray.recycle();
+            }
+        }
     }
 
     @Override
@@ -492,7 +512,7 @@ public class WeekView extends LinearLayout {
         //must be consistent with width of left bar in body part.
         int leftBarPadding = DensityUtil.dip2px(context,40);
         for (int i = 0; i < size; i++) {
-            WeekViewHeader headerView = new WeekViewHeader(context);
+            WeekViewHeader headerView = new WeekViewHeader(context, displayLength);
             headerView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             headerView.setPadding(leftBarPadding,padding,0,padding);
             headerViewList.add(headerView);
@@ -510,7 +530,7 @@ public class WeekView extends LinearLayout {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         for (int i = 0; i < size; i++) {
-            FlexibleLenViewBody bodyView = new FlexibleLenViewBody(context,7);
+            FlexibleLenViewBody bodyView = new FlexibleLenViewBody(context, displayLength);
             bodyView.setLayoutParams(new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             bodyView.setCalendar(new MyCalendar(calendar));
             bodyView.setOnBodyListener(new OnEventInnerListener());
@@ -586,7 +606,7 @@ public class WeekView extends LinearLayout {
         weekViewPager.setScrollDurationFactor(3);
         upperBoundsOffset = 500;
         bodyCurrentPosition = upperBoundsOffset;
-        adapter = new WeekViewPagerAdapter(upperBoundsOffset,weekViewList);
+        adapter = new WeekViewPagerAdapter(upperBoundsOffset, weekViewList, displayLength);
         if (this.eventPackage != null){
             adapter.setDayEventMap(this.eventPackage);
         }
@@ -632,11 +652,14 @@ public class WeekView extends LinearLayout {
 
         int date_offset =  Math.round((float)(tempB.getCalendar().getTimeInMillis() - tempH.getCalendar().getTimeInMillis()) / (float)(1000*60*60*24));
 
-        int row_diff = date_offset/7;
-        int day_diff = (tempH.getDayOfWeek() + date_offset%7);
+        int row_diff = date_offset/displayLength;
+        /**
+         * tempH.getDayOfWeek() should be substantiated by position of current showing week
+         */
+        int day_diff = (tempH.getDayOfWeek()%displayLength + date_offset%displayLength);
 
         if (date_offset > 0){
-            row_diff = row_diff + (day_diff > 7 ? 1:0);
+            row_diff = row_diff + (day_diff > displayLength ? 1:0);
         }else if(date_offset < 0){
             row_diff = row_diff + (day_diff <= 0 ? -1:0);
         }

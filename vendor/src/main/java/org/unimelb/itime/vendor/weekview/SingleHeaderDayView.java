@@ -35,9 +35,7 @@ public class SingleHeaderDayView extends LinearLayout {
     private void init(){
         this.setOrientation(VERTICAL);
 
-        int padding = DensityUtil.dip2px(getContext(),5);
         container = new LinearLayout(getContext());
-        container.setPadding(padding,0,padding,0);
         container.setOrientation(VERTICAL);
         LinearLayout.LayoutParams containerParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         containerParams.gravity = Gravity.CENTER;

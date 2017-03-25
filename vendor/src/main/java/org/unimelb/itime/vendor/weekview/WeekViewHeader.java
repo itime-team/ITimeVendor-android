@@ -38,22 +38,23 @@ public class WeekViewHeader extends LinearLayout {
 
     private List<SingleHeaderDayView> singleHeaderDayViews = new ArrayList<>();
 
-    public WeekViewHeader(Context context) {
+    public WeekViewHeader(Context context, int displayLen) {
         super(context);
         this.context = context;
+        this.displayLen = displayLen;
         this.init();
     }
 
-    public WeekViewHeader(Context context, AttributeSet attrs) {
+    public WeekViewHeader(Context context, AttributeSet attrs, int displayLen) {
         super(context, attrs);
         this.context = context;
+        this.displayLen = displayLen;
         this.init();
     }
 
 
     private void init(){
         this.setOrientation(HORIZONTAL);
-
         for (int i = 0; i < displayLen; i++) {
             SingleHeaderDayView singleHeaderDayView = new SingleHeaderDayView(context);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,1f);
@@ -89,5 +90,13 @@ public class WeekViewHeader extends LinearLayout {
             singleHeaderDayView.updateText(dayOfWeek, nthDay,color);
             cal.setOffsetByDate(1);
         }
+    }
+
+    public int getDisplayLen() {
+        return displayLen;
+    }
+
+    public void setDisplayLen(int displayLen) {
+        this.displayLen = displayLen;
     }
 }

@@ -27,11 +27,12 @@ class WeekViewPagerAdapter extends PagerAdapter {
     private ITimeEventPackageInterface eventPackage;
 
     private MyCalendar startCal;
+    private int displayLength = 0 ;
 
-
-    WeekViewPagerAdapter(int startPst, ArrayList<LinearLayout> views){
+    WeekViewPagerAdapter(int startPst, ArrayList<LinearLayout> views, int displayLength){
         this.views = views;
         this.startPst =startPst;
+        this.displayLength = displayLength;
 
         Calendar calendar = Calendar.getInstance();
         int weekOfDay = calendar.get(Calendar.DAY_OF_WEEK);
@@ -41,12 +42,10 @@ class WeekViewPagerAdapter extends PagerAdapter {
 
     void setSlotsInfo(ArrayList<WrapperTimeSlot> slotsInfo) {
         this.slotsInfo = slotsInfo;
-
     }
 
     void enableTimeSlot(){
-        for (LinearLayout weekView : views
-                ) {
+        for (LinearLayout weekView : views) {
             //0 header, 1 divider, 2 means body
             FlexibleLenViewBody bodyView = (FlexibleLenViewBody)weekView.getChildAt(2);
             bodyView.enableTimeSlot();
@@ -54,8 +53,7 @@ class WeekViewPagerAdapter extends PagerAdapter {
     }
 
     void removeAllOptListener(){
-        for (LinearLayout weekView : views
-                ) {
+        for (LinearLayout weekView : views) {
             FlexibleLenViewBody bodyView = (FlexibleLenViewBody)weekView.getChildAt(2);
             bodyView.removeOptListener();
         }
@@ -67,16 +65,14 @@ class WeekViewPagerAdapter extends PagerAdapter {
 
     void updateTimeSlotsDuration(long duration, boolean animate){
         this.duration = duration;
-        for (LinearLayout weekView : views
-                ) {
+        for (LinearLayout weekView : views) {
             FlexibleLenViewBody bodyView = (FlexibleLenViewBody)weekView.getChildAt(2);
             bodyView.updateTimeSlotsDuration(duration, animate);
         }
     }
 
     void reloadEvents(){
-        for (LinearLayout weekView : views
-                ) {
+        for (LinearLayout weekView : views) {
             FlexibleLenViewBody bodyView = (FlexibleLenViewBody)weekView.getChildAt(2);
             if (this.eventPackage != null){
                 bodyView.resetViews();
@@ -123,7 +119,7 @@ class WeekViewPagerAdapter extends PagerAdapter {
             parent.removeView(view);
         }
 
-        int dateOffset =(position - startPst) * 7 ;
+        int dateOffset =(position - startPst) * displayLength;
         this.updateHeader(view, dateOffset);
         this.updateBody(view, dateOffset);
 
@@ -178,5 +174,13 @@ class WeekViewPagerAdapter extends PagerAdapter {
                 nowBody.timeSlotAnimationChecker();
             }
         }
+    }
+
+    public int getDisplayLength() {
+        return displayLength;
+    }
+
+    public void setDisplayLength(int displayLength) {
+        this.displayLength = displayLength;
     }
 }

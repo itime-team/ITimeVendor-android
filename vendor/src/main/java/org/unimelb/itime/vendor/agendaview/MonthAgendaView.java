@@ -40,7 +40,6 @@ import java.util.Calendar;
 
 public class MonthAgendaView extends RelativeLayout{
     private final String TAG = "AgendaHeader";
-
     private int upperBoundsOffset = 1;
     private int init_height;
     private int scroll_height;

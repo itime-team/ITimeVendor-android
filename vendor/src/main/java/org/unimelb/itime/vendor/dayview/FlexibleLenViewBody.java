@@ -157,7 +157,7 @@ public class FlexibleLenViewBody extends FrameLayout {
         super(context, attrs);
         this.context = context;
         initLayoutParams();
-        loadAttributes(attrs, context);
+//        loadAttributes(attrs, context);
         init();
     }
 
@@ -165,7 +165,7 @@ public class FlexibleLenViewBody extends FrameLayout {
         super(context, attrs, defStyleAttr);
         this.context = context;
         initLayoutParams();
-        loadAttributes(attrs, context);
+//        loadAttributes(attrs, context);
         init();
     }
 
@@ -421,19 +421,18 @@ public class FlexibleLenViewBody extends FrameLayout {
         return displayLen;
     }
 
-    private void loadAttributes(AttributeSet attrs, Context context) {
-        if (attrs != null && context != null) {
-            TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.dayStyle, 0, 0);
-            try {
-                displayLen = typedArray.getInteger(R.styleable.dayStyle_display_length,displayLen);
-                timeTextSize = typedArray.getDimensionPixelSize(R.styleable.dayStyle_timeTextSize,
-                        (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, timeTextSize, context.getResources().getDisplayMetrics()));
-
-            } finally {
-                typedArray.recycle();
-            }
-        }
-    }
+//    private void loadAttributes(AttributeSet attrs, Context context) {
+//        if (attrs != null && context != null) {
+//            TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.dayStyle, 0, 0);
+//            try {
+//                timeTextSize = typedArray.getDimensionPixelSize(R.styleable.dayStyle_timeTextSize,
+//                        (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, timeTextSize, context.getResources().getDisplayMetrics()));
+//
+//            } finally {
+//                typedArray.recycle();
+//            }
+//        }
+//    }
 
     public void initBackgroundView() {
         initTimeSlot();

@@ -488,7 +488,8 @@ public class MonthDayView extends LinearLayout {
         calendar.set(Calendar.MILLISECOND, 0);
 
         for (int i = 0; i < size; i++) {
-            FlexibleLenViewBody bodyView = (FlexibleLenViewBody) LayoutInflater.from(this.context).inflate(R.layout.itime_day_view_body_view, null);
+//            FlexibleLenViewBody bodyView = (FlexibleLenViewBody) LayoutInflater.from(this.context).inflate(R.layout.itime_day_view_body_view, null);
+            FlexibleLenViewBody bodyView = new FlexibleLenViewBody(context,1);
             bodyView.setCalendar(new MyCalendar(calendar));
             bodyViewList.add(bodyView);
             bodyView.setOnBodyTouchListener(new FlexibleLenViewBody.OnBodyTouchListener() {
