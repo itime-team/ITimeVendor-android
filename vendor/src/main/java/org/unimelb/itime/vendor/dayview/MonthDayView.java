@@ -66,6 +66,7 @@ public class MonthDayView extends LinearLayout {
     private ViewTreeObserver.OnScrollChangedListener onBodyScrollChangedListener;
 
     private Context context;
+    private Config config;
 
     public MonthDayView(Context context) {
         super(context);
@@ -269,12 +270,14 @@ public class MonthDayView extends LinearLayout {
 
     public void setOnHeaderListener(OnHeaderListener onHeaderListener){
         this.onHeaderListener = onHeaderListener;
+        this.config.setOnMonthDayViewHeaderListener(onHeaderListener);
     }
 
     private EventController.OnEventListener OnBodyOuterListener;
 
     public void setOnBodyOuterListener(EventController.OnEventListener onBodyOuterListener){
         this.OnBodyOuterListener = onBodyOuterListener;
+        this.config.setOnBodyOuterListener(onBodyOuterListener);
     }
 
     public interface OnHeaderListener{
@@ -360,6 +363,7 @@ public class MonthDayView extends LinearLayout {
 
     public void setOnFlexibleBodyScroll(OnFlexibleBodyScroll onFlexibleBodyScroll) {
         this.onFlexibleBodyScroll = onFlexibleBodyScroll;
+        this.config.setOnFlexibleBodyScroll(onFlexibleBodyScroll);
     }
 
     /***************************************************************************
@@ -488,7 +492,6 @@ public class MonthDayView extends LinearLayout {
         calendar.set(Calendar.MILLISECOND, 0);
 
         for (int i = 0; i < size; i++) {
-//            FlexibleLenViewBody bodyView = (FlexibleLenViewBody) LayoutInflater.from(this.context).inflate(R.layout.itime_day_view_body_view, null);
             FlexibleLenViewBody bodyView = new FlexibleLenViewBody(context,1);
             bodyView.setCalendar(new MyCalendar(calendar));
             bodyViewList.add(bodyView);
