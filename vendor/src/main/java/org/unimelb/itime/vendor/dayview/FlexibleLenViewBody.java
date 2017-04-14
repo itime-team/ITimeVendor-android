@@ -708,6 +708,7 @@ public class FlexibleLenViewBody extends FrameLayout {
         if (fromDayBegin == todayBegin && endTime > todayEnd){
             return DAY_CROSS_ALL_DAY;
         }
+
         //End part
         if (startTime < todayBegin && endTime > todayBegin){
             return DAY_CROSS_END;
