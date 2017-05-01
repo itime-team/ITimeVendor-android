@@ -41,4 +41,16 @@
     </declare-styleable>
 
     <attr name="calendarViewStyle" format="reference" />
+
+    <declare-styleable name ="MultiBottomSheetLayout_Layout">
+        <attr name ="layout_type">
+            <enum name ="header" value="1" />
+            <enum name ="body" value="2" />
+            <enum name ="footer" value="3" />
+        </attr >
+    </declare-styleable>
+    <declare-styleable name ="MultiBottomSheetLayout">
+        <attr name ="multi_bottom_sheet_modal" format="boolean"/>
+        <attr name = "multi_bottom_sheet_backcolor" format="color"/>
+    </declare-styleable>
 </resources>
