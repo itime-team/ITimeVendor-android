@@ -1,6 +1,9 @@
 package org.unimelb.itime.vendor.wrapper;
 
+import android.util.Log;
+
 import org.unimelb.itime.vendor.listener.ITimeTimeSlotInterface;
+import org.unimelb.itime.vendor.weekview.WeekView;
 
 /**
  * Created by yuhaoliu on 4/01/2017.
@@ -11,9 +14,12 @@ public class WrapperTimeSlot {
     private boolean isSelected = false;
     private boolean isAnimated = true;
     private boolean isRead = false;
+    private boolean isRecommended = false;
+    private WeekView.OnRcdTimeSlot onRcdTimeSlot;
 
     public WrapperTimeSlot(ITimeTimeSlotInterface timeSlot) {
         this.timeSlot = timeSlot;
+        this.isRecommended = timeSlot.isRecommended();
     }
 
     public WrapperTimeSlot copyWrapperTimeslot(){
@@ -55,4 +61,13 @@ public class WrapperTimeSlot {
     public void setRead(boolean read) {
         isRead = read;
     }
+
+    public boolean isRecommended() {
+        return isRecommended;
+    }
+
+    public void setRecommended(boolean recommended) {
+        isRecommended = recommended;
+    }
+
 }

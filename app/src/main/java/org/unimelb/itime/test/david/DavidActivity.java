@@ -2,18 +2,26 @@ package org.unimelb.itime.test.david;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 
 import org.unimelb.itime.test.R;
 import org.unimelb.itime.test.bean.Contact;
 import org.unimelb.itime.test.bean.Event;
 import org.unimelb.itime.test.bean.Invitee;
-import org.unimelb.itime.vendor.agendaview.MonthAgendaView;
+import org.unimelb.itime.test.bean.TimeSlot;
 import org.unimelb.itime.vendor.dayview.MonthDayView;
+import org.unimelb.itime.vendor.dayview.TimeSlotController;
+import org.unimelb.itime.vendor.unitviews.DraggableTimeSlotView;
+import org.unimelb.itime.vendor.unitviews.RecommendedSlotView;
+import org.unimelb.itime.vendor.unitviews.TimeSlotInnerCalendarView;
+import org.unimelb.itime.vendor.weekview.WeekView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class DavidActivity extends AppCompatActivity {
@@ -21,6 +29,9 @@ public class DavidActivity extends AppCompatActivity {
     private DBManager dbManager;
     private EventManager eventManager;
     private MonthDayView monthDayView;
+    private WeekView weekView;
+
+    private ArrayList<TimeSlot> slots = new ArrayList<>();
 
     private Event event;
 
@@ -38,9 +49,105 @@ public class DavidActivity extends AppCompatActivity {
         loadData();
 //        doInviteesThings();
 
-        doMonthAgendaViewThings();
+        doTimeSlotThings();
+//        doMonthAgendaViewThings();
 //        displayAllInvitee();
 //        doMonthDayViewThings();
+    }
+
+    private void doTimeSlotThings(){
+        initSlots();
+
+        weekView = (WeekView) findViewById(R.id.weekview_david);
+        weekView.setDayEventMap(eventManager.getEventsMap());
+        weekView.enableTimeSlot();
+        weekView.setOnTimeSlotInnerCalendar(new TimeSlotInnerCalendarView.OnTimeSlotInnerCalendar() {
+            @Override
+            public void onCalendarBtnClick(View v, boolean result) {
+
+            }
+
+            @Override
+            public void onDayClick(Date dateClicked) {
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(dateClicked);
+                weekView.scrollTo(cal);
+            }
+
+            @Override
+            public void onMonthScroll(Date firstDayOfNewMonth) {
+            }
+        });
+        weekView.setOnTimeSlotOuterListener(new TimeSlotController.OnTimeSlotListener() {
+            @Override
+            public void onTimeSlotCreate(DraggableTimeSlotView draggableTimeSlotView) {
+                
+            }
+
+            @Override
+            public void onTimeSlotClick(DraggableTimeSlotView draggableTimeSlotView) {
+
+            }
+
+            @Override
+            public void onTimeSlotDragStart(DraggableTimeSlotView draggableTimeSlotView) {
+
+            }
+
+            @Override
+            public void onTimeSlotDragging(DraggableTimeSlotView draggableTimeSlotView, int x, int y) {
+
+            }
+
+            @Override
+            public void onTimeSlotDragDrop(DraggableTimeSlotView draggableTimeSlotView, long startTime, long endTime) {
+
+            }
+
+            @Override
+            public void onTimeSlotEdit(DraggableTimeSlotView draggableTimeSlotView) {
+                Log.i(TAG, "onTimeSlotEdit: ");
+            }
+
+            @Override
+            public void onTimeSlotDelete(DraggableTimeSlotView draggableTimeSlotView) {
+                Log.i(TAG, "onTimeSlotDelete: ");
+            }   
+        });
+        weekView.setOnRcdTimeSlot(new WeekView.OnRcdTimeSlot() {
+            @Override
+            public void onClick(RecommendedSlotView v) {
+                v.getWrapper().setSelected(true);
+                weekView.reloadTimeSlots(false);
+            }
+        });
+
+        HashMap<String, Integer> numSlot = new HashMap<>();
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
+        numSlot.put(fmt.format(new Date()), 6);
+
+        weekView.setSlotNumMap(numSlot);
+
+
+        for (TimeSlot slot:slots
+             ) {
+            weekView.addTimeSlot(slot);
+        }
+    }
+
+    private void initSlots(){
+        Calendar cal = Calendar.getInstance();
+        long startTime = cal.getTimeInMillis();
+        long duration = 3*3600*1000;
+        for (int i = 0; i < 10; i++) {
+            TimeSlot slot = new TimeSlot();
+            slot.setStartTime(startTime);
+            slot.setEndTime(startTime+duration);
+            slot.setRecommended(true);
+            slots.add(slot);
+
+            startTime += 5 * 3600 * 1000;
+        }
     }
 
 //    private void doMonthDayViewThings(){
@@ -112,21 +219,16 @@ public class DavidActivity extends AppCompatActivity {
 //        });
 //    }
 
-    private void doMonthAgendaViewThings(){
-        Button back = (Button) findViewById(R.id.back);
-        final MonthAgendaView monthDayView = (MonthAgendaView) findViewById(R.id.monthAgendaView);
-        monthDayView.setDayEventMap(eventManager.getEventsMap());
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                monthDayView.backToToday();
-            }
-        });
-    }
-
-//    private void doInviteesThings(){
-//        InviteeFragment inviteeFragment = new InviteeFragment();
-//        getFragmentManager().beginTransaction().add(R.id.fragment, inviteeFragment).commit();
+//    private void doMonthAgendaViewThings(){
+//        Button back = (Button) findViewById(R.id.back);
+//        final MonthAgendaView monthDayView = (MonthAgendaView) findViewById(R.id.monthAgendaView);
+//        monthDayView.setDayEventMap(eventManager.getEventsMap());
+//        back.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                monthDayView.backToToday();
+//            }
+//        });
 //    }
 
     private void initData(){
@@ -140,52 +242,10 @@ public class DavidActivity extends AppCompatActivity {
         Event testE = null;
         for (Event event: allEvents
              ) {
-//            String[] rec = {"RRULE:FREQ=WEEKLY;INTERVAL=1"};
-//            event.setRecurrence(rec);
             this.event = event;
             EventManager.getInstance().addEvent(event);
-//            testE = event;
         }
-//        final Event e=testE;
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    Event newE = (Event) e.clone();
-//                    newE.setEndTime(newE.getNewStartTime() + 60*3600);
-//                    EventManager.getInstance().updateRepeatedEvent(newE);
-//
-//                } catch (CloneNotSupportedException e1) {
-//                    e1.printStackTrace();
-//                }
-//            }
-//        }, 5000);
-
-//        EventManager.getInstance().loadRepeatedEvent(nowRepeatedStartAt.getTimeInMillis(),nowRepeatedEndAt.getTimeInMillis());
-
-
     }
-
-//    private void doMonthDayViewThings(){
-//        final MonthDayView monthDayFragment = (MonthDayView) findViewById(R.id.monthDayView);
-//
-////        monthDayFragment.postDelayed(new Runnable() {
-////            @Override
-////            public void run() {
-////                Event event = new Event();
-////                event.setTitle("new added");
-////                event.setNewStartTime(Calendar.getInstance().getTimeInMillis());
-////                event.setEndTime(Calendar.getInstance().getTimeInMillis() + 60 * 60 * 1000);
-////                EventManager.getInstance().addEvent(event);
-////            }
-////        },5000);
-//    }
-
-//    private void doMonthAgendaViewThings(){
-//        MonthAgendaView monthDayFragment = (MonthAgendaView) findViewById(R.id.monthAgendaView);
-//
-//        monthDayFragment.setDayEventMap(EventManager.getInstance().getEventsMap());
-//    }
 
     private void initDB(){
         Calendar calendar = Calendar.getInstance();
@@ -220,17 +280,11 @@ public class DavidActivity extends AppCompatActivity {
                 }
             }
 
-
             dbManager.insertInviteeList(inviteeList);
-
-
 
             event.setEndTime(endTime);
             events.add(event);
-
-//            startTime= i==2?startTime:endTime;
             startTime = endTime;
-//            calendar.setTimeInMillis(startTime + 24*3600*1000);
         }
 
         dbManager.insertEventList(events);

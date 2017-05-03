@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.media.Image;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -20,6 +21,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import com.daasuu.bl.ArrowDirection;
+import com.daasuu.bl.BubbleLayout;
 
 import org.unimelb.itime.vendor.R;
 import org.unimelb.itime.vendor.util.BaseUtil;
@@ -82,8 +86,8 @@ public class FlexibleLenViewBody extends FrameLayout {
     protected ScrollContainerView scrollContainerView;
     private FrameLayout bodyContainerLayout;
 
-    private RelativeLayout globalAnimationLayout;
-    private RelativeLayout localAnimationLayout;
+    protected RelativeLayout globalAnimationLayout;
+    protected RelativeLayout localAnimationLayout;
 
     protected LinearLayout topAllDayLayout;
     protected LinearLayout topAllDayEventLayouts;
@@ -91,6 +95,8 @@ public class FlexibleLenViewBody extends FrameLayout {
     private FrameLayout timeLayout;
     private FrameLayout dividerBgRLayout;
     protected LinearLayout eventLayout;
+
+    protected BubbleLayout bubble;
 
     public MyCalendar myCalendar;
     protected Context context;
@@ -284,9 +290,76 @@ public class FlexibleLenViewBody extends FrameLayout {
 
         localAnimationLayout = new RelativeLayout(context);
         FrameLayout.LayoutParams localAnimationLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-//        localAnimationLayoutParams.topMargin = topAllDayHeight;
         localAnimationLayout.setLayoutParams(localAnimationLayoutParams);
         bodyContainerLayout.addView(localAnimationLayout);
+
+        bubble = new BubbleLayout(getContext());
+        int bubbleWidth = DensityUtil.dip2px(getContext(),110);
+        int bubbleHeight = DensityUtil.dip2px(getContext(),35);
+        bubble.setArrowDirection(ArrowDirection.BOTTOM);
+        bubble.setCornersRadius(DensityUtil.dip2px(getContext(),10));
+        bubble.setBubbleColor(getResources().getColor(R.color.timeslot_bubble_bg));
+        bubble.setArrowHeight(20);
+        bubble.setArrowWidth(20);
+        bubble.setStrokeWidth(0);
+        bubble.setVisibility(GONE);
+        bubble.setArrowPosition(bubbleWidth/2 - bubble.getArrowWidth()/2);
+
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(bubbleWidth, bubbleHeight);
+        localAnimationLayout.addView(bubble,params);
+
+        LinearLayout bubbleMenuContainer = new LinearLayout(getContext());
+        FrameLayout.LayoutParams bubbleParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        bubble.addView(bubbleMenuContainer,bubbleParams);
+
+        TextView editBtn = new TextView(getContext());
+        editBtn.setText("Edit");
+        editBtn.setTextColor(Color.WHITE);
+        editBtn.setTextSize(12);
+        editBtn.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams editBtnParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
+        editBtnParams.weight = 10;
+        editBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Object tag = bubble.getTag();
+                if (tag != null){
+                    DraggableTimeSlotView slotView = (DraggableTimeSlotView) tag;
+                    bubble.setVisibility(GONE);
+                    bubble.setTag(null);
+                    timeSlotController.onTimeSlotEdit(slotView);
+                }
+            }
+        });
+        bubbleMenuContainer.addView(editBtn,editBtnParams);
+
+        ImageView slash = new ImageView(getContext());
+        slash.setImageDrawable(getResources().getDrawable(R.drawable.icon_slash));
+        slash.setPadding(0,20,0,20);
+        LinearLayout.LayoutParams slashParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        bubbleMenuContainer.addView(slash,slashParams);
+
+        TextView deleteBtn = new TextView(getContext());
+        deleteBtn.setText("Delete");
+        deleteBtn.setTextSize(12);
+        deleteBtn.setTextColor(Color.WHITE);
+        deleteBtn.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams dltBtnParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
+        dltBtnParams.weight = 10;
+        deleteBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Object tag = bubble.getTag();
+                if (tag != null){
+                    DraggableTimeSlotView slotView = (DraggableTimeSlotView) tag;
+                    bubble.setVisibility(GONE);
+                    bubble.setTag(null);
+                    timeSlotController.onTimeSlotDelete(slotView);
+                }
+            }
+        });
+        bubbleMenuContainer.addView(deleteBtn,dltBtnParams);
+
     }
 
     private void initAnimations(){
@@ -1003,16 +1076,25 @@ public class FlexibleLenViewBody extends FrameLayout {
         timeSlotController.addSlot(wrapper,animate);
     }
 
+    public void addRcdSlot(WrapperTimeSlot wrapper){
+        timeSlotController.addRecommended(wrapper);
+    }
+
     public void updateTimeSlotsDuration(long duration, boolean animate){
         timeSlotController.updateTimeSlotsDuration(duration, animate);
     }
 
     public void enableTimeSlot(){
+        eventController.enableBgMode();
         timeSlotController.enableTimeSlot();
     }
 
     public void setOnTimeSlotListener(TimeSlotController.OnTimeSlotListener onTimeSlotListener) {
         timeSlotController.setOnTimeSlotListener(onTimeSlotListener);
+    }
+
+    public void setOnRcdTimeSlot(WeekView.OnRcdTimeSlot onRcdTimeSlot){
+        timeSlotController.setOnRcdTimeSlot(onRcdTimeSlot);
     }
 
     @Override

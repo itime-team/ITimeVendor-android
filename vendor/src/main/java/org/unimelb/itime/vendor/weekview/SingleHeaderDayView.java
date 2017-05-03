@@ -20,7 +20,7 @@ public class SingleHeaderDayView extends LinearLayout {
 
     //sp
     private int dayOfWeekTvSize = 11;
-    private int nthDayTvSize = 14;
+    private int nthDayTvSize = 18;
 
     public SingleHeaderDayView(Context context) {
         super(context);

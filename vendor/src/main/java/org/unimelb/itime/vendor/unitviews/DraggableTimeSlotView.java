@@ -6,9 +6,11 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import org.unimelb.itime.vendor.R;
 import org.unimelb.itime.vendor.util.DensityUtil;
@@ -21,7 +23,7 @@ import java.util.Calendar;
 /**
  * Created by yuhaoliu on 26/08/2016.
  */
-public class DraggableTimeSlotView extends ViewGroup {
+public class DraggableTimeSlotView extends FrameLayout {
     public static int TYPE_NORMAL = 0;
     public static int TYPE_TEMP = 1;
 
@@ -32,7 +34,7 @@ public class DraggableTimeSlotView extends ViewGroup {
     private long newEndTime = 0;
     private long duration;
 
-    private ImageView icon;
+//    private ImageView icon;
     private MyCalendar calendar = new MyCalendar(Calendar.getInstance());
 
     private WrapperTimeSlot wrapper;
@@ -40,6 +42,8 @@ public class DraggableTimeSlotView extends ViewGroup {
 
     private ValueAnimator bgAlphaAnimation;
     private ValueAnimator frameAlphaAnimation;
+    private TextView title;
+
 
     public DraggableTimeSlotView(Context context, WrapperTimeSlot wrapper) {
         super(context);
@@ -54,9 +58,22 @@ public class DraggableTimeSlotView extends ViewGroup {
     }
 
     public void init(){
+        initViews();
         initBackground();
-        initIcon();
+//        initIcon();
         initAnimation();
+    }
+
+    public void initViews(){
+        title = new TextView(getContext());
+        title.setText(getTimeText());
+        title.setGravity(Gravity.CENTER);
+        title.setTextColor(getResources().getColor(R.color.event_as_bg_title));
+        title.setTextSize(12);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.topMargin = DensityUtil.dip2px(getContext(),5);
+        layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+        this.addView(title,layoutParams);
     }
 
     public void resetView(){
@@ -70,20 +87,7 @@ public class DraggableTimeSlotView extends ViewGroup {
     }
 
     public void initBackground(){
-        this.setBackgroundDrawable(getResources().getDrawable(R.drawable.icon_timeslot_empty));
-    }
-
-    public void initIcon(){
-        icon = new ImageView(getContext());
-        LayoutParams params = new LayoutParams(50, 50);
-
-        if (!wrapper.isSelected()){
-            icon.setImageResource(R.drawable.icon_event_timeslot_unselected);
-        }else{
-            icon.setImageResource(R.drawable.icon_event_attendee_selected);
-        }
-
-        this.addView(icon,params);
+        this.setBackgroundDrawable(getResources().getDrawable(R.drawable.icon_timeslot_selected));
     }
 
     public void setTimes(long startTime, long endTime){
@@ -97,7 +101,6 @@ public class DraggableTimeSlotView extends ViewGroup {
 
     public void setIsSelected(boolean isSelect){
         this.wrapper.setSelected(isSelect);
-        updateIcon();
     }
 
     public void setNewStartTime(Long newStartTime) {
@@ -128,14 +131,6 @@ public class DraggableTimeSlotView extends ViewGroup {
         return wrapper;
     }
     
-    private void updateIcon(){
-        if (wrapper.isSelected()){
-            icon.setImageDrawable(getResources().getDrawable(R.drawable.icon_event_attendee_selected));
-        } else {
-            icon.setImageDrawable(getResources().getDrawable(R.drawable.icon_event_timeslot_unselected));
-        }
-    }
-
     public MyCalendar getCalendar() {
         return calendar;
     }
@@ -170,6 +165,15 @@ public class DraggableTimeSlotView extends ViewGroup {
         }
     }
 
+    private String getTimeText(){
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(wrapper.getTimeSlot().getStartTime());
+        String starTime = String.format("%02d:%02d", cal.get(Calendar.HOUR_OF_DAY),cal.get(Calendar.MINUTE));
+        cal.setTimeInMillis(wrapper.getTimeSlot().getEndTime());
+        String endTime = String.format("%02d:%02d", cal.get(Calendar.HOUR_OF_DAY),cal.get(Calendar.MINUTE));
+        return starTime + "-" + endTime;
+    }
+
     private void initAnimation(){
         bgAlphaAnimation = ObjectAnimator.ofFloat(this, View.ALPHA, 0,1);
         frameAlphaAnimation = ObjectAnimator.ofFloat(this, View.ALPHA, 0,1);
@@ -182,13 +186,13 @@ public class DraggableTimeSlotView extends ViewGroup {
             @Override
             public void onAnimationStart(Animator animation) {
                 super.onAnimationStart(animation);
-                DraggableTimeSlotView.this.setBackgroundResource(R.drawable.icon_timeslot_fill);
+                DraggableTimeSlotView.this.setBackgroundResource(R.drawable.icon_timeslot_empty);
             }
 
             @Override
             public void onAnimationEnd(Animator animation)
             {
-                DraggableTimeSlotView.this.setBackgroundResource(R.drawable.icon_timeslot_empty);
+                DraggableTimeSlotView.this.setBackgroundResource(R.drawable.icon_timeslot_selected);
                 frameAlphaAnimation.start();
             }
         });
@@ -197,40 +201,5 @@ public class DraggableTimeSlotView extends ViewGroup {
 
     public ITimeTimeSlotInterface getTimeslot() {
         return timeslot;
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    }
-
-    @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        int cCount = getChildCount();
-        int width = r - l;
-        int margin = DensityUtil.dip2px(getContext(),5);
-        for (int i = 0; i < cCount; i++) {
-            int cW = getChildAt(i).getLayoutParams().width;
-            int cH = getChildAt(i).getLayoutParams().height;
-            getChildAt(i).layout(width - cW - margin,margin, width, cH+margin);
-        }
-    }
-
-    public static class LayoutParams extends ViewGroup.LayoutParams {
-        public int left = 0;
-        public int top = 0;
-
-        public LayoutParams(Context arg0, AttributeSet arg1) {
-            super(arg0, arg1);
-        }
-
-        public LayoutParams(int arg0, int arg1) {
-            super(arg0, arg1);
-        }
-
-        public LayoutParams(android.view.ViewGroup.LayoutParams arg0) {
-            super(arg0);
-        }
-
     }
 }

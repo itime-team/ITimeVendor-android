@@ -1,15 +1,23 @@
 package org.unimelb.itime.vendor.dayview;
 
 import android.content.ClipData;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.daasuu.bl.ArrowDirection;
+import com.daasuu.bl.BubbleLayout;
 
 import org.unimelb.itime.vendor.listener.ITimeTimeSlotInterface;
 import org.unimelb.itime.vendor.unitviews.DraggableEventView;
 import org.unimelb.itime.vendor.unitviews.DraggableTimeSlotView;
+import org.unimelb.itime.vendor.unitviews.RecommendedSlotView;
+import org.unimelb.itime.vendor.util.DensityUtil;
 import org.unimelb.itime.vendor.weekview.WeekView;
 import org.unimelb.itime.vendor.wrapper.WrapperTimeSlot;
 
@@ -31,6 +39,9 @@ public class TimeSlotController {
     private OnTimeSlotListener onTimeSlotListener;
 
     private ArrayList<DraggableTimeSlotView> slotViews = new ArrayList<>();
+    private ArrayList<RecommendedSlotView> rcdSlotViews = new ArrayList<>();
+    private WeekView.OnRcdTimeSlot onRcdTimeSlot;
+
 
     TimeSlotController(FlexibleLenViewBody container) {
         this.container = container;
@@ -63,10 +74,38 @@ public class TimeSlotController {
          * @param endTime : dropped Y position of View
          */
         void onTimeSlotDragDrop(DraggableTimeSlotView draggableTimeSlotView, long startTime, long endTime);
+
+        void onTimeSlotEdit(DraggableTimeSlotView draggableTimeSlotView);
+        void onTimeSlotDelete(DraggableTimeSlotView draggableTimeSlotView);
     }
 
     void setOnTimeSlotListener(OnTimeSlotListener onTimeSlotListener) {
         this.onTimeSlotListener = onTimeSlotListener;
+    }
+
+    public void setOnRcdTimeSlot(final WeekView.OnRcdTimeSlot onRcdTimeSlot){
+        this.onRcdTimeSlot = onRcdTimeSlot;
+    }
+
+    void onTimeSlotEdit(DraggableTimeSlotView slotView){
+        if (this.onTimeSlotListener != null){
+            this.onTimeSlotListener.onTimeSlotEdit(slotView);
+        }
+    }
+
+    void onTimeSlotDelete(DraggableTimeSlotView slotView){
+        if (this.onTimeSlotListener != null){
+            this.onTimeSlotListener.onTimeSlotDelete(slotView);
+        }
+    }
+
+    private class OnRcdClickListener implements View.OnClickListener{
+        @Override
+        public void onClick(View v) {
+            if (onRcdTimeSlot != null){
+                onRcdTimeSlot.onClick((RecommendedSlotView) v);
+            }
+        }
     }
 
     class CreateTimeSlotListener implements View.OnLongClickListener {
@@ -231,15 +270,66 @@ public class TimeSlotController {
             @Override
             public void onClick(View v) {
                 DraggableTimeSlotView draggableTimeSlotView = (DraggableTimeSlotView) v;
+                showTimeSlotTools(draggableTimeSlotView);
 
                 if (onTimeSlotListener != null){
                     onTimeSlotListener.onTimeSlotClick(draggableTimeSlotView);
                 }
-
             }
         });
 
         return draggableTimeSlotView;
+    }
+
+    private void showTimeSlotTools(DraggableTimeSlotView slotView){
+        BubbleLayout bubble = container.bubble;
+        Object tag = bubble.getTag();
+        if (tag != null && tag == slotView){
+            //which means second time to click same slot
+            bubble.setVisibility(View.GONE);
+            bubble.setTag(null);
+            return;
+        }else {
+            //which means its clicked the different slot
+            bubble.setTag(slotView);
+        }
+
+        int buttonLoc[] = {0, 0};
+        slotView.getLocationOnScreen(buttonLoc);
+        float posX = buttonLoc[0];
+        float posY = slotView.getY();
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) bubble.getLayoutParams();
+        int topMargin = (int)posY - params.height;
+        params.topMargin = topMargin>0?topMargin:0;
+        params.leftMargin = (int)posX;
+
+        bubble.setVisibility(View.VISIBLE);
+        bubble.requestLayout();
+
+    }
+
+    private RecommendedSlotView createRcdTimeSlotView(WrapperTimeSlot wrapper){
+        RecommendedSlotView recommendedSlotView = new RecommendedSlotView(container.context, wrapper);
+        recommendedSlotView.setOnClickListener(new OnRcdClickListener());
+        if (wrapper.getTimeSlot() != null){
+            DayInnerBodyEventLayout.LayoutParams params = new DayInnerBodyEventLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, container.layoutWidthPerDay);
+            recommendedSlotView.setLayoutParams(params);
+        }
+
+//        draggableTimeSlotView.setOnLongClickListener(new TimeSlotLongClickListener());
+//        draggableTimeSlotView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                DraggableTimeSlotView draggableTimeSlotView = (DraggableTimeSlotView) v;
+//
+//                if (onTimeSlotListener != null){
+//                    onTimeSlotListener.onTimeSlotClick(draggableTimeSlotView);
+//                }
+//
+//            }
+//        });
+
+        return recommendedSlotView;
     }
 
 
@@ -264,7 +354,6 @@ public class TimeSlotController {
 
         if (offset < container.displayLen && offset > -1){
             DraggableTimeSlotView draggableTimeSlotView = createTimeSlotView(wrapper);
-
             container.eventLayouts.get(offset).addView(draggableTimeSlotView, draggableTimeSlotView.getLayoutParams());
             draggableTimeSlotView.bringToFront();
             draggableTimeSlotView.setVisibility(VISIBLE);
@@ -283,6 +372,21 @@ public class TimeSlotController {
             if (container.leftArrow!= null && offset <= -1){
                 container.leftArrow.setVisibility(VISIBLE);
             }
+        }
+    }
+
+
+    void addRecommended(WrapperTimeSlot wrapper){
+        int offset = container.getContainerIndex(wrapper.getTimeSlot().getStartTime());
+
+        if (offset < container.displayLen && offset > -1){
+            RecommendedSlotView rcdSlotView = createRcdTimeSlotView(wrapper);
+            container.eventLayouts.get(offset).addView(rcdSlotView, rcdSlotView.getLayoutParams());
+            rcdSlotView.bringToFront();
+            rcdSlotView.setVisibility(VISIBLE);
+            resizeRcdTimeSlot(rcdSlotView);
+            rcdSlotViews.add(rcdSlotView);
+            rcdSlotView.requestLayout();
         }
     }
 
@@ -310,6 +414,16 @@ public class TimeSlotController {
         }
 
         this.slotViews.clear();
+
+        for (RecommendedSlotView rcdView : rcdSlotViews
+                ) {
+            ViewGroup parent = (ViewGroup) rcdView.getParent();
+            if (parent != null){
+                parent.removeView(rcdView);
+            }
+        }
+
+        rcdSlotViews.clear();
     }
 
     void resetTimeSlotViews(){
@@ -377,17 +491,11 @@ public class TimeSlotController {
         }
     }
 
-
-
     private void resizeTimeSlot(DraggableTimeSlotView draggableTimeSlotView, boolean animate){
         final DayInnerBodyEventLayout.LayoutParams params = (DayInnerBodyEventLayout.LayoutParams) draggableTimeSlotView.getLayoutParams();
         long duration = draggableTimeSlotView.getDuration();
-        final int slotHeight = (int) (((float) duration / (3600 * 1000)) * container.lineHeight);
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-        String hourWithMinutes = sdf.format(new Date(draggableTimeSlotView.getNewStartTime()));
-        String[] components = hourWithMinutes.split(":");
-        float trickTime = Integer.valueOf(components[0]) + (float) Integer.valueOf(components[1]) / 100;
-        final int topMargin = container.nearestTimeSlotValue(trickTime);
+        final int slotHeight = getSlotHeight(duration);
+        final int topMargin = getSlotTopMargin(draggableTimeSlotView.getNewStartTime());
 
         ((DayInnerBodyEventLayout.LayoutParams) draggableTimeSlotView.getLayoutParams()).top = topMargin;
 
@@ -403,6 +511,30 @@ public class TimeSlotController {
         }else {
             params.height = slotHeight;
         }
+    }
+
+    private void resizeRcdTimeSlot(RecommendedSlotView rcd){
+        long duration = rcd.getWrapper().getTimeSlot().getEndTime() - rcd.getWrapper().getTimeSlot().getStartTime();
+        final int slotHeight = getSlotHeight(duration);
+        final int topMargin = getSlotTopMargin(rcd.getWrapper().getTimeSlot().getStartTime());
+
+        ((DayInnerBodyEventLayout.LayoutParams) rcd.getLayoutParams()).height = slotHeight;
+        ((DayInnerBodyEventLayout.LayoutParams) rcd.getLayoutParams()).top = topMargin;
+    }
+
+    private int getSlotHeight(long duration){
+        final int slotHeight = (int) (((float) duration / (3600 * 1000)) * container.lineHeight);
+        return slotHeight;
+    }
+
+    private int getSlotTopMargin(long startTime){
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        String hourWithMinutes = sdf.format(new Date(startTime));
+        String[] components = hourWithMinutes.split(":");
+        float trickTime = Integer.valueOf(components[0]) + (float) Integer.valueOf(components[1]) / 100;
+        final int topMargin = container.nearestTimeSlotValue(trickTime);
+
+        return topMargin;
     }
 
     private DraggableTimeSlotView findTimeslotView(ArrayList<DraggableTimeSlotView> draggableTimeSlotViews, ITimeTimeSlotInterface timeslot){

@@ -1,2 +1,2 @@
-include ':app', ':vendor', ':photopicker', ':imagepicker', ':IOSDialog', ':LoadingBtn'
+include ':app', ':vendor', ':photopicker', ':imagepicker', ':IOSDialog', ':LoadingBtn', ':innerCalLibrary'
 project(':LoadingBtn').projectDir = new File('library')

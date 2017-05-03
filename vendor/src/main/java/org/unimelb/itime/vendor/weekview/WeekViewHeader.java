@@ -3,11 +3,17 @@ package org.unimelb.itime.vendor.weekview;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.media.Image;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.unimelb.itime.vendor.R;
+import org.unimelb.itime.vendor.util.DensityUtil;
 import org.unimelb.itime.vendor.util.MyCalendar;
 
 import java.util.ArrayList;
@@ -18,11 +24,11 @@ import java.util.Locale;
 /**
  * Created by yuhaoliu on 23/09/16.
  */
-public class WeekViewHeader extends LinearLayout {
+public class WeekViewHeader extends FrameLayout {
 
     /*************************** Start of Color Setting **********************************/
     private int color_header_bg_today = R.color.today_circle_color;
-    private int color_header_text_today = R.color.text_in_circle_color;
+    private int color_header_text_today = R.color.today_circle_color;
     private int color_header_text_normal = R.color.text_enable;
     /*************************** End of Color Setting **********************************/
 
@@ -54,11 +60,19 @@ public class WeekViewHeader extends LinearLayout {
 
 
     private void init(){
-        this.setOrientation(HORIZONTAL);
+        this.setBackgroundColor(getResources().getColor(R.color.white));
+
+        LinearLayout titleContainer = new LinearLayout(getContext());
+        titleContainer.setOrientation(LinearLayout.HORIZONTAL);
+        FrameLayout.LayoutParams titleCtnParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        titleCtnParams.leftMargin =  DensityUtil.dip2px(context,40);
+        this.addView(titleContainer,titleCtnParams);
+
         for (int i = 0; i < displayLen; i++) {
             SingleHeaderDayView singleHeaderDayView = new SingleHeaderDayView(context);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,1f);
-            this.addView(singleHeaderDayView,params);
+            params.gravity = Gravity.CENTER_VERTICAL;
+            titleContainer.addView(singleHeaderDayView,params);
             singleHeaderDayViews.add(singleHeaderDayView);
         }
     }
@@ -74,14 +88,14 @@ public class WeekViewHeader extends LinearLayout {
 
         for (int i = 0; i < this.singleHeaderDayViews.size(); i++) {
             SingleHeaderDayView singleHeaderDayView = this.singleHeaderDayViews.get(i);
+            singleHeaderDayView.getContainer().setBackgroundResource(0);
 
             if (cal.isToday()){
-                Drawable drawable = getResources().getDrawable(rs_today_bg);
-                singleHeaderDayView.getContainer().setBackground(drawable);
-                ((GradientDrawable) singleHeaderDayView.getContainer().getBackground()).setColor(getResources().getColor(color_header_bg_today));
+//                Drawable drawable = getResources().getDrawable(rs_today_bg);
+//                singleHeaderDayView.getContainer().setBackground(drawable);
+//                ((GradientDrawable) singleHeaderDayView.getContainer().getBackground()).setColor(getResources().getColor(color_header_bg_today));
                 color = getResources().getColor(color_header_text_today);
             }else{
-                singleHeaderDayView.getContainer().setBackgroundResource(0);
                 color = getResources().getColor(color_header_text_normal);
             }
 

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import org.unimelb.itime.vendor.unitviews.DraggableEventView;
 import org.unimelb.itime.vendor.listener.ITimeEventInterface;
 import org.unimelb.itime.vendor.unitviews.DraggableTimeSlotView;
+import org.unimelb.itime.vendor.unitviews.RecommendedSlotView;
 import org.unimelb.itime.vendor.wrapper.WrapperEvent;
 
 import java.util.ArrayList;
@@ -74,6 +75,18 @@ public class DayInnerBodyEventLayout extends ViewGroup {
         for (int i = 0; i < cCount; i++) {
             if (getChildAt(i) instanceof DraggableTimeSlotView) {
                 getChildAt(i).getLayoutParams().width = width;
+                if (getChildAt(i).getVisibility() != View.GONE) {
+                    //Make or work out measurements for children here (MeasureSpec.make...)
+                    measureChild (getChildAt(i), widthMeasureSpec, heightMeasureSpec);
+                }
+            }
+
+            if (getChildAt(i) instanceof RecommendedSlotView){
+                getChildAt(i).getLayoutParams().width = width;
+                if (getChildAt(i).getVisibility() != View.GONE) {
+                    //Make or work out measurements for children here (MeasureSpec.make...)
+                    measureChild (getChildAt(i), widthMeasureSpec, heightMeasureSpec);
+                }
             }
 
             if (!(getChildAt(i) instanceof DraggableEventView)) {
@@ -108,7 +121,7 @@ public class DayInnerBodyEventLayout extends ViewGroup {
                 child.layout(paddingLeft + params.left, params.top, paddingLeft + params.left + child.getLayoutParams().width, params.top + child.getLayoutParams().height);
             }
             
-            if (child instanceof DraggableTimeSlotView){
+            if (child instanceof DraggableTimeSlotView || child instanceof RecommendedSlotView){
                 DayInnerBodyEventLayout.LayoutParams params = (DayInnerBodyEventLayout.LayoutParams) child.getLayoutParams();
                 child.layout(paddingLeft + params.left, params.top, paddingLeft + params.left + child.getLayoutParams().width, params.top + child.getLayoutParams().height);
             }

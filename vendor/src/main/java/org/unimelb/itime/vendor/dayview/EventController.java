@@ -56,6 +56,8 @@ public class EventController {
 
     private Class<?> eventClassName;
 
+    private boolean isTimeSlot = false;
+
     EventController(FlexibleLenViewBody container) {
         this.container = container;
         this.context = container.getContext();
@@ -133,13 +135,17 @@ public class EventController {
             final DayInnerBodyEventLayout eventLayout = container.eventLayouts.get(offset);
             final DraggableEventView newDragEventView = this.createDayDraggableEventView(wrapper, false);
             final DraggableEventView.LayoutParams params = (DraggableEventView.LayoutParams) newDragEventView.getLayoutParams();
-
             newDragEventView.setId(View.generateViewId());
             this.regularEventViewMap.put(wrapper, newDragEventView.getId());
 
             eventLayout.addView(newDragEventView, params);
             eventLayout.getEvents().add(wrapper);
             eventLayout.getDgEvents().add(newDragEventView);
+
+            //if bg mode
+            if (isTimeSlot){
+                newDragEventView.setToBg();
+            }
         }else {
             Log.i(TAG, "event in body offset error: " + offset);
         }
@@ -585,5 +591,9 @@ public class EventController {
         if (eventView!=null){
             eventView.showAlphaAnim();
         }
+    }
+
+    void enableBgMode(){
+        isTimeSlot = true;
     }
 }

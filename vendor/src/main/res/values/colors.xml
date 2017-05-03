@@ -333,4 +333,15 @@
     <color name="title_today_bg_color">#FABDC2</color>
     <color name="sub_title_text_color">#9b9b9b</color>
     <color name="time_red">#f56572</color>
+
+    <!--for new iTime-->
+    <color name="event_as_bg_bg">#CFD6DC</color>
+    <color name="event_as_bg_title">#FFFFFF</color>
+
+    <color name="timeslot_rcd_bg">#F4F7FB</color>
+    <color name="timeslot_rcd_label">#75AAE9</color>
+    <color name="timeslot_rcd_title">#75AAE9</color>
+    <color name="timeslot_selected">#0073FF</color>
+    <color name="timeslot_bubble_bg">#262728</color>
+
 </resources>

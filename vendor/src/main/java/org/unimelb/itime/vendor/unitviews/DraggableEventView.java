@@ -218,7 +218,7 @@ public class DraggableEventView extends ViewGroup {
     }
 
     private void initBackgroundView(){
-        bg = new ImageView(getContext()){
+        bg = new android.support.v7.widget.AppCompatImageView(getContext()){
             @Override
             protected void onDraw(Canvas canvas) {
                 super.onDraw(canvas);
@@ -289,6 +289,14 @@ public class DraggableEventView extends ViewGroup {
 
     public ITimeEventInterface getEvent() {
         return event;
+    }
+
+    public void setToBg(){
+        leftBar.setVisibility(INVISIBLE);
+        color = getResources().getColor(R.color.event_as_bg_bg);
+        ((GradientDrawable)bg.getBackground()).setColor(color);
+        bg.getBackground().setAlpha(255);
+        title.setTextColor(getResources().getColor(R.color.event_as_bg_title));
     }
 
     public void setEvent(ITimeEventInterface event) {

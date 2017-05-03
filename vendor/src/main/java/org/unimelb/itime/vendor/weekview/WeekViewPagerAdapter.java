@@ -4,7 +4,7 @@ import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 
 import org.unimelb.itime.vendor.dayview.FlexibleLenViewBody;
 import org.unimelb.itime.vendor.util.MyCalendar;
@@ -22,21 +22,21 @@ class WeekViewPagerAdapter extends PagerAdapter {
     public long duration = 3600 * 1000;
     private int startPst = 0;
 
-    private ArrayList<LinearLayout> views;
+    private ArrayList<WeekViewUnit> views;
     private List<WrapperTimeSlot> slotsInfo;
     private ITimeEventPackageInterface eventPackage;
 
     private MyCalendar startCal;
     private int displayLength = 0 ;
 
-    WeekViewPagerAdapter(int startPst, ArrayList<LinearLayout> views, int displayLength){
+    WeekViewPagerAdapter(int startPst, ArrayList<WeekViewUnit> views, int displayLength){
         this.views = views;
         this.startPst =startPst;
         this.displayLength = displayLength;
 
         Calendar calendar = Calendar.getInstance();
-        int weekOfDay = calendar.get(Calendar.DAY_OF_WEEK);
-        calendar.set(Calendar.DATE, calendar.get(Calendar.DATE) - weekOfDay + 1);
+//        int weekOfDay = calendar.get(Calendar.DAY_OF_WEEK);
+//        calendar.set(Calendar.DATE, calendar.get(Calendar.DATE) - weekOfDay + 1);
         this.startCal = new MyCalendar(calendar);
     }
 
@@ -45,16 +45,16 @@ class WeekViewPagerAdapter extends PagerAdapter {
     }
 
     void enableTimeSlot(){
-        for (LinearLayout weekView : views) {
+        for (WeekViewUnit weekView : views) {
             //0 header, 1 divider, 2 means body
-            FlexibleLenViewBody bodyView = (FlexibleLenViewBody)weekView.getChildAt(2);
+            FlexibleLenViewBody bodyView = weekView.getBody();
             bodyView.enableTimeSlot();
         }
     }
 
     void removeAllOptListener(){
-        for (LinearLayout weekView : views) {
-            FlexibleLenViewBody bodyView = (FlexibleLenViewBody)weekView.getChildAt(2);
+        for (WeekViewUnit weekView : views) {
+            FlexibleLenViewBody bodyView = weekView.getBody();
             bodyView.removeOptListener();
         }
     }
@@ -65,15 +65,15 @@ class WeekViewPagerAdapter extends PagerAdapter {
 
     void updateTimeSlotsDuration(long duration, boolean animate){
         this.duration = duration;
-        for (LinearLayout weekView : views) {
-            FlexibleLenViewBody bodyView = (FlexibleLenViewBody)weekView.getChildAt(2);
+        for (WeekViewUnit weekView : views) {
+            FlexibleLenViewBody bodyView = weekView.getBody();
             bodyView.updateTimeSlotsDuration(duration, animate);
         }
     }
 
     void reloadEvents(){
-        for (LinearLayout weekView : views) {
-            FlexibleLenViewBody bodyView = (FlexibleLenViewBody)weekView.getChildAt(2);
+        for (WeekViewUnit weekView : views) {
+            FlexibleLenViewBody bodyView = weekView.getBody();
             if (this.eventPackage != null){
                 bodyView.resetViews();
                 bodyView.setEventList(this.eventPackage);
@@ -82,14 +82,18 @@ class WeekViewPagerAdapter extends PagerAdapter {
     }
 
     void reloadTimeSlots(boolean animate){
-        for (LinearLayout weekView : views
+        for (WeekViewUnit weekView : views
                 ) {
-            FlexibleLenViewBody bodyView = (FlexibleLenViewBody)weekView.getChildAt(2);
+            FlexibleLenViewBody bodyView = weekView.getBody();
             bodyView.clearTimeSlots();
             if (this.slotsInfo != null){
                 for (int j = 0; j < this.slotsInfo.size(); j++) {
                     WrapperTimeSlot struct = this.slotsInfo.get(j);
-                    bodyView.addSlot(struct,animate);
+                    if (struct.isRecommended() && !struct.isSelected()){
+                        bodyView.addRcdSlot(struct);
+                    }else {
+                        bodyView.addSlot(struct,animate);
+                    }
                 }
             }else {
                 Log.i("debug", "slotsInfo: " + ((this.slotsInfo != null) ? "size 0":"null"));
@@ -97,12 +101,12 @@ class WeekViewPagerAdapter extends PagerAdapter {
             bodyView.timeSlotAnimationChecker();
         }
 
-        updateTimeSlotsDuration(this.duration,false);
+//        updateTimeSlotsDuration(this.duration,false);
     }
 
     FlexibleLenViewBody getViewBodyByPosition(int position){
-        LinearLayout viewAtPosition = views.get(position % views.size());
-        FlexibleLenViewBody nowBody = (FlexibleLenViewBody) viewAtPosition.getChildAt(2);
+        WeekViewUnit viewAtPosition = views.get(position % views.size());
+        FlexibleLenViewBody nowBody = viewAtPosition.getBody();
         return nowBody;
     }
 
@@ -113,7 +117,7 @@ class WeekViewPagerAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        LinearLayout view = views.get(position%views.size());
+        WeekViewUnit view = views.get(position%views.size());
         ViewGroup parent = (ViewGroup) view.getParent();
         if (parent != null){
             parent.removeView(view);
@@ -138,14 +142,9 @@ class WeekViewPagerAdapter extends PagerAdapter {
     }
 
     private void updateHeader(ViewGroup parent, int offset){
-        int count = parent.getChildCount();
-        for (int i = 0; i < count; i++) {
-            if (parent.getChildAt(i) instanceof WeekViewHeader){
-                MyCalendar cal = new MyCalendar(this.startCal);
-                cal.setOffsetByDate(offset);
-                ((WeekViewHeader)parent.getChildAt(i)).setMyCalendar(cal);
-            }
-        }
+        MyCalendar cal = new MyCalendar(this.startCal);
+        cal.setOffsetByDate(offset);
+        ((WeekViewUnit)parent).getHeader().setMyCalendar(cal);
     }
 
     private void updateBody(ViewGroup parent, int offset){
@@ -164,10 +163,14 @@ class WeekViewPagerAdapter extends PagerAdapter {
                 if (this.slotsInfo != null && this.slotsInfo.size() != 0){
                     for (int j = 0; j < this.slotsInfo.size(); j++) {
                         WrapperTimeSlot struct = this.slotsInfo.get(j);
-                        nowBody.addSlot(struct,false);
+                        if (struct.isRecommended() && !struct.isSelected()){
+                            nowBody.addRcdSlot(struct);
+                        }else {
+                            nowBody.addSlot(struct,false);
+                        }
                     }
 
-                    updateTimeSlotsDuration(duration,false);
+//                    updateTimeSlotsDuration(duration,false);
                 }else {
                     Log.i("debug", "slotsInfo: " + ((this.slotsInfo != null) ? "size 0":"null"));
                 }

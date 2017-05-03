@@ -19,4 +19,6 @@ public interface ITimeTimeSlotInterface {
     void setTotalNum(int num);
 
     String getTimeslotUid();
+
+    boolean isRecommended();
 }

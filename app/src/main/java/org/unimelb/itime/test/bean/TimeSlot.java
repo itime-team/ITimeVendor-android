@@ -18,11 +18,12 @@ public class TimeSlot implements ITimeTimeSlotInterface,Serializable {
     private String status;
     private int accetpedNum;
     private int totalNum;
+    private boolean isRecommended;
 
-
-    @Generated(hash = 842313577)
+    @Generated(hash = 1976353352)
     public TimeSlot(String timeSlotUid, String eventUid, long startTime,
-            long endTime, String status, int accetpedNum, int totalNum) {
+            long endTime, String status, int accetpedNum, int totalNum,
+            boolean isRecommended) {
         this.timeSlotUid = timeSlotUid;
         this.eventUid = eventUid;
         this.startTime = startTime;
@@ -30,6 +31,7 @@ public class TimeSlot implements ITimeTimeSlotInterface,Serializable {
         this.status = status;
         this.accetpedNum = accetpedNum;
         this.totalNum = totalNum;
+        this.isRecommended = isRecommended;
     }
 
     @Generated(hash = 1337764006)
@@ -92,6 +94,15 @@ public class TimeSlot implements ITimeTimeSlotInterface,Serializable {
         return this.timeSlotUid;
     }
 
+    @Override
+    public boolean isRecommended() {
+        return isRecommended;
+    }
+
+    public void setRecommended(boolean recommended) {
+        isRecommended = recommended;
+    }
+
     public void setTimeSlotUid(String timeSlotUid) {
         this.timeSlotUid = timeSlotUid;
     }
@@ -115,5 +126,13 @@ public class TimeSlot implements ITimeTimeSlotInterface,Serializable {
 
     public String getTimeSlotUid() {
         return this.timeSlotUid;
+    }
+
+    public boolean getIsRecommended() {
+        return this.isRecommended;
+    }
+
+    public void setIsRecommended(boolean isRecommended) {
+        this.isRecommended = isRecommended;
     }
 }

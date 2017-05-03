@@ -74,6 +74,7 @@ class DayViewHeaderRecyclerAdapter extends RecyclerView.Adapter<DayViewHeaderRec
 
     class MyViewHolder extends RecyclerView.ViewHolder{
         DayViewHeader headerRow;
+
         MyViewHolder(View itemView) {
             super(itemView);
             headerRow = (DayViewHeader) itemView.findViewById(R.id.calendarDayViewHeader);
