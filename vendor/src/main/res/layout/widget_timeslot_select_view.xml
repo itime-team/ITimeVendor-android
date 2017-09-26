@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cl"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/bottom_sheet_layout"
+            app:behavior_hideable="true"
+            app:behavior_peekHeight="245dp">
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/listview"
+            android:background="#00FF00"
+            android:orientation="vertical"
+            android:layout_marginTop="50dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="40dp"
+            />
+        </LinearLayout>
+        <TextView
+            android:layout_width="40dp"
+            android:layout_height="20dp"
+            android:text="show"
+            android:id="@+id/show_button"
+            android:gravity="center"
+            android:layout_gravity="top"
+            android:background="#FF0000"
+            app:layout_anchor="@id/listview"
+            app:layout_anchorGravity="top|right"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        android:id="@+id/actionView"
+        android:layout_gravity="bottom"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="accept"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="reject"/>
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>
