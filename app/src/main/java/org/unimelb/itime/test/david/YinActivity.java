@@ -13,6 +13,7 @@ import org.unimelb.itime.test.bean.Invitee;
 import org.unimelb.itime.vendor.agendaview.MonthAgendaView;
 import org.unimelb.itime.vendor.dayview.EventController;
 import org.unimelb.itime.vendor.dayview.MonthDayView;
+import org.unimelb.itime.vendor.dayview.New_MonthView;
 import org.unimelb.itime.vendor.unitviews.DraggableEventView;
 import org.unimelb.itime.vendor.util.MyCalendar;
 
@@ -24,7 +25,7 @@ public class YinActivity extends AppCompatActivity {
     private final String TAG= "MyAPP";
     private DBManager dbManager;
     private EventManager eventManager;
-    private MonthDayView monthDayView;
+    private New_MonthView monthDayView;
 
     private Event event;
 
@@ -47,148 +48,27 @@ public class YinActivity extends AppCompatActivity {
 
     private void doMonthDayViewThings(){
         Button back = (Button) findViewById(R.id.back);
-        monthDayView = (MonthDayView) findViewById(R.id.monthDayView);
-        monthDayView.setDayEventMap(eventManager.getEventsMap());
-        monthDayView.setEventClassName(Event.class);
-        monthDayView.setOnHeaderListener(new MonthDayView.OnHeaderListener() {
-            @Override
-            public void onMonthChanged(MyCalendar calendar) {
-                Log.i(TAG, "onMonthChanged: " + calendar.getCalendar().getTime());
-            }
-        });
-        monthDayView.setOnBodyOuterListener(new EventController.OnEventListener() {
-            @Override
-            public boolean isDraggable(DraggableEventView eventView) {
-                return true;
-            }
-
-            @Override
-            public void onEventCreate(DraggableEventView eventView) {
-                Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(eventView.getStartTimeM());
-                Log.i(TAG, "onEventCreate: s" + cal.getTime());
-                cal.setTimeInMillis(eventView.getEndTimeM());
-                Log.i(TAG, "onEventCreate: " + cal.getTime());
-
-//                monthDayView.scrollToWithOffset(eventView.getStartTimeM());
-                monthDayView.reloadEvents();
-            }
-
-            @Override
-            public void onEventClick(DraggableEventView eventView) {
-                Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(eventView.getStartTimeM());
-
-                EventManager.getInstance().updateEvent((Event) eventView.getEvent(),10,10);
-            }
-
-            @Override
-            public void onEventDragStart(DraggableEventView eventView) {
-                eventView.setEvent(new Event());
-            }
-
-            @Override
-            public void onEventDragging(DraggableEventView eventView, int x, int y) {
-                Log.i(TAG, "onEventDragging: ");
-            }
-
-            @Override
-            public void onEventDragDrop(DraggableEventView eventView) {
-                Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(eventView.getStartTimeM());
-                Log.i(TAG, "onEventDragDrop: s" + cal.getTime());
-                cal.setTimeInMillis(eventView.getEndTimeM());
-                Log.i(TAG, "onEventDragDrop: " + cal.getTime());
-
-//                monthDayView.scrollToWithOffset(eventView.getStartTimeM());
-            }
-
-        });
-
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                monthDayView.reloadEvents();
-                loadData();
-            }
-        });
+        monthDayView = (New_MonthView) findViewById(R.id.monthDayView);
     }
-
-    private void doMonthAgendaViewThings(){
-        Button back = (Button) findViewById(R.id.back);
-        final MonthAgendaView monthDayView = (MonthAgendaView) findViewById(R.id.monthAgendaView);
-        monthDayView.setDayEventMap(eventManager.getEventsMap());
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                monthDayView.backToToday();
-            }
-        });
-    }
-
-//    private void doInviteesThings(){
-//        InviteeFragment inviteeFragment = new InviteeFragment();
-//        getFragmentManager().beginTransaction().add(R.id.fragment, inviteeFragment).commit();
-//    }
 
     private void initData(){
         this.dbManager.clearDB();
         this.initDB();
     }
 
-    private void loadData(){
+    private void loadData() {
         List<Event> allEvents = dbManager.getAllEvents();
         EventManager.getInstance().getEventsMap().clearPackage();
         Event testE = null;
-        for (Event event: allEvents
+        for (Event event : allEvents
                 ) {
 //            String[] rec = {"RRULE:FREQ=WEEKLY;INTERVAL=1"};
 //            event.setRecurrence(rec);
             this.event = event;
-//            event.setHighLighted(true);
             EventManager.getInstance().addEvent(event);
-//            testE = event;
         }
-//        final Event e=testE;
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    Event newE = (Event) e.clone();
-//                    newE.setEndTime(newE.getNewStartTime() + 60*3600);
-//                    EventManager.getInstance().updateRepeatedEvent(newE);
-//
-//                } catch (CloneNotSupportedException e1) {
-//                    e1.printStackTrace();
-//                }
-//            }
-//        }, 5000);
-
-//        EventManager.getInstance().loadRepeatedEvent(nowRepeatedStartAt.getTimeInMillis(),nowRepeatedEndAt.getTimeInMillis());
-
-
     }
 
-//    private void doMonthDayViewThings(){
-//        final MonthDayView monthDayFragment = (MonthDayView) findViewById(R.id.monthDayView);
-//
-////        monthDayFragment.postDelayed(new Runnable() {
-////            @Override
-////            public void run() {
-////                Event event = new Event();
-////                event.setTitle("new added");
-////                event.setNewStartTime(Calendar.getInstance().getTimeInMillis());
-////                event.setEndTime(Calendar.getInstance().getTimeInMillis() + 60 * 60 * 1000);
-////                EventManager.getInstance().addEvent(event);
-////            }
-////        },5000);
-//    }
-
-//    private void doMonthAgendaViewThings(){
-//        MonthAgendaView monthDayFragment = (MonthAgendaView) findViewById(R.id.monthAgendaView);
-//
-//        monthDayFragment.setDayEventMap(EventManager.getInstance().getEventsMap());
-//    }
 
     private void initDB(){
         Calendar calendar = Calendar.getInstance();
@@ -197,13 +77,10 @@ public class YinActivity extends AppCompatActivity {
         int[] type = {0,1,2};
         int[] status = {0,1};
         long interval = 3600 * 1000;
-//        calendar.set(Calendar.HOUR_OF_DAY,0);
-//        calendar.set(Calendar.MINUTE,0);
         long startTime = calendar.getTimeInMillis();
         long endTime;
         for (int i = 1; i < 10; i++) {
             endTime = startTime + (3600*1000);
-//            long duration = (endTime - startTime);
 
             Event event = new Event();
             event.setEventUid("" + i);
@@ -233,9 +110,7 @@ public class YinActivity extends AppCompatActivity {
             event.setEndTime(endTime);
             events.add(event);
 
-//            startTime= i==2?startTime:endTime;
             startTime = startTime + 24*3600*1000;
-//            calendar.setTimeInMillis(startTime + 24*3600*1000);
         }
 
         dbManager.insertEventList(events);

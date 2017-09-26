@@ -40,7 +40,7 @@ public class TimeSlotController {
 
     private ArrayList<DraggableTimeSlotView> slotViews = new ArrayList<>();
     private ArrayList<RecommendedSlotView> rcdSlotViews = new ArrayList<>();
-    private WeekView.OnRcdTimeSlot onRcdTimeSlot;
+//    private WeekView.OnRcdTimeSlot onRcdTimeSlot;
 
 
     TimeSlotController(FlexibleLenViewBody container) {
@@ -56,6 +56,8 @@ public class TimeSlotController {
         void onTimeSlotCreate(DraggableTimeSlotView draggableTimeSlotView);
         //While clicking existed time block
         void onTimeSlotClick(DraggableTimeSlotView draggableTimeSlotView);
+        //while clicking recommended time slot
+        void onRcdTimeSlotClick(RecommendedSlotView v);
         //When start dragging
         void onTimeSlotDragStart(DraggableTimeSlotView draggableTimeSlotView);
 
@@ -83,9 +85,9 @@ public class TimeSlotController {
         this.onTimeSlotListener = onTimeSlotListener;
     }
 
-    public void setOnRcdTimeSlot(final WeekView.OnRcdTimeSlot onRcdTimeSlot){
-        this.onRcdTimeSlot = onRcdTimeSlot;
-    }
+//    public void setOnRcdTimeSlot(final WeekView.OnRcdTimeSlot onRcdTimeSlot){
+//        this.onRcdTimeSlot = onRcdTimeSlot;
+//    }
 
     void onTimeSlotEdit(DraggableTimeSlotView slotView){
         if (this.onTimeSlotListener != null){
@@ -102,8 +104,8 @@ public class TimeSlotController {
     private class OnRcdClickListener implements View.OnClickListener{
         @Override
         public void onClick(View v) {
-            if (onRcdTimeSlot != null){
-                onRcdTimeSlot.onClick((RecommendedSlotView) v);
+            if (onTimeSlotListener != null){
+                onTimeSlotListener.onRcdTimeSlotClick((RecommendedSlotView) v);
             }
         }
     }

@@ -86,7 +86,13 @@ public class DavidActivity extends AppCompatActivity {
 
             @Override
             public void onTimeSlotClick(DraggableTimeSlotView draggableTimeSlotView) {
+                weekView.reloadTimeSlots(false);
+            }
 
+            @Override
+            public void onRcdTimeSlotClick(RecommendedSlotView v) {
+                v.getWrapper().setSelected(true);
+                weekView.reloadTimeSlots(false);
             }
 
             @Override
@@ -114,19 +120,15 @@ public class DavidActivity extends AppCompatActivity {
                 Log.i(TAG, "onTimeSlotDelete: ");
             }   
         });
-        weekView.setOnRcdTimeSlot(new WeekView.OnRcdTimeSlot() {
-            @Override
-            public void onClick(RecommendedSlotView v) {
-                v.getWrapper().setSelected(true);
-                weekView.reloadTimeSlots(false);
-            }
-        });
+//        weekView.setOnRcdTimeSlot(new WeekView.OnRcdTimeSlot() {
+//            @Override
+//            public void onClick(RecommendedSlotView v) {
+//                v.getWrapper().setSelected(true);
+//                weekView.reloadTimeSlots(false);
+//            }
+//        });
 
         HashMap<String, Integer> numSlot = new HashMap<>();
-        SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
-        numSlot.put(fmt.format(new Date()), 6);
-
-        weekView.setSlotNumMap(numSlot);
 
 
         for (TimeSlot slot:slots

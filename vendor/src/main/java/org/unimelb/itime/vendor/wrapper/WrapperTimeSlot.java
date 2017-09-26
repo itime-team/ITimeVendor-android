@@ -15,11 +15,12 @@ public class WrapperTimeSlot {
     private boolean isAnimated = true;
     private boolean isRead = false;
     private boolean isRecommended = false;
-    private WeekView.OnRcdTimeSlot onRcdTimeSlot;
 
     public WrapperTimeSlot(ITimeTimeSlotInterface timeSlot) {
         this.timeSlot = timeSlot;
-        this.isRecommended = timeSlot.isRecommended();
+        if (timeSlot != null){
+            this.isRecommended = timeSlot.isRecommended();
+        }
     }
 
     public WrapperTimeSlot copyWrapperTimeslot(){

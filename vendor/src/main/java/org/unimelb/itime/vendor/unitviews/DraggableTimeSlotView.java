@@ -166,6 +166,9 @@ public class DraggableTimeSlotView extends FrameLayout {
     }
 
     private String getTimeText(){
+        if (wrapper == null || wrapper.getTimeSlot() == null){
+            return "";
+        }
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(wrapper.getTimeSlot().getStartTime());
         String starTime = String.format("%02d:%02d", cal.get(Calendar.HOUR_OF_DAY),cal.get(Calendar.MINUTE));

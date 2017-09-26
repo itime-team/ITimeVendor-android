@@ -14,7 +14,7 @@ import org.unimelb.itime.vendor.util.MyCalendar;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-class DayViewHeaderRecyclerAdapter extends RecyclerView.Adapter<DayViewHeaderRecyclerAdapter.MyViewHolder> {
+public class DayViewHeaderRecyclerAdapter extends RecyclerView.Adapter<DayViewHeaderRecyclerAdapter.MyViewHolder> {
     public String TAG = "MyAPP";
     private LayoutInflater inflater;
     private int upperBoundsOffset;
@@ -27,7 +27,7 @@ class DayViewHeaderRecyclerAdapter extends RecyclerView.Adapter<DayViewHeaderRec
     int indexInRow = 0;
     ViewPager bodyPager;
 
-    DayViewHeaderRecyclerAdapter(Context context, int upperBoundsOffset) {
+    public DayViewHeaderRecyclerAdapter(Context context, int upperBoundsOffset) {
         inflater = LayoutInflater.from(context);
         this.upperBoundsOffset = upperBoundsOffset;
         startPosition = upperBoundsOffset;

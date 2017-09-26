@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId "org.unimelb.itime.vendor"
-        minSdkVersion 17
+        minSdkVersion 19
         targetSdkVersion 24
         versionCode 2
         versionName "1.0"
@@ -33,12 +33,11 @@ greendao {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':vendor')
     compile project(':photopicker')
     compile project(':imagepicker')
-//    compile project(':photopicker')
-
+    //    compile project(':photopicker')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.0.0'
     compile 'com.android.support:recyclerview-v7:23.2.1'

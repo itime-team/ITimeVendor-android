@@ -1,2 +1,3 @@
-include ':app', ':vendor', ':photopicker', ':imagepicker', ':IOSDialog', ':LoadingBtn', ':innerCalLibrary'
+include ':app', ':vendor', ':photopicker', ':imagepicker', ':IOSDialog', ':LoadingBtn', ':innerCalLibrary', ':horizontalscrollpageview'
 project(':LoadingBtn').projectDir = new File('library')
+project(':horizontalscrollpageview').projectDir = new File('ITime_HorizontalRecyclerPageView/horizontalscrollpageview')

@@ -4,7 +4,7 @@
     android:background="@drawable/itime_shadow_bg"
     android:id="@+id/compactcalendar_view"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
+    android:layout_height="wrap_content"
     app:itimeTimeslotCircleColor="#1677FB"
     app:itimeTimeslotTextColor="#FFFFFF"
     app:compactCalendarTargetHeight="220dp"

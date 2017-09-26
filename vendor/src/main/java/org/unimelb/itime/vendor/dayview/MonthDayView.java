@@ -58,15 +58,15 @@ public class MonthDayView extends LinearLayout {
     private RecyclerView headerRecyclerView;
     private FlexibleLenBodyViewPager bodyPager;
 
-    private LinearLayoutManager headerLinearLayoutManager;
+
     private FlexibleLenBodyViewPagerAdapter bodyPagerAdapter;
     private DayViewHeaderRecyclerAdapter headerRecyclerAdapter;
+    private LinearLayoutManager headerLinearLayoutManager;
 
     private OnFlexibleBodyScroll onFlexibleBodyScroll;
     private ViewTreeObserver.OnScrollChangedListener onBodyScrollChangedListener;
 
     private Context context;
-    private Config config;
 
     public MonthDayView(Context context) {
         super(context);
@@ -373,7 +373,8 @@ public class MonthDayView extends LinearLayout {
         this.addView(container);
 
         this.headerRecyclerView = (RecyclerView) container.findViewById(R.id.headerRowList);
-        this.bodyPager = (FlexibleLenBodyViewPager) container.findViewById(R.id.pager);
+        //记得改回来 pager
+        this.bodyPager = (FlexibleLenBodyViewPager) container.findViewById(R.id.recyclerScrollView);
         this.bodyPager.setScrollDurationFactor(3);
         this.upperBoundsOffset = 100000;
 

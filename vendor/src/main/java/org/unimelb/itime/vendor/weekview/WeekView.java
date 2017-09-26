@@ -33,6 +33,7 @@ import org.unimelb.itime.vendor.listener.ITimeTimeSlotInterface;
 import org.unimelb.itime.vendor.unitviews.DraggableTimeSlotView;
 import org.unimelb.itime.vendor.wrapper.WrapperTimeSlot;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -85,9 +86,11 @@ public class WeekView extends FrameLayout {
     private OnHeaderListener onHeaderListener;
     private OnFlexScroll onFlexScroll;
     private ViewTreeObserver.OnScrollChangedListener onScrollChangedListener;
-    private OnRcdTimeSlot onRcdTimeSlot;
 
     private MyCalendar monthDayViewCalendar = new MyCalendar(Calendar.getInstance());
+
+    private SimpleDateFormat slotFmt = new SimpleDateFormat("yyyyMMdd");
+    private HashMap<String, Integer> numSlotMap = new HashMap<>();
 
     private Context context;
 
@@ -150,6 +153,20 @@ public class WeekView extends FrameLayout {
 
     public void reloadTimeSlots(boolean animate){
         adapter.reloadTimeSlots(animate);
+        this.updateNumTimeslotMap();
+    }
+
+    public void deleteTimeslot(ITimeTimeSlotInterface timeslot){
+        for (WrapperTimeSlot wrapper:slotsInfo
+             ) {
+            ITimeTimeSlotInterface slot = wrapper.getTimeSlot();
+            if (slot != null && slot.getTimeslotUid().equals(timeslot.getTimeslotUid())){
+                slotsInfo.remove(wrapper);
+                this.reloadTimeSlots(false);
+                this.updateNumTimeslotMap();
+                break;
+            }
+        }
     }
 
     public void backToToday(){
@@ -165,10 +182,14 @@ public class WeekView extends FrameLayout {
                 public void onGlobalLayout() {
                     self.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                     weekViewPager.setCurrentItem(upperBoundsOffset + getRowDiff(toDate),false);
+                    innerCalView.setMonthTitle(monthDayViewCalendar.getCalendar());
+                    innerCalView.setCurrentDate(monthDayViewCalendar.getCalendar().getTime());
                 }
             });
         }else{
             weekViewPager.setCurrentItem(upperBoundsOffset + getRowDiff(toDate),false);
+            innerCalView.setMonthTitle(monthDayViewCalendar.getCalendar());
+            innerCalView.setCurrentDate(monthDayViewCalendar.getCalendar().getTime());
         }
     }
 
@@ -283,14 +304,14 @@ public class WeekView extends FrameLayout {
 
     public void addTimeSlot(ITimeTimeSlotInterface slotInfo){
         WrapperTimeSlot wrapper = new WrapperTimeSlot(slotInfo);
-        slotsInfo.add(wrapper);
+        addSlotToList(wrapper);
         if (adapter != null){
             adapter.notifyDataSetChanged();
         }
     }
 
     public void addTimeSlot(WrapperTimeSlot wrapperTimeSlot){
-        slotsInfo.add(wrapperTimeSlot);
+        addSlotToList(wrapperTimeSlot);
         if (adapter != null){
             adapter.notifyDataSetChanged();
         }
@@ -299,14 +320,36 @@ public class WeekView extends FrameLayout {
     public void addTimeSlot(ITimeTimeSlotInterface slotInfo, boolean isSelected){
         WrapperTimeSlot wrapper = new WrapperTimeSlot(slotInfo);
         wrapper.setSelected(isSelected);
-        slotsInfo.add(wrapper);
+        addSlotToList(wrapper);
         if (adapter != null){
             adapter.notifyDataSetChanged();
         }
     }
 
+    private void addSlotToList(WrapperTimeSlot wrapperSlot){
+        slotsInfo.add(wrapperSlot);
+        updateNumTimeslotMap();
+    }
+
+    private void updateNumTimeslotMap(){
+        numSlotMap.clear();
+        for (WrapperTimeSlot wrapper:slotsInfo
+             ) {
+            if (wrapper.getTimeSlot() != null && wrapper.isSelected()){
+                String strDate = slotFmt.format(new Date(wrapper.getTimeSlot().getStartTime()));
+                if (this.numSlotMap.containsKey(strDate)){
+                    numSlotMap.put(strDate, numSlotMap.get(strDate) + 1);
+                }else {
+                    numSlotMap.put(strDate,1);
+                }
+            }
+        }
+        innerCalView.refreshSlotNum();
+    }
+
     public void resetTimeSlots(){
         slotsInfo.clear();
+        numSlotMap.clear();
         reloadTimeSlots(false);
     }
 
@@ -344,21 +387,13 @@ public class WeekView extends FrameLayout {
         }
     }
 
-    public OnRcdTimeSlot getOnRcdTimeSlot() {
-        return onRcdTimeSlot;
-    }
-
-    public void setOnRcdTimeSlot(OnRcdTimeSlot onRcdTimeSlot) {
-        this.onRcdTimeSlot = onRcdTimeSlot;
-        for (FlexibleLenViewBody body:bodyViewList
-             ) {
-            body.setOnRcdTimeSlot(onRcdTimeSlot);
-        }
-    }
-
-    public void setSlotNumMap(HashMap<String, Integer> slotNumMap) {
-        this.innerCalView.setSlotNumMap(slotNumMap);
-    }
+//    public void setOnRcdTimeSlot(OnRcdTimeSlot onRcdTimeSlot) {
+//        this.onRcdTimeSlot = onRcdTimeSlot;
+//        for (FlexibleLenViewBody body:bodyViewList
+//             ) {
+//            body.setOnRcdTimeSlot(onRcdTimeSlot);
+//        }
+//    }
 
     /***************************************************************************
      * Listener Part, Including onHeaderListener, OnBodyOuterListener
@@ -393,27 +428,22 @@ public class WeekView extends FrameLayout {
             draggableTimeSlotView.getNewCalendar().setMonth(currentCal.getMonth());
             draggableTimeSlotView.getNewCalendar().setYear(currentCal.getYear());
 
-//            TimeSlotStruct newStruct = new TimeSlotStruct();
-//            newStruct.startTime = timeSlotView.getNewStartTime();
-//            newStruct.endTime = timeSlotView.getNewStartTime() + timeSlotView.getDuration();
-//            newStruct.status = false;
-
-//            timeSlotView.setTag(newStruct);
             if (onTimeSlotOuterListener != null){
                 onTimeSlotOuterListener.onTimeSlotCreate(draggableTimeSlotView);
-//                ){
-//                    addTimeSlot(newStruct);
-//                    reloadTimeSlots(false);
-//                }
             }
         }
 
         @Override
         public void onTimeSlotClick(DraggableTimeSlotView draggableTimeSlotView) {
-            //do inner things here
-
             if (onTimeSlotOuterListener != null){
                 onTimeSlotOuterListener.onTimeSlotClick(draggableTimeSlotView);
+            }
+        }
+
+        @Override
+        public void onRcdTimeSlotClick(RecommendedSlotView v) {
+            if (onTimeSlotOuterListener != null){
+                onTimeSlotOuterListener.onRcdTimeSlotClick(v);
             }
         }
 
@@ -540,9 +570,9 @@ public class WeekView extends FrameLayout {
         void onScroll(long currentTime);
     }
 
-    public interface OnRcdTimeSlot{
-        void onClick(RecommendedSlotView v);
-    }
+//    public interface OnRcdTimeSlot{
+//        void onClick(RecommendedSlotView v);
+//    }
 
     /***************************************************************************
      * Inner private methods block, including function of setting up MonthDayView
@@ -607,11 +637,6 @@ public class WeekView extends FrameLayout {
                 if(onScrollChangedListener == null){
                     onScrollChangedListener = this;
                 }
-
-//                if (!scroller.isShown()){
-//                    scroller.getViewTreeObserver().removeOnScrollChangedListener(this);
-//                    return;
-//                }
 
                 FlexibleLenViewBody currentShow = adapter.getViewBodyByPosition(weekViewPager.getCurrentItem());
 
@@ -684,7 +709,6 @@ public class WeekView extends FrameLayout {
             public void onPageSelected(int position) {
                 bodyCurrentPosition = position;
                 monthDayViewCalendar = adapter.getViewBodyByPosition(position).getCalendar();
-                innerCalView.setMonth(monthDayViewCalendar.getCalendar());
                 if (onHeaderListener != null){
                     onHeaderListener.onMonthChanged(monthDayViewCalendar);
                 }
@@ -710,6 +734,7 @@ public class WeekView extends FrameLayout {
         FrameLayout.LayoutParams stcPageParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         innerCalView = new TimeSlotInnerCalendarView(context);
         innerCalView.setHeaderHeight(headerHeight);
+        innerCalView.setSlotNumMap(numSlotMap);
 
         FrameLayout.LayoutParams innerCalViewParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         this.staticLayer.addView(innerCalView,innerCalViewParams);
@@ -719,25 +744,16 @@ public class WeekView extends FrameLayout {
     }
 
     private int getRowDiff(Calendar body_fst_cal){
-        MyCalendar tempH = new MyCalendar(Calendar.getInstance());
-        MyCalendar tempB = new MyCalendar(body_fst_cal);
-        tempH.setToSameBeginOfDay(tempB);
+        MyCalendar tempNow = new MyCalendar(Calendar.getInstance());
+        MyCalendar tempCompared = new MyCalendar(body_fst_cal);
+        tempNow.setToSameBeginOfDay(tempCompared);
 
-        int date_offset =  Math.round((float)(tempB.getCalendar().getTimeInMillis() - tempH.getCalendar().getTimeInMillis()) / (float)(1000*60*60*24));
+        long tT = tempNow.getCalendar().getTimeInMillis();
+        long cT = tempCompared.getCalendar().getTimeInMillis();
 
-        int row_diff = date_offset/displayLength;
-        /**
-         * tempH.getDayOfWeek() should be substantiated by position of current showing week
-         */
-        int day_diff = (tempH.getDayOfWeek()%displayLength + date_offset%displayLength);
+        int rowDiff = (int)Math.floor(((float)(cT - tT) / (1000*60*60*24))/displayLength);
 
-        if (date_offset > 0){
-            row_diff = row_diff + (day_diff > displayLength ? 1:0);
-        }else if(date_offset < 0){
-            row_diff = row_diff + (day_diff <= 0 ? -1:0);
-        }
-
-        return row_diff;
+        return rowDiff;
     }
 
     private ImageView getDivider() {

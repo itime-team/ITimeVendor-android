@@ -1093,9 +1093,9 @@ public class FlexibleLenViewBody extends FrameLayout {
         timeSlotController.setOnTimeSlotListener(onTimeSlotListener);
     }
 
-    public void setOnRcdTimeSlot(WeekView.OnRcdTimeSlot onRcdTimeSlot){
-        timeSlotController.setOnRcdTimeSlot(onRcdTimeSlot);
-    }
+//    public void setOnRcdTimeSlot(WeekView.OnRcdTimeSlot onRcdTimeSlot){
+//        timeSlotController.setOnRcdTimeSlot(onRcdTimeSlot);
+//    }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {

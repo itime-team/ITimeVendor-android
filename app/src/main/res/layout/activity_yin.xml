@@ -14,12 +14,12 @@
         />
 
 
-    <org.unimelb.itime.vendor.dayview.MonthDayView
+    <org.unimelb.itime.vendor.dayview.New_MonthView
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/monthDayView"
     >
-    </org.unimelb.itime.vendor.dayview.MonthDayView>
+    </org.unimelb.itime.vendor.dayview.New_MonthView>
 
     <!--<FrameLayout-->
     <!--android:id="@+id/fragment"-->

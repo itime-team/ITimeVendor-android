@@ -1,18 +1,17 @@
 package com.github.sundeepk.compactcalendarview;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.support.annotation.AttrRes;
-import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -31,7 +30,7 @@ public class ITimeInnerCalendar extends RelativeLayout {
     private CompactCalendarView calendarView;
     private TextView titleTv;
     private Context context;
-
+    private int targetHeight;
     private CompactCalendarView.CompactCalendarViewListener outListener;
 
     public ITimeInnerCalendar(@NonNull Context context) {
@@ -44,6 +43,7 @@ public class ITimeInnerCalendar extends RelativeLayout {
     public ITimeInnerCalendar(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         this.calendarView = new CompactCalendarView(context, attrs, 0);
+        this.loadAttributes(attrs, context);
         this.context = context;
         this.init();
     }
@@ -52,27 +52,53 @@ public class ITimeInnerCalendar extends RelativeLayout {
         super(context, attrs, defStyleAttr);
         this.context = context;
         this.calendarView = new CompactCalendarView(context, attrs, defStyleAttr);
+        this.loadAttributes(attrs, context);
         this.init();
     }
 
+    private void loadAttributes(AttributeSet attrs, Context context) {
+        if (attrs != null && context != null) {
+            TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.ITimeInnerCalendar, 0, 0);
+            try {
+                targetHeight = typedArray.getDimensionPixelSize(R.styleable.ITimeInnerCalendar_compactCalendarTargetHeight,
+                        (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, targetHeight, context.getResources().getDisplayMetrics()));
+            } finally {
+                typedArray.recycle();
+            }
+        }
+    }
+
     private void init(){
+        initSelf();
         initCalendarTitleBar();
         initCalendar();
         initDivider();
+    }
+
+    private void initSelf(){
+        this.setBackgroundColor(getResources().getColor(R.color.calendar_alpha_bg));
+    }
+
+    public void setOnBgClickListener(OnClickListener listener){
+        this.setOnClickListener(listener);
     }
 
     public void setSlotNumMap(HashMap<String, Integer> slotNumMap) {
         this.calendarView.setSlotNumMap(slotNumMap);
     }
 
+    public void setCurrentDate(Date date){
+        this.calendarView.setCurrentDate(date);
+    }
+
     private void initCalendarTitleBar(){
         this.calTitleBar = new RelativeLayout(getContext());
         this.calTitleBar.setBackgroundColor(Color.WHITE);
-        int barPad = DensityUtil.dip2px(context,10);
+        int barPad = DensityUtil.dip2px(context,20);
         this.calTitleBar.setPadding(0,barPad,0,barPad);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        this.calTitleBar.setLayoutParams(params);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         this.calTitleBar.setId(View.generateViewId());
+        this.addView(calTitleBar, params);
 
         titleTv = new TextView(getContext());
         titleTv.setId(View.generateViewId());
@@ -108,14 +134,11 @@ public class ITimeInnerCalendar extends RelativeLayout {
                 calendarView.showNextMonth();
             }
         });
-
         calTitleBar.addView(rightIcon,rightIconParams);
-        this.addView(calTitleBar);
     }
 
     private void initCalendar(){
-//        this.calendarView = (CompactCalendarView) LayoutInflater.from(context).inflate(R.layout.itime_timeslot_inner_calendar, null);
-        RelativeLayout.LayoutParams calParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams calParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, targetHeight);
         calendarView.setId(generateViewId());
         calParams.addRule(BELOW, calTitleBar.getId());
         calendarView.setListener(new CompactCalendarView.CompactCalendarViewListener() {

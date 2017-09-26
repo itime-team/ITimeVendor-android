@@ -43,8 +43,6 @@ public class TimeSlotInnerCalendarView extends LinearLayout {
     private RotateAnimation showIndicatorAnim;
     private RotateAnimation hideIndicatorAnim;
 
-//    private RelativeLayout calTitleBar;
-//    private CompactCalendarView calendarView;
     private ITimeInnerCalendar calendarView;
 
     private OnTimeSlotInnerCalendar onTimeSlotInnerCalendar;
@@ -80,8 +78,6 @@ public class TimeSlotInnerCalendarView extends LinearLayout {
     private void intViews(){
         this.setOrientation(VERTICAL);
         initBtnBlock();
-//        initCalendarTitleBar();
-//        initCalendar();
         initITimeInnerCalendar();
         initListeners();
         initAnimations();
@@ -119,50 +115,17 @@ public class TimeSlotInnerCalendarView extends LinearLayout {
 
     private void initITimeInnerCalendar(){
         this.calendarView = (ITimeInnerCalendar) LayoutInflater.from(context).inflate(R.layout.itime_timeslot_inner_calendar, null);
-        LinearLayout.LayoutParams calParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.dip2px(getContext(),260));
-        this.addView(calendarView,calParams);
+        LinearLayout.LayoutParams calParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        this.calendarView.setOnBgClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideCalendar();
+            }
+        });
         this.calendarView.setVisibility(GONE);
+
+        this.addView(calendarView,calParams);
     }
-
-//    private void initCalendarTitleBar(){
-//        this.calTitleBar = new RelativeLayout(getContext());
-//        this.calTitleBar.setBackgroundColor(Color.WHITE);
-//        int barPad = DensityUtil.dip2px(context,10);
-//        this.calTitleBar.setPadding(0,barPad,0,barPad);
-//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//        this.calTitleBar.setLayoutParams(params);
-//
-//        TextView titleTv = new TextView(getContext());
-//        titleTv.setText("MARCH 2017");
-//        titleTv.setId(generateViewId());
-//        RelativeLayout.LayoutParams titleTvParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//        titleTvParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-//        calTitleBar.addView(titleTv,titleTvParams);
-//
-//        int indicatorSize = DensityUtil.dip2px(context,20);
-//
-//        ImageView leftIcon = new ImageView(getContext());
-//        leftIcon.setImageDrawable(getResources().getDrawable(R.drawable.indicator_more_left));
-//        RelativeLayout.LayoutParams leftIconParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, indicatorSize);
-//        leftIconParams.addRule(RelativeLayout.LEFT_OF,titleTv.getId());
-//        calTitleBar.addView(leftIcon,leftIconParams);
-//
-//        ImageView rightIcon = new ImageView(getContext());
-//        rightIcon.setImageDrawable(getResources().getDrawable(R.drawable.indicator_more_right));
-//        RelativeLayout.LayoutParams rightIconParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, indicatorSize);
-//        rightIconParams.addRule(RelativeLayout.RIGHT_OF,titleTv.getId());
-//        calTitleBar.addView(rightIcon,rightIconParams);
-//        this.addView(calTitleBar);
-//        this.calTitleBar.setVisibility(GONE);
-//    }
-
-//    private void initCalendar(){
-//        this.calendarView = (CompactCalendarView) LayoutInflater.from(context).inflate(R.layout.itime_timeslot_inner_calendar, null);
-//        LinearLayout.LayoutParams calParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.dip2px(context,220));
-//        this.addView(calendarView,calParams);
-//        this.calendarView.setVisibility(GONE);
-//        addDivider();
-//    }
 
     private void initAnimations(){
         showIndicatorAnim = new RotateAnimation(0, 180, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
@@ -181,35 +144,9 @@ public class TimeSlotInnerCalendarView extends LinearLayout {
             @Override
             public void onClick(View v) {
                 if (calendarView.getVisibility() != VISIBLE){
-                    calendarView.setVisibility(VISIBLE);
-//                    calendarView.setVisibility(VISIBLE);
-//                    YoYo.with(Techniques.FadeIn)
-//                            .duration(200)
-//                            .playOn(calTitleBar);
-                    YoYo.with(Techniques.FadeInDown)
-                            .duration(200)
-                            .playOn(calendarView);
-                    indicator.startAnimation(showIndicatorAnim);
+                    showCalendar();
                 }else {
-//                    YoYo.with(Techniques.FadeOut)
-//                            .duration(200)
-//                            .onEnd(new YoYo.AnimatorCallback() {
-//                                @Override
-//                                public void call(Animator animator) {
-//                                    calTitleBar.setVisibility(GONE);
-//                                }
-//                            })
-//                            .playOn(calTitleBar);
-                    YoYo.with(Techniques.FadeOutUp)
-                            .duration(200)
-                            .onEnd(new YoYo.AnimatorCallback() {
-                                @Override
-                                public void call(Animator animator) {
-                                    calendarView.setVisibility(GONE);
-                                }
-                            })
-                            .playOn(calendarView);
-                    indicator.startAnimation(hideIndicatorAnim);
+                   hideCalendar();
                 }
 
                 if (onTimeSlotInnerCalendar != null){
@@ -224,6 +161,7 @@ public class TimeSlotInnerCalendarView extends LinearLayout {
                 if (onTimeSlotInnerCalendar != null){
                     onTimeSlotInnerCalendar.onDayClick(dateClicked);
                 }
+                hideCalendarFadeOut();
             }
 
             @Override
@@ -233,6 +171,40 @@ public class TimeSlotInnerCalendarView extends LinearLayout {
                 }
             }
         });
+    }
+
+    private void showCalendar(){
+        calendarView.setVisibility(VISIBLE);
+        YoYo.with(Techniques.FadeInDown)
+                .duration(200)
+                .playOn(calendarView);
+        indicator.startAnimation(showIndicatorAnim);
+    }
+
+    private void hideCalendar(){
+        YoYo.with(Techniques.FadeOutUp)
+                .duration(200)
+                .onEnd(new YoYo.AnimatorCallback() {
+                    @Override
+                    public void call(Animator animator) {
+                        calendarView.setVisibility(GONE);
+                    }
+                })
+                .playOn(calendarView);
+        indicator.startAnimation(hideIndicatorAnim);
+    }
+
+    private void hideCalendarFadeOut(){
+        YoYo.with(Techniques.FadeOut)
+                .duration(100)
+                .onEnd(new YoYo.AnimatorCallback() {
+                    @Override
+                    public void call(Animator animator) {
+                        calendarView.setVisibility(GONE);
+                    }
+                })
+                .playOn(calendarView);
+        indicator.startAnimation(hideIndicatorAnim);
     }
 
     private void addDivider(){
@@ -245,7 +217,7 @@ public class TimeSlotInnerCalendarView extends LinearLayout {
         this.addView(dividerImgV);
     }
 
-    public void setMonth(Calendar calendar){
+    public void setMonthTitle(Calendar calendar){
         String monthName = calendar.getDisplayName(Calendar.MONTH,Calendar.SHORT, Locale.getDefault());
         monthTitle.setText(monthName + ".");
     }
@@ -256,6 +228,15 @@ public class TimeSlotInnerCalendarView extends LinearLayout {
 
     public void setOnTimeSlotInnerCalendar(OnTimeSlotInnerCalendar onTimeSlotInnerCalendar) {
         this.onTimeSlotInnerCalendar = onTimeSlotInnerCalendar;
+    }
+
+    public void setCurrentDate(Date currentDate){
+        this.calendarView.setCurrentDate(currentDate);
+    }
+
+    public void refreshSlotNum(){
+        calendarView.setWillNotDraw(false);
+        calendarView.refreshSlotNum();
     }
 
     public interface OnTimeSlotInnerCalendar{
